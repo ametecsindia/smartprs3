@@ -581,7 +581,8 @@
      "route": "configure-menu",
      "label": "Menu",
      "icon": "fa-bars",
-     "permission": "tenant.settings.view"
+     "permission": "tenant.settings.view",
+     "hidden": true
     },
     {
      "key": "performance-appraisal",

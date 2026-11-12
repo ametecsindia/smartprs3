@@ -28102,6 +28102,35 @@ boot();
         + '<td class="n">0</td><td><button type="button" class="btn btn-outline" onclick="this.closest(\'tr\').remove()"><i class="fas fa-xmark"></i> Remove</button></td>';
       tb.appendChild(tr); tr.querySelector('input').focus();
     }
+    // Latitude / Longitude follow the branch location: looked up (OpenStreetMap) from Branch Name, City and State
+    // when blank on load, and again whenever one of those three changes. A value typed by hand is kept.
+    (function () {
+      var queue = [], busy = false;
+      function v(tr, k) { var i = tr.querySelector('[name$="[' + k + ']"]'); return i ? i.value.trim() : ''; }
+      function look(tr) {
+        var lat = tr.querySelector('[name$="[lat]"]'), lng = tr.querySelector('[name$="[lng]"]');
+        if (!lat || !lng || lat.dataset.manual === '1') { return; }
+        var name = v(tr, 'name'), city = v(tr, 'city'), state = v(tr, 'state');
+        if (!city && !state) { return; }
+        queue.push({ lat: lat, lng: lng, tries: [[name, city, state, 'India'], [city, state, 'India']].map(function (a) { return a.filter(Boolean).join(', '); }) });
+        next();
+      }
+      function next() { // ponytail: one request a second, the OpenStreetMap usage limit; fine for a branch list
+        if (busy || !queue.length) { return; } busy = true;
+        var job = queue.shift(), q = job.tries.shift();
+        fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d[0]) { job.lat.value = (+d[0].lat).toFixed(6); job.lng.value = (+d[0].lon).toFixed(6); job.lat.title = job.lng.title = 'Found for ' + q + ' — Save to keep'; job.lat.style.background = job.lng.style.background = '#ecfdf5'; }
+          else if (job.tries.length) { queue.unshift(job); }
+        }).catch(function () {}).then(function () { setTimeout(function () { busy = false; next(); }, 1100); });
+      }
+      var tb = document.querySelector('#br-table tbody');
+      tb.addEventListener('change', function (ev) {
+        var n = ev.target.name || '', tr = ev.target.closest('tr');
+        if (/\[(lat|lng)\]$/.test(n)) { var m = ev.target.value.trim() !== '' ? '1' : ''; tr.querySelector('[name$="[lat]"]').dataset.manual = m; return; }
+        if (/\[(name|city|state)\]$/.test(n)) { look(tr); }
+      });
+      tb.querySelectorAll('tr').forEach(function (tr) { var lat = tr.querySelector('[name$="[lat]"]'); if (lat && lat.value.trim() === '') { look(tr); } });
+    })();
   </script>
 
 <?php elseif ($route === 'pay-cycles' && !$may('payroll.view')): ?>

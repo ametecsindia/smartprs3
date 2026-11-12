@@ -1,0 +1,6 @@
+{
+  "note": "Files a release update never overwrites on a server (besides .env, storage/, public/uploads/, .git/). Add a path here if a server keeps its own copy of a shipped file.",
+  "keep": [
+    "config/gst.json"
+  ]
+}

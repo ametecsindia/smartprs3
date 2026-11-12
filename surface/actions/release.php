@@ -21,10 +21,52 @@ $before = $id === '' ? null : $platform->find('releases', $id);
 $now = date('Y-m-d H:i:s');
 $by = (string) $session->user()['email'];
 
+$relRoot = dirname(__DIR__, 2);
+$relUpdater = new SmartPRS\Surface\Updater($relRoot);
+$relBack = static function (string $problem, string $to = '?r=releases'): never { $_SESSION['flash_problem'] = $problem; header('Location: ' . $to); exit; };
+
 if ($op === 'save') {
     $version = trim(post('version'));
     $row = ['version' => $version, 'notes' => trim(post('notes')) ?: null, 'file_path' => trim(post('file_path')) ?: null,
         'checksum' => strtolower(trim(post('checksum'))) ?: null];
+    $editTo = '?r=releases&edit=' . ($id === '' ? 'new' : $id);
+
+    // THE PACKAGE (12 Nov 2026): the .zip + .sig from C:\SmartPRS3-Releases, uploaded here — or, when the zip is
+    // too big for an upload, copied into storage/releases on this server and picked from the list.
+    $upZip = (array) ($_FILES['package'] ?? []);
+    $upSig = (array) ($_FILES['signature'] ?? []);
+    $picked = basename(post('server_file'));
+    $zipTmp = '';
+    $sigText = '';
+
+    if ((int) ($upZip['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+        $zipTmp = (string) $upZip['tmp_name'];
+        $sigText = (int) ($upSig['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK ? trim((string) file_get_contents((string) $upSig['tmp_name'])) : '';
+        $sigText !== '' || $relBack('Choose the .sig file too — it comes with the .zip in C:\\SmartPRS3-Releases.', $editTo);
+    } elseif (in_array((int) ($upZip['error'] ?? UPLOAD_ERR_NO_FILE), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
+        $relBack('The package is bigger than this server accepts for an upload (' . ini_get('upload_max_filesize') . '). Copy the .zip and .sig into storage/releases on the server and pick it from the list instead.', $editTo);
+    } elseif ($picked !== '' && is_file($relUpdater->releasesDir() . '/' . $picked)) {
+        $zipTmp = $relUpdater->releasesDir() . '/' . $picked;
+        $sigText = trim((string) @file_get_contents(preg_replace('/\.zip$/i', '.sig', $zipTmp)));
+        $sigText !== '' || $relBack('No ' . preg_replace('/\.zip$/i', '.sig', $picked) . ' beside it in storage/releases.', $editTo);
+    }
+
+    if ($zipTmp !== '') {
+        $man = SmartPRS\Surface\Updater::manifest($zipTmp);
+        $man['ok'] || $relBack($man['error'], $editTo);
+        $chk = SmartPRS\Surface\Updater::verify($zipTmp, '', $sigText);
+        $chk['ok'] || $relBack($chk['error'], $editTo);
+        $version = (string) $man['manifest']['version'];
+        $dest = $relUpdater->releasesDir() . '/' . SmartPRS\Surface\Updater::PACKAGE_PREFIX . $version . '.zip';
+
+        if ($zipTmp !== $dest && !(is_uploaded_file($zipTmp) ? move_uploaded_file($zipTmp, $dest) : copy($zipTmp, $dest))) {
+            $relBack('Could not store the package in storage/releases (folder not writable).', $editTo);
+        }
+
+        file_put_contents(preg_replace('/\.zip$/i', '.sig', $dest), $sigText);
+        $row = ['version' => $version, 'notes' => trim(post('notes')) ?: ((string) ($man['manifest']['notes'] ?? '') ?: null),
+            'file_path' => 'storage/releases/' . basename($dest), 'checksum' => $chk['sha256'], 'size' => (int) filesize($dest)];
+    }
 
     if (preg_match('/^\d+(\.\d+)*[A-Za-z0-9.-]*$/', $version) !== 1) {
         $_SESSION['flash_problem'] = 'A version looks like 3.1.0.';
@@ -55,6 +97,25 @@ if ($op === 'save') {
     $platform->put('releases', ['id' => $id, 'applied_platform_at' => $now]);
     $audit('release.applied_platform', 'releases', $id, ['applied_platform_at' => $before['applied_platform_at']], ['applied_platform_at' => $now], $by);
     $_SESSION['flash_notice'] = 'Recorded: the cloud runs ' . (string) $before['version'] . '. Bump config/version.json to match if it does not already.';
+} elseif ($op === 'install-cloud' && $before !== null) {
+    // ONE CLICK UPDATES THE CLOUD SERVER (owner, 12 Nov 2026): every cloud company moves together.
+    (string) ($before['published_at'] ?? '') !== '' || $relBack('Publish the release first.');
+    $pkg = (new SmartPRS\Surface\LicenceAuthority($platform, $relRoot))->packagePath($before);
+    $pkg !== null || $relBack('This release has no package on the server — Edit it and upload the .zip and .sig.');
+    $chk = SmartPRS\Surface\Updater::verify($pkg, (string) ($before['checksum'] ?? ''), trim((string) @file_get_contents(preg_replace('/\.zip$/i', '.sig', $pkg))));
+    $chk['ok'] || $relBack($chk['error']);
+    session_write_close();
+    $res = $relUpdater->install($pkg, $by);
+    session_start();
+    $_SESSION['release_log'] = $res['log'];
+
+    if ($res['ok']) {
+        $platform->put('releases', ['id' => $id, 'applied_platform_at' => date('Y-m-d H:i:s')]);
+        $audit('release.installed_cloud', 'releases', $id, null, ['from' => $res['from'], 'to' => $res['version']], $by);
+        $_SESSION['flash_notice'] = 'Cloud server: ' . $res['message'];
+    } else {
+        $_SESSION['flash_problem'] = 'Cloud server not updated: ' . $res['message'];
+    }
 } elseif ($op === 'grant' && $before !== null) {
     $already = [];
 
@@ -64,9 +125,11 @@ if ($op === 'save') {
         }
     }
 
-    $targets = post('client_id') === '*'
+    // SEND TO THE CLIENTS TICKED (owner, 12 Nov 2026) — several at once, or every on-prem client.
+    $picked = array_map('strval', (array) ($_POST['client_ids'] ?? []));
+    $targets = in_array('*', $picked, true) || post('client_id') === '*'
         ? array_map(static fn (array $c): string => (string) $c['id'], $platform->all('onprem_clients'))
-        : ($platform->find('onprem_clients', post('client_id')) === null ? [] : [post('client_id')]);
+        : array_values(array_filter($picked !== [] ? $picked : [post('client_id')], static fn (string $c): bool => $c !== '' && $platform->find('onprem_clients', $c) !== null));
     $count = 0;
 
     foreach (array_diff($targets, $already) as $clientId) {

@@ -1,5 +1,5 @@
 {
-  "note": "Administration → Updates & Licence reads this. The number a support call starts with; bump it when a release is cut. Updates are applied by the operator from the release archive — nothing downloads or installs itself from a screen.",
+  "note": "Administration → Updates & Licence reads this. make-release.bat sets it when a release is built; an installed release package brings its own copy.",
   "product": "SmartPRS",
   "version": "3.0.0-dev",
   "released_on": "2026-09-09",

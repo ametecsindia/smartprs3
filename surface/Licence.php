@@ -79,7 +79,7 @@ PEM;
 
     public function server(): string
     {
-        return rtrim($this->env('SMARTPRS_LICENCE_SERVER', 'https://app.smartprs.com'), '/');
+        return rtrim($this->env('SMARTPRS_LICENCE_SERVER', 'https://smartprs.com'), '/'); // central moved to smartprs.com (12 Nov 2026)
     }
 
     private function dir(): string
@@ -444,6 +444,69 @@ PEM;
         $s = strtr($s, '-_', '+/');
 
         return base64_decode($s . str_repeat('=', (4 - strlen($s) % 4) % 4), true);
+    }
+
+    // ------------------------------------------------------------ updates (12 Nov 2026)
+
+    /** This install's licence key, or '' (offline .lic installs have none to send). */
+    private function key(): string
+    {
+        $st = $this->state();
+
+        return empty($st['key_enc']) ? '' : (string) Secret::decrypt((string) $st['key_enc'], $this->root . '/.env');
+    }
+
+    /**
+     * Ask central whether a newer release has been sent to this licence.
+     *
+     * @return array<string, mixed> central's answer, or ['ok' => false, 'message' => …]
+     */
+    public function checkUpdate(string $currentVersion): array
+    {
+        $key = $this->key();
+
+        if ($key === '') {
+            return ['ok' => false, 'update_available' => false, 'message' => 'This installation has no online licence key, so it cannot check for updates. Activate online first, or ask Ametecs for the package.'];
+        }
+
+        return $this->post('/update/check', ['key' => $key, 'current_version' => $currentVersion, 'fingerprint' => $this->fingerprint()], 20)
+            ?? ['ok' => false, 'update_available' => false, 'message' => 'The update server (' . $this->server() . ') could not be reached. Check this server\'s internet connection.'];
+    }
+
+    /** Download a granted release to $dest. Returns '' on success, else the reason. */
+    public function downloadUpdate(string $version, string $dest): string
+    {
+        $key = $this->key();
+        $fh = $key === '' ? false : @fopen($dest, 'wb');
+
+        if ($fh === false) {
+            return $key === '' ? 'No online licence key.' : 'Cannot write ' . $dest . '.';
+        }
+
+        $ch = curl_init($this->server() . '/update/download');
+        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => http_build_query(['key' => $key, 'version' => $version]),
+            CURLOPT_FILE => $fh, CURLOPT_TIMEOUT => 900, CURLOPT_CONNECTTIMEOUT => 15, CURLOPT_FOLLOWLOCATION => true]);
+        $ok = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $type = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        curl_close($ch);
+        fclose($fh);
+
+        if ($ok === false || $code !== 200 || !str_contains($type, 'zip')) {
+            $j = json_decode((string) @file_get_contents($dest), true);
+            @unlink($dest);
+
+            return is_array($j) && isset($j['error']) ? (string) $j['error'] : 'Download failed (HTTP ' . $code . ').';
+        }
+
+        return '';
+    }
+
+    /** Tell central what happened (applied / failed). Best effort. */
+    public function reportUpdate(string $version, string $action, string $detail): void
+    {
+        $key = $this->key();
+        $key === '' || $this->post('/update/report', ['key' => $key, 'version' => $version, 'action' => $action, 'detail' => $detail], 10);
     }
 
     /**

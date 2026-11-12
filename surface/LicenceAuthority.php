@@ -384,6 +384,15 @@ final class LicenceAuthority
 
             case 'check':
                 return $this->check($lic, (string) ($in['current_version'] ?? $in['version'] ?? '0'));
+
+            // THE CLIENT REPORTS WHAT IT DID with a release (12 Nov 2026): downloaded | applied | failed.
+            case 'report':
+                $action = in_array((string) ($in['action'] ?? ''), ['download', 'applied', 'failed'], true) ? (string) $in['action'] : 'failed';
+                $this->platform->put('client_updates', ['client_id' => $lic['client_id'] ?? null, 'licence_id' => $id,
+                    'version' => mb_substr((string) ($in['version'] ?? ''), 0, 30), 'action' => $action,
+                    'detail' => mb_substr((string) ($in['detail'] ?? ''), 0, 1000) ?: null]);
+
+                return [200, ['ok' => true]];
         }
 
         return [404, ['ok' => false, 'error' => 'No such licence operation.']];
@@ -433,7 +442,64 @@ final class LicenceAuthority
 
         return [200, $base + ['update_available' => true, 'amc_active' => true, 'product' => 'smartprs3', 'version' => $best['version'],
             'notes' => $best['notes'] ?? '', 'size_bytes' => (int) ($best['size'] ?? 0), 'package_hash' => $best['checksum'] ?? null,
+            'signature' => $this->signatureOf($best), 'downloadable' => $this->packagePath($best) !== null,
             'released_at' => $best['published_at']]];
+    }
+
+    /** The release's package on this (central) server, or null when it has none. */
+    public function packagePath(array $release): ?string
+    {
+        $rel = (string) ($release['file_path'] ?? '');
+        $path = $rel === '' ? '' : (str_starts_with($rel, '/') || preg_match('/^[A-Za-z]:/', $rel) === 1 ? $rel : $this->root . '/' . $rel);
+
+        return $path !== '' && is_file($path) ? $path : null;
+    }
+
+    /** The signature kept beside the package (smartprs3-<version>.sig). */
+    public function signatureOf(array $release): string
+    {
+        $zip = $this->packagePath($release);
+
+        return $zip === null ? '' : trim((string) @file_get_contents(preg_replace('/\.zip$/i', '.sig', $zip)));
+    }
+
+    /**
+     * THE PACKAGE A CLIENT MAY DOWNLOAD (/update/download): the licence must be active, its AMC current,
+     * and that version granted to its client. Returns the file path, or [status, error body].
+     *
+     * @return array{0: int, 1: array<string, mixed>|string}
+     */
+    public function download(array $in, string $ip): array
+    {
+        $lic = strlen(self::normalize((string) ($in['key'] ?? ''))) >= 16 ? $this->findByKey((string) $in['key']) : null;
+
+        if ($lic === null || (string) $lic['status'] !== 'active') {
+            return [422, ['ok' => false, 'error' => self::NEUTRAL]];
+        }
+
+        if (!self::amcActive($lic)) {
+            return [422, ['ok' => false, 'error' => 'Your AMC has ended. Renew to receive updates.']];
+        }
+
+        $want = (string) ($in['version'] ?? '');
+
+        foreach ($this->platform->all('releases') as $r) {
+            if ((string) $r['version'] !== $want || (string) ($r['published_at'] ?? '') === '') {
+                continue;
+            }
+
+            foreach ($this->platform->all('release_grants') as $g) {
+                if ((string) $g['release_id'] === (string) $r['id'] && (string) $g['client_id'] === (string) $lic['client_id']) {
+                    $path = $this->packagePath($r);
+                    $this->platform->put('client_updates', ['client_id' => $lic['client_id'], 'licence_id' => $lic['id'], 'version' => $want,
+                        'action' => 'download', 'detail' => $path === null ? 'package missing on central' : 'from ' . $ip]);
+
+                    return $path === null ? [404, ['ok' => false, 'error' => 'The package for ' . $want . ' is not on the update server yet.']] : [200, $path];
+                }
+            }
+        }
+
+        return [404, ['ok' => false, 'error' => 'Version ' . $want . ' has not been released to this licence.']];
     }
 
     // ------------------------------------------------------- the sale (client)

@@ -106,7 +106,7 @@ input,select,textarea{font-family:var(--font2)}
 .nav-caret{margin-left:auto;font-size:10px;transition:transform .2s;color:rgba(255,255,255,0.45)}
 .nav-section:not(.collapsed) .nav-caret{transform:rotate(180deg)}
 .nav-items{overflow:hidden;max-height:0;transition:max-height .25s ease}
-.nav-section:not(.collapsed) .nav-items{max-height:760px}
+.nav-section:not(.collapsed) .nav-items{max-height:none} /* no height cap at all (12 Nov 2026): a fixed 760px cut the last items off once Organization Setup grew past it */
 .nav-items .nav-item{padding-left:40px;font-size:12px;color:rgba(255,255,255,0.6)}
 .nav-items .nav-item.active{color:var(--accent);background:rgba(249,115,22,0.08)}
 .sidebar-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,0.06)}

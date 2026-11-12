@@ -8,6 +8,8 @@
  *   POST /update/device/activate     {key, device_uid, hostname}
  *   POST /update/device/deactivate   {key, device_uid}
  *   POST /update/check               {key, current_version}           → update offer (granted releases)
+ *   POST /update/download            {key, version}                   → the signed package (zip)
+ *   POST /update/report              {key, version, action, detail}   → client_updates row
  *
  * An on-premise install refuses all of this: it is a client of a licence server,
  * never one itself.
@@ -39,5 +41,17 @@ if ($hits > 60) {
 $uri = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
 $op = ($p = strpos($uri, '/update/')) !== false ? trim(substr($uri, $p + 8), '/') : trim((string) ($_SERVER['PATH_INFO'] ?? ''), '/');
 $in = array_map(static fn ($v): string => is_scalar($v) ? (string) $v : '', body_form((string) file_get_contents('php://input')));
+if ($op === 'download') { // the package itself, streamed (12 Nov 2026)
+    [$status, $file] = $authority->download($in, $ip);
+    if (!is_string($file)) {
+        json_out($status, $file);
+    }
+    header('Content-Type: application/zip');
+    header('Content-Length: ' . (string) filesize($file));
+    header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+    readfile($file);
+    exit;
+}
+
 [$status, $body] = $authority->handle($op, $in, $ip);
 json_out($status, $body);

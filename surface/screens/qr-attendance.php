@@ -300,14 +300,14 @@ $qaXls = static fn (string $table, string $file): string => '<button type="butto
 
 <?php elseif ($qaPage === 'employees'):
     $qaF = orgFilter();
-    $qaList = orgFilterApply($store, $qaQrEmps, $qaF);
+    $qaList = orgFilterApply($store, $qaScoped, $qaF); // every Directory employee this viewer may see (owner, 12 Nov 2026), not only QR companies'
     $qaMaRow = (array) ($_SESSION['ma_row'] ?? []);
     unset($_SESSION['ma_row']); // shown once, under that employee's row
     $qaDevBy = []; foreach ($qaDevices as $d) { $qaDevBy[(string) ($d['employee_id'] ?? '')][] = (string) $d['status']; }
     $qaToday = $qaPunches($qaNow, $qaNow, $qaByCode);
     $qaLast = []; foreach ($qaPunches('0000-00-00', $qaNow, $qaByCode) as $p) { $qaLast[(string) $p['employment_id']] ??= (string) $p['at']; } ?>
 <div class="card">
-  <?= orgFilterBar('qr-attendance', $qaF, orgFilterOptions($store, $qaQrEmps), ['qp' => 'employees']) ?>
+  <?= orgFilterBar('qr-attendance', $qaF, orgFilterOptions($store, $qaScoped), ['qp' => 'employees']) ?>
   <div style="display:flex;justify-content:flex-end"><?= $qaXls('qa-emps', 'qr-attendance-employees-' . SmartPRS\Surface\Dates::dmy($qaNow) . '.csv') ?></div>
 </div>
 <div class="card" style="padding:0"><div class="table-wrap"><table id="qa-emps">
