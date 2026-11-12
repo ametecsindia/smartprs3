@@ -7,3 +7,13 @@
 /.phpunit.cache
 /public/uploads
 /Claude outputs
+
+# Android build output and signing keys (never in the repository)
+/mobile/**/build/
+/mobile/**/.gradle/
+/mobile/**/.idea/
+/mobile/**/local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
