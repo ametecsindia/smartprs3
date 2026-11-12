@@ -640,7 +640,11 @@ public class MainActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setGeolocationEnabled(true);
-        s.setUserAgentString(s.getUserAgentString() + " SmartPRS3-Mobile/1.4");
+        // PINCH TO ZOOM IN / OUT ON EVERY SCREEN (owner, 12 Nov 2026), without the old +/- buttons on top of the page.
+        s.setSupportZoom(true);
+        s.setBuiltInZoomControls(true);
+        s.setDisplayZoomControls(false);
+        s.setUserAgentString(s.getUserAgentString() + " SmartPRS3-Mobile/1.5");
 
         final String host = Uri.parse(base()).getHost();
         web.setWebViewClient(new WebViewClient() {

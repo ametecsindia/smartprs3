@@ -17,6 +17,18 @@ $fence = $ownRow === null ? null : (new SmartPRS\Surface\GeoFence($store))->fenc
 $qrSource = $ownRow === null ? 'standard' : SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->modeFor($ownRow); // Office staff: QR by default (12 Nov 2026)
 $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
 ?>
+<style>
+  /* THE PUNCH SCREEN IN THE APP (owner, 12 Nov 2026): one full-width punch button, the camera full width, today's figures as tiles. */
+  body.in-app #qr-punch, body.in-app #self-punch { display:block; }
+  body.in-app #self-punch > div { flex:none !important; }
+  body.in-app .punch-main { display:flex; width:100%; justify-content:center; align-items:center; gap:10px; min-height:58px !important; font-size:17px !important; font-weight:700; border-radius:14px !important; color:#fff; margin:6px 0 4px; }
+  body.in-app #qr-cam { max-width:none !important; }
+  body.in-app #qr-photo { display:none; width:100%; justify-content:center; }
+  body.in-app .punch-stats { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  body.in-app .punch-stats > div { background:var(--bg,#f8fafc); border:1px solid var(--border,#e2e8f0); border-radius:12px; padding:10px 12px; }
+  body.in-app .punch-stats b { display:block; font-size:12px !important; color:var(--text3,#64748b); font-weight:600; margin-bottom:2px; }
+  body.in-app .punch-stats br { display:none; }
+</style>
 <div class="page-header">
   <div><h2>Punch In / Out</h2><p><?= e((new DateTimeImmutable('today'))->format('l, d-m-Y')) ?> &middot; from this web app; device and mobile punches land in the same register</p></div>
   <a class="btn btn-outline" href="?r=today"><i class="fas fa-calendar-day"></i> Today</a>
@@ -37,7 +49,7 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
     <input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
     <input type="hidden" name="action" value="self-punch">
     <input type="hidden" name="qr" value=""><input type="hidden" name="lat" value=""><input type="hidden" name="lng" value=""><input type="hidden" name="accuracy" value="">
-    <button class="go" type="button" id="qr-start" style="background:var(--<?= $next === 'in' ? 'green' : 'red' ?>)"><i class="fas fa-qrcode"></i> Scan QR to punch <?= strtoupper($next) ?></button>
+    <button class="go punch-main" type="button" id="qr-start" style="background:var(--<?= $next === 'in' ? 'green' : 'red' ?>)"><i class="fas fa-qrcode"></i> Scan QR to punch <?= strtoupper($next) ?></button>
     <div id="qr-cam" style="display:none;margin-top:12px;max-width:420px">
       <video id="qr-video" playsinline muted style="width:100%;border-radius:14px;background:#000;aspect-ratio:1;object-fit:cover"></video>
       <div class="note" id="qr-msg" style="margin-top:6px">Point the camera at the QR on the gate screen.</div>
@@ -88,6 +100,8 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
         tick();
       }).catch(function () { photo.style.display = 'inline-flex'; gps.textContent = 'The camera could not open here — take a photo of the QR instead.'; });
     });
+    // FROM HOME'S "Scan QR" CARD (owner, 12 Nov 2026): the camera opens at once.
+    if (/[?&]scan=1/.test(location.search)) { document.getElementById('qr-start').click(); }
   })();
   </script>
 <?php else: ?>
@@ -95,13 +109,13 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
     <input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
     <input type="hidden" name="action" value="self-punch">
     <input type="hidden" name="lat" value=""><input type="hidden" name="lng" value="">
-    <div style="flex:0"><button class="go" type="submit" style="background:var(--<?= $next === 'in' ? 'green' : 'red' ?>)"><i class="fas fa-fingerprint"></i> Punch <?= strtoupper($next) ?></button></div>
+    <div style="flex:0"><button class="go punch-main" type="submit" style="background:var(--<?= $next === 'in' ? 'green' : 'red' ?>)"><i class="fas fa-fingerprint"></i> Punch <?= strtoupper($next) ?></button></div>
     <div class="note" id="punch-gps"><?= $fence === null
         ? 'Your location is asked for when you press the button and kept with the punch. No geo-fence is set for you.'
         : '<b>Geo-fence on:</b> punch-in is allowed only within ' . e(rtrim(rtrim(number_format($fence['radius_km'] + $fence['tolerance_km'], 1, '.', ''), '0'), '.')) . ' km of ' . e($fence['label']) . '. Allow location when the browser asks.' ?></div>
   </form>
 <?php endif; ?>
-  <div class="row" style="margin-top:14px">
+  <div class="row punch-stats" style="margin-top:14px">
     <div><b>First in</b><br><?= e((string) ($today['first_in'] ?? '—')) ?></div>
     <div><b>Last out</b><br><?= e((string) ($today['last_out'] ?? '—')) ?></div>
     <div><b>Worked so far</b><br><?= e(SmartPRS\Surface\AttendanceReport::hm((int) $today['worked_minutes'])) ?></div>

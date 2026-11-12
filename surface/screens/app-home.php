@@ -32,6 +32,24 @@ $ahHour = (int) date('G');
 </style>
 <div class="ah-hello"><h2><?= $ahHour < 12 ? 'Good morning' : ($ahHour < 17 ? 'Good afternoon' : 'Good evening') ?>, <?= e($ahName) ?></h2>
   <p><?= e(SmartPRS\Surface\Dates::dmy(date('Y-m-d'))) ?> &middot; tap a tile to open it</p></div>
+<?php
+// PUNCH FROM HOME (owner, 12 Nov 2026: "the option to Punch IN QR"): the first card on Home. A QR company opens the
+// camera straight away (punch.php ?scan=1); a SmartEPT company is told to punch there; anyone else gets the Punch screen.
+$ahOwn = $may('ess.attendance.punch') ? $scope->own() : null;
+$ahEmp = $ahOwn === null ? null : $store->find('employees', $ahOwn);
+if ($ahEmp !== null):
+    $ahSrc = SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->modeFor($ahEmp);
+    if ($ahSrc !== 'smartept'): ?>
+<a class="ah-punch" href="?r=punch<?= $ahSrc === 'qr' ? '&amp;scan=1' : '' ?>"><i class="fas <?= $ahSrc === 'qr' ? 'fa-qrcode' : 'fa-fingerprint' ?>"></i><span><b><?= $ahSrc === 'qr' ? 'Scan QR to Punch IN / OUT' : 'Punch IN / OUT' ?></b><small><?= $ahSrc === 'qr' ? 'Opens the camera — scan the QR at your office gate' : 'Records your punch with your location' ?></small></span><i class="fas fa-chevron-right"></i></a>
+<?php endif; endif; ?>
+<style>
+  .ah-punch{display:flex;align-items:center;gap:14px;text-decoration:none;background:#16a34a;color:#fff;border-radius:16px;padding:16px 16px;margin:0 0 16px;box-shadow:0 6px 16px rgba(22,163,74,.25)}
+  .ah-punch > i:first-child{font-size:26px;width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center}
+  .ah-punch span{flex:1;display:flex;flex-direction:column;gap:2px}
+  .ah-punch b{font-size:16px !important;color:#fff}
+  .ah-punch small{font-size:12px !important;opacity:.9;color:#fff}
+  .ah-punch:active{transform:scale(.98)}
+</style>
 <?php foreach ($ahSections as $ahS): ?>
 <div class="ah-sec"><h3><i class="fas <?= e($ahS['icon']) ?>"></i> <?= e($ahS['label']) ?></h3>
   <div class="ah-grid">

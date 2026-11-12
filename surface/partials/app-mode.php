@@ -19,6 +19,14 @@ $amTabs = array_values(array_filter([
     ['account-settings', 'fa-user', 'Profile', true],
 ], static fn (array $t): bool => $t[3]));
 $amUnread = (int) ($bellUnread ?? 0);
+// THE COMPANY LOGO TOP-RIGHT (owner, 12 Nov 2026): Branding's logo, else the signed-in employee's own company logo.
+$amCoLogo = trim((string) ($brandLogo ?? ''));
+if ($amCoLogo === '' && ($amOwn = $scope->own()) !== null) {
+    $amEmp = $store->find('employees', $amOwn);
+    $amCoId = (string) ($amEmp['employer_company_id'] ?? '');
+    $amCo = $amCoId === '' ? null : $store->find('companies', $amCoId);
+    $amCoLogo = trim((string) ($amCo['logo_path'] ?? ''));
+}
 ?>
 <style>
   body.in-app .sidebar, body.in-app #nav-toggle, body.in-app .topbar-search, body.in-app .breadcrumb, body.in-app .topbar .page-crumbs { display:none !important; }
@@ -85,6 +93,29 @@ $amUnread = (int) ($bellUnread ?? 0);
   body.in-app .topbar > div:has(> .page-title) { order:10; flex:0 0 100% !important; min-width:0; }
   body.in-app .topbar .page-title { font-size:13.5px !important; font-weight:700 !important; line-height:1.3; }
   body.in-app .topbar .topbar-actions { margin-left:auto; }
+  /* THE HEADER IS FIXED ON EVERY SCREEN (owner, 12 Nov 2026): SmartPRS logo top-left, the company's logo (Branding) top-right,
+     never scrolling away. Its height is measured below and the page starts under it. */
+  body.in-app .topbar { position:fixed !important; top:0; left:0; right:0; z-index:8000; background:var(--card,#fff); box-shadow:0 2px 10px rgba(15,23,42,.06); }
+  body.in-app .main-wrap { padding-top:var(--app-head,60px); }
+  .app-marks { order:-1; }
+  /* ONE TYPE SCALE ON EVERY APP SCREEN (owner, 12 Nov 2026: "professionally formatted with universal font size").
+     Body 14px, titles 17px, sections 15px, table / small text 13px, badges 11.5px — inline sizes on screens follow it. */
+  body.in-app { font-size:14px; line-height:1.45; }
+  body.in-app .content, body.in-app .content p, body.in-app .content li, body.in-app .content div, body.in-app .content span,
+  body.in-app .content label, body.in-app .content b, body.in-app .content strong { font-size:14px; }
+  body.in-app .content [style*="font-size"]:not(i):not(.fas):not(.far):not(.fab) { font-size:14px !important; }
+  body.in-app .content h1, body.in-app .content h2, body.in-app .content .page-header h2 { font-size:17px !important; font-weight:700; line-height:1.3; }
+  body.in-app .content h3, body.in-app .content h4, body.in-app .content legend { font-size:15px !important; font-weight:700; }
+  body.in-app .content label { font-weight:600; color:var(--text2,#334155); }
+  body.in-app .content input, body.in-app .content select, body.in-app .content textarea,
+  body.in-app .content button, body.in-app .content .btn, body.in-app .content .go { font-size:14px !important; }
+  body.in-app .content input:not([type=checkbox]):not([type=radio]):not([type=file]), body.in-app .content select { min-height:42px; }
+  body.in-app .content .btn, body.in-app .content .go, body.in-app .content button { min-height:40px; border-radius:10px; }
+  body.in-app .content table, body.in-app .content th, body.in-app .content td,
+  body.in-app .content small, body.in-app .content .note, body.in-app .content .fmt-hint { font-size:13px !important; }
+  body.in-app .content .badge { font-size:11.5px !important; }
+  body.in-app .content .dk-val, body.in-app .content .stat-card h3 { font-size:20px !important; }
+  body.in-app .content .dk-label { font-size:11px !important; }
 </style>
 <nav class="app-tabs" aria-label="App">
 <?php foreach ($amTabs as [$amR, $amI, $amL]): ?>
@@ -133,8 +164,8 @@ $amUnread = (int) ($bellUnread ?? 0);
   if (tb && !tb.querySelector('.app-marks')) {
     var mk = document.createElement('div'); mk.className = 'app-marks';
     mk.innerHTML = '<img class="sp-light" src="images/smartprs-logo-navy.png" alt="SmartPRS"><img class="sp-dark" src="images/smartprs-logo.png" alt="SmartPRS">';
-<?php if (trim((string) ($brandLogo ?? '')) !== ''): ?>
-    var lg = document.createElement('img'); lg.className = 'app-co-logo'; lg.alt = ''; lg.src = <?= json_encode((string) $brandLogo, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+<?php if ($amCoLogo !== ''): ?>
+    var lg = document.createElement('img'); lg.className = 'app-co-logo'; lg.alt = ''; lg.src = <?= json_encode($amCoLogo, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     tb.appendChild(lg);
 <?php endif; ?>
     tb.insertBefore(mk, tb.firstChild);
@@ -142,5 +173,8 @@ $amUnread = (int) ($bellUnread ?? 0);
 <?php if (in_array($amRoute, ['app-home', 'dashboard', ''], true) && !isset($_GET['full'])): ?>
   b.classList.add('app-on-home');
 <?php endif; ?>
+  // the page starts just under the fixed header, whatever its height on this phone
+  var fitHead = function () { var t = document.querySelector('.topbar'); t && b.style.setProperty('--app-head', t.offsetHeight + 'px'); };
+  fitHead(); window.addEventListener('resize', fitHead); window.addEventListener('load', fitHead);
 })();
 </script>

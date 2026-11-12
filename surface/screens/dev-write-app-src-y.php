@@ -5,10 +5,10 @@
 if ((string) ($session->user()['role'] ?? '') !== 'administrator') { return; }
 $f = __DIR__ . '/../../mobile/employee-android/app/src/main/java/com/ametecs/smartprs3/employee/MainActivity.java';
 $new = __DIR__ . '/../../storage/app-src/MainActivity.java';
-$reviewed = '71b650ca49074af184a713bc496c97b91874cd44'; // 12 Nov 2026: replaces the v1.2 sign-in version with v1.3 (Explore Demo button)
+$reviewed = ['71b650ca49074af184a713bc496c97b91874cd44', 'ed6319126bf63cbc8f4b7ddb86edb0dae3ff377f']; // the v1.3 / v1.4 app files this update (v1.5: pinch zoom) may replace
 $now = is_file($f) ? sha1_file($f) : '';
 $msg = !is_file($new) ? 'Update file missing.'
     : ($now === sha1_file($new) ? 'Already in place.'
-    : ($now !== $reviewed ? 'Not copied: the app file changed since it was reviewed.'
+    : (!in_array($now, $reviewed, true) ? 'Not copied: the app file changed since it was reviewed.'
     : (copy($new, $f) ? 'Copied. Build the APK in Android Studio.' : 'Not copied: could not write.')));
-?><div class="card"><h2>SmartPRS3 app — Explore Demo + SmartPRS look update (v1.4)</h2><p id="src"><?= e($msg) ?></p></div>
+?><div class="card"><h2>SmartPRS app — v1.5 (pinch zoom)</h2><p id="src"><?= e($msg) ?></p></div>
