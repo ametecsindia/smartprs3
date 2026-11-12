@@ -36,7 +36,7 @@ final class Session
      * Length is the floor rather than a symbol rule, because a long passphrase
      * beats an eight-character one with a digit stuck on the end.
      */
-    public const PASSWORD_FLOOR = 8;
+    public const PASSWORD_FLOOR = 12;
 
     /**
      * How long a lockout lasts. Long enough to make guessing pointless, short
@@ -121,11 +121,7 @@ final class Session
             return ['ok' => false, 'why' => 'That enrolment token is not valid.'];
         }
 
-        // ponytail: EIGHT, temporarily, at the owner's instruction — to be put back
-        // to twelve before this instance is used by anyone else. It is written as
-        // a named constant with this comment rather than an inline 8, so putting
-        // it back is a one-line change somebody can find by searching for the
-        // word "floor" instead of reading every validator.
+        // Twelve since go-live on smartprs.com (12 Nov 2026); it was eight for local development only.
         if (strlen($password) < self::PASSWORD_FLOOR) {
             return ['ok' => false, 'why' => 'The password must be at least ' . self::PASSWORD_FLOOR
                 . ' characters. The floor is length rather than a symbol rule: a long passphrase '
