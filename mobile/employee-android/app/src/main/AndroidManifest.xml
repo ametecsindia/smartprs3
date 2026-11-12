@@ -18,7 +18,8 @@
     <!-- usesCleartextTraffic: lets the app reach a LAN test server on http://; production addresses are https. -->
     <application
         android:allowBackup="false"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="SmartPRS3"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="true">
