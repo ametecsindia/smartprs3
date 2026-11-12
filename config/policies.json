@@ -1,0 +1,56 @@
+{
+  "_note": "Public legal/policy pages, carried over from SmartPRS 2 (PolicyController::PAGES). Content: surface/policies/<slug>.html. Served at /<slug> by public/policy.php.",
+  "effective": "08-06-2026",
+  "pages": {
+    "privacy-policy": {
+      "title": "Privacy Policy",
+      "sub": "What we collect, why, and your rights",
+      "link": "Privacy policy"
+    },
+    "terms-and-conditions": {
+      "title": "Terms & Conditions",
+      "sub": "The agreement governing your SmartPRS subscription",
+      "link": "Terms & conditions"
+    },
+    "refund-policy": {
+      "title": "Refund & Cancellation Policy",
+      "sub": "Money-back window, renewals and cancellations",
+      "link": "Refund & cancellation"
+    },
+    "support-policy": {
+      "title": "Support Policy & SLA",
+      "sub": "Channels, hours and response commitments",
+      "link": "Support policy & SLA"
+    },
+    "data-protection": {
+      "title": "Data Protection & Processing Policy",
+      "sub": "How we safeguard your workforce data",
+      "link": "Data protection"
+    },
+    "acceptable-use": {
+      "title": "Acceptable Use Policy",
+      "sub": "What may and may not be done on SmartPRS",
+      "link": "Acceptable use"
+    },
+    "grievance-redressal": {
+      "title": "Grievance Redressal",
+      "sub": "How to raise and escalate a complaint",
+      "link": "Grievance redressal"
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "sub": "Scope and limits of the information we provide",
+      "link": "Disclaimer"
+    },
+    "licence-agreement": {
+      "title": "On-Premise Licence Agreement & AMC Policy",
+      "sub": "Perpetual editions, activation and annual maintenance",
+      "link": "On-premise licence & AMC"
+    },
+    "faqs": {
+      "title": "Frequently Asked Questions",
+      "sub": "Every question answered — with links to the detailed documents",
+      "link": "FAQs"
+    }
+  }
+}

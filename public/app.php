@@ -13148,12 +13148,6 @@ window.acctMenuToggle = function (ev) {
         <button class="btn-login" type="submit">Sign in <i class="fas fa-arrow-right"></i></button>
       </form>
       <p style="margin-top:12px;text-align:right"><a href="?r=forgot-password">Forgot password?</a></p>
-<?php if (($slugTenant['id'] ?? '') === ''): // EXPLORE DEMO (owner, 12 Nov 2026) — on the general sign-in only, never on a company's own page ?>
-      <a href="demo.php" style="display:block;margin-top:14px;padding:11px;border:1.5px solid #f97316;border-radius:9px;text-align:center;color:#f97316;font-weight:700;text-decoration:none"><i class="fas fa-play"></i> Explore Demo</a>
-<?php endif; ?>
-      <p class="note" style="margin-top:18px">A failed sign-in says the same thing whichever half
-         was wrong. &ldquo;No such user&rdquo; and &ldquo;wrong password&rdquo; as separate messages
-         tell somebody guessing which of the two to keep guessing.</p>
       <div class="login-footer">SmartPRS 3 &middot; by Ametecs India</div>
 <?php endif; ?>
 

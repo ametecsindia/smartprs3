@@ -221,8 +221,7 @@
      "module": "devices",
      "label": "Biometric Devices",
      "icon": "fa-mobile-screen",
-     "permission": "employee.view",
-     "hidden": true
+     "permission": "employee.view"
     },
     {
      "key": "geofence",
@@ -560,16 +559,14 @@
      "route": "biometric-setup",
      "label": "Biometric Device Setup",
      "icon": "fa-gear",
-     "permission": "employee.view",
-     "hidden": true
+     "permission": "employee.view"
     },
     {
      "key": "api-keys",
      "route": "api-keys",
      "label": "Biometric API Keys",
      "icon": "fa-key",
-     "permission": "access.apikey.list",
-     "hidden": true
+     "permission": "access.apikey.list"
     },
     {
      "key": "configuration",

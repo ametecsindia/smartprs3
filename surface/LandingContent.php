@@ -54,7 +54,8 @@ final class LandingContent
     private static function coerce(mixed $shape, mixed $posted): mixed
     {
         if (is_array($shape) && array_is_list($shape)) {
-            $rowShape = $shape[0] ?? '';
+            // Every key any row carries (a plan's "highlight" sits on one row only) — row 0 alone would drop it on save.
+            $rowShape = is_array($shape[0] ?? null) ? array_replace(...$shape) : ($shape[0] ?? '');
             $out = [];
 
             foreach (is_array($posted) ? $posted : [] as $item) {

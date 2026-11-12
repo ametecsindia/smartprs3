@@ -21,9 +21,8 @@
    "route": "biometric-mapping",
    "label": "Biometric Mapping & Sync",
    "icon": "fa-fingerprint",
-   "permission": "tenant.settings.update",
-   "hidden": true
+   "permission": "tenant.settings.update"
   }
  ],
- "note": "Biometric Mapping & Sync is hidden (owner, 12 Nov 2026: biometric menus removed from the sidebar; the route still answers). Bulk Attendance Upload is not a separate menu item (owner, 12 Oct): the bulk sheet is part of Manual Entry (route attendance-bulk still answers)."
+ "note": "Biometric Mapping & Sync is shown again (owner, 12 Nov 2026 16:29: Biometric is an attendance source, its menus back on the sidebar). Bulk Attendance Upload is not a separate menu item (owner, 12 Oct): the bulk sheet is part of Manual Entry (route attendance-bulk still answers)."
 }

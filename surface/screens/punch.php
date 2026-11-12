@@ -14,7 +14,7 @@ $today = $code === '' ? null : $attendanceReport->day($code, date('Y-m-d'), $cal
 $next = $today === null || array_filter($today['unpaired'], static fn (array $p): bool => $p['direction'] === 'in') === [] ? 'in' : 'out';
 $fence = $ownRow === null ? null : (new SmartPRS\Surface\GeoFence($store))->fenceFor($ownRow);
 // THE COMPANY'S ATTENDANCE SOURCE (owner, 9 Nov 2026) — Time & Attendance → QR Attendance.
-$qrSource = $ownRow === null ? 'standard' : SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->sourceFor((string) ($ownRow['employer_company_id'] ?? ''));
+$qrSource = $ownRow === null ? 'standard' : SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->modeFor($ownRow); // Office staff: QR by default (12 Nov 2026)
 $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
 ?>
 <div class="page-header">

@@ -214,18 +214,39 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && $pdo !== null) {
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SmartPRS Super Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-:root{--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--brand:#0c1929;--accent:#006699;--bad:#b91c1c;--ok:#15803d;--bg:#eef2f7;--card:#fff}
-@media (prefers-color-scheme:dark){:root{--ink:#e2e8f0;--muted:#94a3b8;--line:#334155;--bg:#0b1220;--card:#111827}}
-body{margin:0;font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:grid;place-items:center}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;width:min(400px,calc(100vw - 32px));box-sizing:border-box}
-.tag{display:inline-block;background:var(--brand);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
-h1{font-size:22px;margin:12px 0 4px}p{color:var(--muted);margin:0 0 18px}label{display:block;font-weight:600;margin:12px 0 6px}
-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--card);color:var(--ink)}
-button{width:100%;margin-top:18px;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:11px;font-weight:600;cursor:pointer}
+/* THE SMARTPRS 3 SIGN-IN LOOK (owner, 12 Nov 2026): navy brand panel on the left, the form on the right — same as app.php's sign-in. */
+:root{--ink:#0f1d33;--muted:#64748b;--line:#e2e8f0;--navy:#0a1628;--navy2:#102744;--accent:#f97316;--blue:#3b5bdb;--bad:#b91c1c;--ok:#15803d;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1.35fr 1fr;background:#fff}
+.brand{background:radial-gradient(ellipse at 30% 20%,#17345c 0,var(--navy2) 35%,var(--navy) 80%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:26px}
+.brand .mark{width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#3b82f6,#2563eb);display:grid;place-items:center;font-size:28px;box-shadow:0 10px 30px -8px rgba(59,130,246,.6)}
+.brand h2{margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px}.brand h2 span{color:#60a5fa}
+.brand .sub{margin:-16px 0 0;color:#94a3b8;font-size:14px}
+.brand ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:16px;max-width:360px}
+.brand li{display:flex;gap:12px;align-items:flex-start;font-size:13px;color:#cbd5e1}.brand li b{display:block;color:#fff;font-size:14px}
+.brand li i{width:34px;height:34px;border-radius:9px;background:rgba(59,130,246,.15);color:#60a5fa;display:grid;place-items:center;flex:none}
+.side{display:grid;place-items:center;padding:32px}
+.card{width:min(400px,100%)}
+.tag{display:inline-block;background:var(--navy);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+h1{font-size:26px;margin:12px 0 4px;font-weight:800}p{color:var(--muted);margin:0 0 18px}
+label{display:block;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#475569;margin:14px 0 6px}
+input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;background:#f8fafc;color:var(--ink)}
+input:focus{outline:none;border-color:var(--blue);background:#fff}
+button{width:100%;margin-top:20px;background:linear-gradient(90deg,var(--blue),var(--accent));color:#fff;border:0;border-radius:10px;padding:12px;font:inherit;font-weight:700;cursor:pointer}
 .msg{padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:14px}.bad{background:rgba(185,28,28,.1);color:var(--bad)}.ok{background:rgba(21,128,61,.12);color:var(--ok)}
+.card a{color:var(--accent);text-decoration:none}.foot{margin-top:28px;text-align:center;color:#94a3b8;font-size:12px}
 code{font-size:12px}
+@media (max-width:860px){body{grid-template-columns:1fr}.brand{display:none}}
 </style></head><body>
+<aside class="brand"><div class="mark"><i class="fas fa-bolt"></i></div><h2>Smart<span>PRS</span></h2><p class="sub">Platform console</p>
+  <ul><li><i class="fas fa-building"></i><div><b>Tenants &amp; plans</b>Every customer workspace, its plan, seats and status</div></li>
+  <li><i class="fas fa-file-invoice"></i><div><b>Billing</b>Subscriptions, invoices, payments and quotations</div></li>
+  <li><i class="fas fa-key"></i><div><b>Licences &amp; demos</b>On-prem licences, releases, Explore Demo requests</div></li></ul></aside>
+<div class="side">
 <form class="card" method="post" autocomplete="on" action="<?= $h(match ($mode) { 'forgot' => '?forgot=1', 'link' => '?reset=' . rawurlencode($linkToken), default => 'super.php' }) ?>">
   <span class="tag">Super Admin</span>
   <h1><?= $h(['create' => 'Create the Super Admin', 'token' => 'Reset the Super Admin password', 'forgot' => 'Forgot password', 'link' => 'Set a new password', 'signin' => 'Platform sign in'][$mode]) ?></h1>
@@ -257,5 +278,7 @@ code{font-size:12px}
     <button type="submit"><?= $h(['create' => 'Create', 'token' => 'Reset password', 'forgot' => 'Send reset link', 'signin' => 'Sign in'][$mode]) ?></button>
   <?php endif; ?>
   <p style="margin:14px 0 0;text-align:right;font-size:14px"><?php if ($mode === 'signin'): ?><a href="?forgot=1">Forgot password?</a><?php elseif ($mode !== 'create' && $mode !== 'token'): ?><a href="super.php">Back to sign in</a><?php endif; ?></p>
+  <div class="foot">SmartPRS 3 &middot; by Ametecs India</div>
 </form>
+</div>
 </body></html>

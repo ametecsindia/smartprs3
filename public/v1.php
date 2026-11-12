@@ -111,8 +111,9 @@ if ($method === 'POST' && preg_match('~^webhooks/smartept/([A-Za-z0-9]{8,32})$~'
         }
         $t['punches'] = array_values(array_filter($t['punches'], static function (array $p) use ($ingest, $srcCo, $srcQr, &$srcRefused): bool {
             $code = $ingest->match((string) ($p['employee_code'] ?? ''), (string) ($p['device_user_id'] ?? ''), (string) ($p['device_user_id'] ?? ''));
-            if ($code !== null && $srcQr->sourceFor($srcCo[strtolower($code)] ?? '') === 'qr') {
-                $srcRefused[] = ['external_id' => $p['external_id'], 'status' => 'rejected', 'reason' => 'COMPANY_USES_QR_ATTENDANCE'];
+            $src = $code === null ? '' : $srcQr->sourceFor($srcCo[strtolower($code)] ?? '');
+            if (in_array($src, ['qr', 'biometric'], true)) { // one attendance source per company (QR, or Biometric since 12 Nov 2026)
+                $srcRefused[] = ['external_id' => $p['external_id'], 'status' => 'rejected', 'reason' => 'COMPANY_USES_' . strtoupper($src) . '_ATTENDANCE'];
                 return false;
             }
             return true;

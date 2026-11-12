@@ -28,10 +28,12 @@ $code = SmartPRS\Surface\Employment::code($ownRow);
 // THE COMPANY'S ATTENDANCE SOURCE (owner, 9 Nov 2026; Time & Attendance → QR Attendance): SmartEPT punch = attendance comes
 // from SmartEPT only, so no punch here; QR Attendance = only a scan of the gate QR in the SmartPRS3 app counts; Standard = as before.
 $qrAtt = SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..');
-$qrSource = $qrAtt->sourceFor((string) ($ownRow['employer_company_id'] ?? ''));
+$qrSource = $qrAtt->modeFor($ownRow); // Office staff: QR by default (owner, 12 Nov 2026)
 
-if ($qrSource === 'smartept') {
-    $_SESSION['flash_problem'] = 'Your company records attendance through SmartEPT. Punch in SmartEPT; it reaches SmartPRS3 by itself.';
+if ($qrSource === 'smartept' || $qrSource === 'biometric') {
+    // Biometric (owner, 12 Nov 2026): attendance comes from the company's biometric device only — one source per company.
+    $_SESSION['flash_problem'] = $qrSource === 'smartept' ? 'Your company records attendance through SmartEPT. Punch in SmartEPT; it reaches SmartPRS3 by itself.'
+        : 'Your company records attendance on the biometric device. Punch on the device at your office; it reaches SmartPRS3 by itself.';
     header('Location: ?r=punch');
     exit;
 }

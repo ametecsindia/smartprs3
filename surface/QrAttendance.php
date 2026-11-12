@@ -62,6 +62,39 @@ final class QrAttendance
         return array_map('strval', (array) ($this->config['sources'] ?? []));
     }
 
+    /**
+     * THE PUNCH THIS EMPLOYEE USES (owner, 12 Nov 2026): the company's source, except that in a Standard company an
+     * Office employee (config office_qr) whose branch has an active gate punches by QR — Field staff keep the location punch.
+     *
+     * @param array<string, mixed> $employee
+     */
+    public function modeFor(array $employee): string
+    {
+        $source = $this->sourceFor((string) ($employee['employer_company_id'] ?? ''));
+        $rule = (array) ($this->config['office_qr'] ?? []);
+        $type = trim((string) ($employee[(string) ($rule['field'] ?? 'type')] ?? ''));
+
+        if ($source !== 'standard' || $type === '' || !in_array(strtolower($type), array_map('strtolower', array_map('strval', (array) ($rule['values'] ?? []))), true)) {
+            return $source;
+        }
+
+        foreach ($this->gates() as $g) {
+            if ((bool) ($g['active'] ?? true) && (string) ($g['branch_id'] ?? '') !== '' && (string) $g['branch_id'] === (string) ($employee['branch_id'] ?? '')) {
+                return self::SOURCE;
+            }
+        }
+
+        return $source;
+    }
+
+    /** A company whose branches have gates: a QR company, or a Standard one whose Office staff punch by QR (office_qr). */
+    public function usesGates(string $companyId): bool
+    {
+        $source = $this->sourceFor($companyId);
+
+        return $source === self::SOURCE || ($source === 'standard' && (array) (((array) ($this->config['office_qr'] ?? []))['values'] ?? []) !== []);
+    }
+
     /** standard | smartept | qr — a company never set (or set to something unknown) is Standard. */
     public function sourceFor(string $companyId): string
     {

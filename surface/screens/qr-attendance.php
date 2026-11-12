@@ -21,7 +21,7 @@ $qaDefData = $qa->saved();
 $qaDefGates = $qa->gates();
 $qaDefAdded = [];
 foreach ($qaBranches as $b) {
-    if ($qa->sourceFor($qaBrCo($b)) !== 'qr') { continue; }
+    if (!$qa->usesGates($qaBrCo($b))) { continue; } // Standard companies too: their Office staff punch by QR (12 Nov 2026)
     $bId = (string) $b['id'];
     $bName = trim((string) $b['name']) . ' Main Entrance';
     $has = false;
@@ -109,9 +109,9 @@ $qaExceptions = static function (string $kind, string $title, array $rows, array
 $qaNow = date('Y-m-d');
 $qaCoName = []; foreach ($qaCompanies as $c) { $qaCoName[(string) $c['id']] = (string) $c['name']; }
 $qaBrName = []; foreach ($qaBranches as $b) { $qaBrName[(string) $b['id']] = (string) $b['name']; }
-$qaQrCos = array_values(array_filter(array_map('strval', array_keys($qaCoName)), static fn (string $id): bool => $qa->sourceFor($id) === 'qr'));
+$qaQrCos = array_values(array_filter(array_map('strval', array_keys($qaCoName)), static fn (string $id): bool => $qa->usesGates($id)));
 $qaScoped = $scope->only($qaEmps, $may('employee.list'));
-$qaQrEmps = array_values(array_filter($qaScoped, static fn (array $e): bool => in_array((string) ($e['employer_company_id'] ?? ''), $qaQrCos, true)));
+$qaQrEmps = array_values(array_filter($qaScoped, static fn (array $e): bool => $qa->modeFor($e) === 'qr')); // a Standard company's Field staff are not QR punchers
 $qaByCode = []; foreach ($qaQrEmps as $e) { $qaByCode[SmartPRS\Surface\Employment::code($e)] = $e; }
 $qaGateName = []; foreach ($qa->gates() as $g) { $qaGateName[(string) $g['code']] = (string) $g['name']; }
 // A QR punch's reference is qr:<gate>:<window>|gps:…|<metres>m[|geofence-exception] (surface/actions/self-punch.php).
@@ -413,7 +413,7 @@ $qaXls = static fn (string $table, string $file): string => '<button type="butto
 <?php if (in_array($qaPage, ['policy', 'gates', 'phones'], true)): ?>
 <?php if ($qaPage === 'phones'): ?><h3 style="margin:18px 0 8px">Phone approval exceptions <span class="note" style="font-weight:400;font-size:13px">— these employees' new phones are approved without the Admin (demo / Android review)</span></h3><?php endif; ?>
 <?php if ($qaCompanies === []): ?><div class="card note">No companies yet — add one in Organization Configuration → Companies.</div><?php endif; ?>
-<?php foreach ($qaCompanies as $qaI => $co): $coId = (string) $co['id']; $src = $qa->sourceFor($coId); $isQr = $src === 'qr';
+<?php foreach ($qaCompanies as $qaI => $co): $coId = (string) $co['id']; $src = $qa->sourceFor($coId); $isQr = $qa->usesGates($coId);
     $coName = (string) $co['name'];
     $coHooks = array_values(array_filter($qaHooks, static fn (array $w): bool => in_array((string) ($w['employer_company_id'] ?? ''), ['', $coId], true)));
     $coBranches = array_values(array_filter($qaBranches, static fn (array $b): bool => $qaBrCo($b) === $coId));
@@ -425,7 +425,7 @@ $qaXls = static fn (string $table, string $file): string => '<button type="butto
 <?php if ($qaPage === 'policy'): ?>
 
   <div class="table-wrap"><table class="qa-t"><thead><tr><th style="width:34%">Attendance source</th><th style="width:34%">Phone approval</th><th>SmartEPT link</th></tr></thead><tbody><tr>
-    <td><select form="<?= e($cf) ?>" name="source" data-qa-src required><?= $src === 'standard' ? '<option value="" selected disabled>Choose the attendance source</option>' : '' ?><?php foreach ($qa->sourceOptions() as $k => $label): if ($k === 'standard') { continue; } // owner, 12 Nov 2026: only SmartEPT punch or QR ?><option value="<?= e($k) ?>"<?= $k === $src ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?></select></td>
+    <td><select form="<?= e($cf) ?>" name="source" data-qa-src required><?= $src === 'standard' ? '<option value="" selected disabled>Choose the attendance source</option>' : '' ?><?php foreach ($qa->sourceOptions() as $k => $label): if ($k === 'standard') { continue; } // owner, 12 Nov 2026: SmartEPT punch, Biometric device or QR ?><option value="<?= e($k) ?>"<?= $k === $src ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?></select></td>
     <td><select form="<?= e($cf) ?>" name="phone_approval"><option value="required"<?= $qa->phoneApproval($coId) === 'required' ? ' selected' : '' ?>>Admin approval needed</option>
       <option value="auto"<?= $qa->phoneApproval($coId) === 'auto' ? ' selected' : '' ?>>No approval — whole company (demo company / Android review)</option></select>
       <div class="qa-rng">Only a few people (a demo login)? <a href="?r=qr-attendance&amp;qp=phones">Phones → Phone approval exceptions</a></div></td>

@@ -1,45 +1,263 @@
 {
     "brand": "SmartPRS",
     "tagline": "by Ametecs",
+    "seo": {
+        "title": "SmartPRS 3.0 — HR, Payroll & QR Attendance Software for India | Ametecs",
+        "description": "SmartPRS 3.0 by Ametecs: HRMS, India-compliant payroll, leave, PF/ESI/PT/TDS and built-in QR code attendance with a mobile app — no biometric device needed. Cloud from ₹1,500/month or a lifetime on-premises licence.",
+        "url": "https://smartprs.com/"
+    },
     "hero": {
-        "badge": "HRM · Payroll · RBI Audit-Readiness",
-        "title": "HR, payroll & RBI audit-readiness for India's collections & recovery industry",
-        "subtitle": "Biometric attendance with working shifts, automated India-compliant payroll, DRA/PCC agent compliance and one-click RBI audit reports on your own letterhead — be audit-ready before the 1 October 2026 directions.",
+        "badge": "SmartPRS 3.0 · HRMS · Payroll · QR Attendance",
+        "title": "SmartPRS 3.0 — Complete HR & Payroll. Now with Smart QR Attendance.",
+        "subtitle": "From Attendance to Payroll — One Smart Platform. No Biometric Device Required. QR check-in at the gate, leave, India-compliant payroll, PF / ESI / PT / TDS and RBI agent audit reports — in the cloud or on your own server.",
         "cta": "Request a Demo",
         "cta2": "Sign in",
         "image": "images/hero.png"
     },
     "stats": [
-        {"n": "500+", "l": "Employees managed"},
-        {"n": "16", "l": "HR modules · 119 screens"},
-        {"n": "1-click", "l": "RBI agent audit file"},
-        {"n": "SaaS + On-Prem", "l": "Cloud or L1/L2/L3 licence"}
+        {
+            "n": "500+",
+            "l": "Employees managed"
+        },
+        {
+            "n": "24",
+            "l": "HR modules · 119 screens"
+        },
+        {
+            "n": "1-click",
+            "l": "RBI agent audit file"
+        },
+        {
+            "n": "SaaS + On-Prem",
+            "l": "Cloud or lifetime licence"
+        }
     ],
     "features": [
-        {"icon": "gauge-high", "title": "Dashboard", "desc": "Your live command centre — headcount, attendance, payroll and escalation KPIs at a glance."},
-        {"icon": "user-plus", "title": "Hiring & Onboarding", "desc": "Requisitions with approval, job-portal imports into a talent pool, hiring drives, WhatsApp invites, interviews and one-click hire."},
-        {"icon": "users", "title": "People", "desc": "One source of truth for every employee — profiles, teams, documents and org structure."},
-        {"icon": "fingerprint", "title": "Time & Attendance", "desc": "Biometric (ZKTeco, cloud, CSV) and geo-fenced selfie punch, named working shifts with night allowance, rosters and a wizard-built late policy."},
-        {"icon": "umbrella-beach", "title": "Leave", "desc": "Leave types, balances, holiday calendars and self-service approval workflows."},
-        {"icon": "money-check-dollar", "title": "Payroll", "desc": "Automated, India-compliant payroll — shift-aware late cuts, night allowance, A4 payslips with a plain-English calculation note on every slip."},
-        {"icon": "hand-holding-dollar", "title": "Compensation & Claims", "desc": "Salary structures, reimbursements, expenses, advances and loans — all with approvals."},
-        {"icon": "scale-balanced", "title": "Statutory & Compliance", "desc": "PF, ESI, PT and TDS returns — plus one-click RBI agent audit reports (single or bulk) on your own letterhead, with a verdict per agent."},
-        {"icon": "trophy", "title": "Performance & Rewards", "desc": "Goals, reviews, incentives, points and leaderboards that keep field teams driven."},
-        {"icon": "graduation-cap", "title": "Learning & Knowledge", "desc": "Training programs, courses, assessments, FAQs and a searchable knowledge base."},
-        {"icon": "file-signature", "title": "HR Letters", "desc": "Offer, appointment, increment, warning and relieving letters from smart templates."},
-        {"icon": "route", "title": "Field Force", "desc": "Off-roll agents, DRA/PCC compliance, geo-tracking and the bank escalation desk."},
-        {"icon": "bullhorn", "title": "Communication", "desc": "Notice board, announcements and targeted email, SMS and WhatsApp messaging."},
-        {"icon": "chart-line", "title": "Reports & Analytics", "desc": "Attendance, payroll, compliance and workforce insights — exportable on demand."},
-        {"icon": "sliders", "title": "Administration", "desc": "Companies, roles, masters, policy repository, exit clearance and a tamper-evident (hash-chained) audit trail of every change."},
-        {"icon": "building-user", "title": "SaaS Platform", "desc": "Run multiple companies from one tenant, with plans, billing and GST invoicing."}
+        {
+            "icon": "gauge-high",
+            "title": "Dashboard",
+            "desc": "Your live command centre — headcount, attendance, payroll and escalation KPIs at a glance."
+        },
+        {
+            "icon": "inbox",
+            "title": "Approvals & Alerts",
+            "desc": "One approvals inbox for leave, regularizations, advances and letters — with notifications, email/WhatsApp alerts and an escalation desk."
+        },
+        {
+            "icon": "indian-rupee-sign",
+            "title": "Live Salary",
+            "desc": "Each employee's salary earned so far this month, updated as attendance comes in — no surprises on payday."
+        },
+        {
+            "icon": "user-plus",
+            "title": "Hiring & Onboarding",
+            "desc": "Requisitions with approval, job-portal imports into a talent pool, hiring drives, WhatsApp invites, interviews and one-click hire."
+        },
+        {
+            "icon": "users",
+            "title": "People",
+            "desc": "One source of truth for every employee — profiles, teams, documents and org structure."
+        },
+        {
+            "icon": "fingerprint",
+            "title": "Time & Attendance",
+            "desc": "Biometric (ZKTeco, cloud, CSV) and geo-fenced selfie punch, named working shifts with night allowance, rosters and a wizard-built late policy."
+        },
+        {
+            "icon": "qrcode",
+            "title": "QR Attendance",
+            "desc": "A rotating QR at each office gate, scanned in the SmartPRS app — geo-fenced, approved phones only, no device to buy."
+        },
+        {
+            "icon": "mobile-screen-button",
+            "title": "Employee Mobile App",
+            "desc": "Android app for punch-in, attendance, leave, payslips and approvals — each phone activated once with a code."
+        },
+        {
+            "icon": "umbrella-beach",
+            "title": "Leave",
+            "desc": "Leave types, balances, holiday calendars and self-service approval workflows."
+        },
+        {
+            "icon": "money-check-dollar",
+            "title": "Payroll",
+            "desc": "Automated, India-compliant payroll — shift-aware late cuts, night allowance, A4 payslips with a plain-English calculation note on every slip."
+        },
+        {
+            "icon": "hand-holding-dollar",
+            "title": "Compensation & Claims",
+            "desc": "Salary structures, reimbursements, expenses, advances and loans — all with approvals."
+        },
+        {
+            "icon": "scale-balanced",
+            "title": "Statutory & Compliance",
+            "desc": "PF, ESI, PT and TDS returns — plus one-click RBI agent audit reports (single or bulk) on your own letterhead, with a verdict per agent."
+        },
+        {
+            "icon": "trophy",
+            "title": "Performance & Rewards",
+            "desc": "Goals, reviews, incentives, points and leaderboards that keep field teams driven."
+        },
+        {
+            "icon": "graduation-cap",
+            "title": "Learning & Knowledge",
+            "desc": "Training programs, courses, assessments, FAQs and a searchable knowledge base."
+        },
+        {
+            "icon": "headset",
+            "title": "HR Helpdesk",
+            "desc": "Employees raise HR queries and tickets; HR answers, tracks and closes them with a full history."
+        },
+        {
+            "icon": "file-signature",
+            "title": "HR Letters",
+            "desc": "Offer, appointment, increment, warning and relieving letters from smart templates."
+        },
+        {
+            "icon": "route",
+            "title": "Field Force",
+            "desc": "Off-roll agents, DRA/PCC compliance, geo-tracking and the bank escalation desk."
+        },
+        {
+            "icon": "laptop",
+            "title": "Assets",
+            "desc": "Asset stock, issue and return to employees, branch-wise tracking and a My Assets page for every employee."
+        },
+        {
+            "icon": "bullhorn",
+            "title": "Communication",
+            "desc": "Notice board, announcements and targeted email, SMS and WhatsApp messaging."
+        },
+        {
+            "icon": "chart-line",
+            "title": "Reports & Analytics",
+            "desc": "Attendance, payroll, compliance and workforce insights — exportable on demand."
+        },
+        {
+            "icon": "sliders",
+            "title": "Administration",
+            "desc": "Companies, roles, masters, policy repository, exit clearance and a tamper-evident (hash-chained) audit trail of every change."
+        },
+        {
+            "icon": "sitemap",
+            "title": "Organization Setup",
+            "desc": "Companies, branches, departments, designations, teams, shifts, holidays, salary structures, payslip and ID-card formats — all on screen."
+        },
+        {
+            "icon": "robot",
+            "title": "AI Assistant",
+            "desc": "Ask in plain words — who is absent, what a payslip figure means, where a setting lives — and get the answer from your own data."
+        },
+        {
+            "icon": "building-user",
+            "title": "SaaS Platform",
+            "desc": "Run multiple companies from one tenant, with plans, billing and GST invoicing."
+        }
     ],
-    "plans": [
-        {"name": "Starter", "price": "₹1,000", "period": "/mo + GST", "highlight": "0", "features": "Up to 25 employees, All 16 modules included, Extra employee ₹60/mo, Extra company ₹1000/mo, Minimum 3 months advance — 0% discount, 6 months payment — 10% discount, 12 months payment — 25% discount"},
-        {"name": "Growth", "price": "₹2,500", "period": "/mo + GST", "highlight": "1", "features": "Up to 75 employees, All 16 modules included, Extra employee ₹50/mo, Extra company ₹1000/mo, Minimum 3 months advance — 0% discount, 6 months payment — 10% discount, 12 months payment — 25% discount"},
-        {"name": "Professional", "price": "₹5,000", "period": "/mo + GST", "highlight": "0", "features": "Up to 150 employees, All 16 modules included, Extra employee ₹40/mo, Extra company ₹1000/mo, Minimum 3 months advance — 0% discount, 6 months payment — 10% discount, 12 months payment — 25% discount"}
-    ],
+    "app": {
+        "eyebrow": "SmartPRS 3.0 mobile app",
+        "title": "Your HR office in every employee's pocket",
+        "lead": "The SmartPRS Android app: scan the gate QR to punch in and out, see attendance, apply for leave, download payslips and approve requests — with each phone activated once with a code.",
+        "play_url": "",
+        "screens": [
+            {
+                "file": "images/app/dashboard.jpg",
+                "caption": "Employee dashboard"
+            },
+            {
+                "file": "images/app/qr-scan.jpg",
+                "caption": "QR attendance scanner"
+            },
+            {
+                "file": "images/app/attendance.jpg",
+                "caption": "Attendance history"
+            },
+            {
+                "file": "images/app/leave.jpg",
+                "caption": "Leave"
+            },
+            {
+                "file": "images/app/payslips.jpg",
+                "caption": "Payslips"
+            },
+            {
+                "file": "images/app/self-service.jpg",
+                "caption": "Employee self-service"
+            }
+        ]
+    },
+    "pricing": {
+        "note": "SMARTPRS 3.0 PRICING (owner, 12 Nov 2026) — same logic as smartprs.com (SmartPRS 2 BillingController::priceFor): per month = plan price + extra employees above the plan x the plan's extra-employee rate + extra companies x company_fee; x advance months; less the period discount; + setup & onboarding (never discounted); + GST (config/gst.json). Above the largest plan: Contact Sales. On-premises: one-time lifetime licence; AMC = amc_percent of the licence a year. Setup & onboarding = base + per_employee x employees (\"base_plus\") or the larger of the two (\"max\").",
+        "default": "onprem",
+        "cloud": {
+            "packages": [
+                {
+                    "name": "Starter",
+                    "employees": 25,
+                    "monthly": 1500,
+                    "extra": 60
+                },
+                {
+                    "name": "Growth",
+                    "employees": 50,
+                    "monthly": 2500,
+                    "extra": 50,
+                    "highlight": 1
+                },
+                {
+                    "name": "Professional",
+                    "employees": 100,
+                    "monthly": 4500,
+                    "extra": 45
+                }
+            ],
+            "company_fee": 1000,
+            "cycles": [
+                {
+                    "months": 3,
+                    "discount": 0,
+                    "label": "Quarterly"
+                },
+                {
+                    "months": 6,
+                    "discount": 10,
+                    "label": "Half-yearly"
+                },
+                {
+                    "months": 12,
+                    "discount": 25,
+                    "label": "Annual"
+                }
+            ],
+            "above_label": "Above 100 employees",
+            "above_text": "Contact Sales"
+        },
+        "onprem": {
+            "licence": 350000,
+            "amc_percent": 20,
+            "amc_first_year_included": 1,
+            "installation": 5000,
+            "capacity_note": "Licensed employee capacity is confirmed in your quotation."
+        },
+        "onboarding": {
+            "base": 2500,
+            "per_employee": 100,
+            "mode": "base_plus"
+        }
+    },
     "clients": [
-        {"name": "Exon"}, {"name": "Storm"}, {"name": "Numero Uno"}, {"name": "Vimal Enterprises"}
+        {
+            "name": "Exon"
+        },
+        {
+            "name": "Storm"
+        },
+        {
+            "name": "Numero Uno"
+        },
+        {
+            "name": "Vimal Enterprises"
+        }
     ],
     "about": {
         "eyebrow": "Why SmartPRS",
