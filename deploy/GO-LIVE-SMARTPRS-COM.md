@@ -1,165 +1,208 @@
-# Replacing SmartPRS 2 with SmartPRS 3 at smartprs.com (cPanel)
+# Replacing SmartPRS 2 with SmartPRS 3 at smartprs.com
 
 Owner decision, 12 Nov 2026: SmartPRS 3 replaces SmartPRS 2 at smartprs.com entirely, switched directly.
-Nothing of SmartPRS 2 is deleted — its files are renamed and its database is left as it is, so the Rollback section
-puts it back in two minutes if anything goes wrong.
 
-Below, `CPUSER` is your cPanel username (top right of cPanel). Commands go in **cPanel → Terminal**.
-PHP 8.3 on cPanel is `/opt/cpanel/ea-php83/root/usr/bin/php` — written `PHP` below.
+The server (checked 12 Nov 2026): Ubuntu 22.04, nginx, PHP 8.3-FPM, `ametecsssh@linux-ametecs` (35.200.195.98).
+smartprs.com is `/etc/nginx/sites-available/smartprs`, serving `/var/www/client_apps/SmartPRS2/public`.
+SmartPRS 2's database `smartprs` is on the MySQL server at 34.93.92.26. Its scheduler is the www-data cron line
+`artisan smartprs:tick`.
+
+Nothing of SmartPRS 2 is deleted. The switch changes one nginx file (a copy is kept) and one cron line, so
+**Rollback** at the end puts SmartPRS 2 back in a minute. Other sites on this server are not touched.
+
+Run each block, check it worked, then go to the next. Anything in `<angle brackets>` you replace.
 
 ---
 
-## 1. Back up SmartPRS 2 (do not skip)
+## 0. Check the tools
 
-cPanel → **Backup** → *Download a Full Account Backup* → Generate. Wait for the email, download the file to your PC.
-Also, in Terminal:
+```bash
+which composer git; systemctl is-active mysql
+```
+
+`composer` and `git` must print a path. `mysql` says `active` only if there is a database server on this machine too.
+
+## 1. Back up SmartPRS 2
 
 ```bash
 mkdir -p ~/backups
-tar czf ~/backups/smartprs2-files-$(date +%F).tar.gz -C ~ public_html
+sudo cp /etc/nginx/sites-available/smartprs ~/backups/smartprs.nginx.bak
+sudo crontab -l -u www-data > ~/backups/www-data.crontab.bak
+grep -E "^DB_USERNAME" /var/www/client_apps/SmartPRS2/.env
+mysqldump -h 34.93.92.26 -u <that DB_USERNAME> -p --single-transaction --no-tablespaces smartprs > ~/backups/smartprs2-db-$(date +%F).sql
+ls -lh ~/backups
 ```
 
-and cPanel → **phpMyAdmin** → SmartPRS 2's database → *Export* → Go. Keep the .sql on your PC.
+The password it asks for is `DB_PASSWORD` in `/var/www/client_apps/SmartPRS2/.env`. The .sql file must not be 0 bytes.
 
-## 2. PHP 8.3 for smartprs.com
+## 2. Get the code
 
-- cPanel → **MultiPHP Manager** → tick smartprs.com → PHP version **ea-php83** → Apply.
-- cPanel → **MultiPHP INI Editor** → smartprs.com:
-  `date.timezone = Asia/Kolkata`, `upload_max_filesize = 25M`, `post_max_size = 26M`,
-  `memory_limit = 512M`, `max_execution_time = 300`.
-- Extensions needed (most are on by default): pdo_mysql, mbstring, curl, intl, zip, gd, xml, openssl.
+```bash
+cd /var/www/client_apps
+git clone https://github.com/ametecsindia/smartprs3.git SmartPRS3
+```
+
+GitHub asks for a username and password: give your GitHub username and a **personal access token** (GitHub →
+Settings → Developer settings → Personal access tokens → Fine-grained, read access to `smartprs3`), not your password.
+
+```bash
+cd /var/www/client_apps/SmartPRS3
+composer install --no-dev --no-scripts --optimize-autoloader
+mkdir -p storage/keys storage/logs public/uploads
+rm -f surface/screens/dev-*.php surface/actions/dev-*.php public/dev-fieldtest*.js public/diag.php
+sudo chown -R www-data:www-data storage public/uploads
+```
 
 ## 3. Database
 
-cPanel → **MySQL Databases**:
+Sign in to MySQL as an admin — on 34.93.92.26 (`mysql -h 34.93.92.26 -u <admin> -p`), or `sudo mysql` if step 0 said
+`active` and you want the database on this machine (then use `localhost` instead of 34.93.92.26 below). Then, with two
+new strong passwords:
 
-1. New database: `smartprs3` (cPanel names it `CPUSER_smartprs3`).
-2. New user `s3mig` with a strong password → add to the database with **ALL PRIVILEGES** (runs migrations only).
-3. New user `s3app` with another strong password → add to the database with **SELECT, INSERT, UPDATE, DELETE** only.
-
-## 4. Upload the code
-
-On the office PC, make a zip of `C:\laragon\www\SmartPRS3` **with** `vendor\` and **without**:
-`.git`, `.env`, `.env.bak`, `env-local.txt`, `storage`, `public\uploads`, `Claude outputs`, `mobile`.
-
-cPanel → **File Manager** → home folder (`/home/CPUSER`, not public_html) → Upload the zip → Extract → rename
-the extracted folder to `smartprs3`. Then in Terminal:
-
-```bash
-cd ~/smartprs3
-mkdir -p storage/keys public/uploads
-rm -f surface/screens/dev-*.php surface/actions/dev-*.php public/dev-fieldtest*.js public/diag.php
-chmod -R 755 storage public/uploads
+```sql
+CREATE DATABASE smartprs3 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'smartprs3_migrator'@'%' IDENTIFIED BY '<password 1>';
+GRANT ALL PRIVILEGES ON smartprs3.* TO 'smartprs3_migrator'@'%' WITH GRANT OPTION;
+CREATE USER 'smartprs3_app'@'%' IDENTIFIED BY '<password 2>';
+GRANT SELECT, INSERT, UPDATE, DELETE ON smartprs3.* TO 'smartprs3_app'@'%';
+EXIT;
 ```
 
-## 5. .env
+## 4. .env
 
 ```bash
-cd ~/smartprs3
+cd /var/www/client_apps/SmartPRS3
 cp deploy/env.production.example .env
-PHP -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
+php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
+nano .env
 ```
 
-Open `~/smartprs3/.env` in File Manager → Edit, and set:
+Set these lines (Ctrl+O, Enter to save, Ctrl+X to close):
 
 ```
 APP_KEY=<the base64:… line printed above>
 APP_URL=https://smartprs.com
-DB_HOST=localhost
-DB_DATABASE=CPUSER_smartprs3
-DB_USERNAME=CPUSER_s3app
-DB_PASSWORD=<s3app password>
-DB_MIGRATION_USERNAME=CPUSER_s3mig
-DB_MIGRATION_PASSWORD=<s3mig password>
-MAIL_FROM_ADDRESS="no-reply@smartprs.com"
+DB_HOST=34.93.92.26
+DB_DATABASE=smartprs3
+DB_USERNAME=smartprs3_app
+DB_PASSWORD=<password 2>
+DB_MIGRATION_USERNAME=smartprs3_migrator
+DB_MIGRATION_PASSWORD=<password 1>
 ```
-
-Save, then `chmod 640 ~/smartprs3/.env`. Copy the APP_KEY somewhere safe (password manager) — losing it makes stored
-licence keys and gateway secrets unreadable.
-
-## 6. Build the tables
 
 ```bash
-cd ~/smartprs3
-PHP tools/db/migrate.php
-PHP tools/db/grant-application-account.php --apply
+sudo chown www-data:www-data .env && sudo chmod 640 .env
 ```
 
-The second command may say it cannot GRANT on shared hosting — that is fine, step 3 already gave `s3app` its rights.
+Save the APP_KEY in your password manager — losing it makes stored licence keys and gateway secrets unreadable.
 
-## 7. Licence signing key
-
-File Manager → upload `C:\laragon\www\SmartPRS3\storage\keys\license_private.pem` into `~/smartprs3/storage/keys/`, then:
+## 5. Build the tables
 
 ```bash
-chmod 600 ~/smartprs3/storage/keys/license_private.pem
-cd ~/smartprs3 && PHP tools/licence-keys.php status      # must say OK … matches
+cd /var/www/client_apps/SmartPRS3
+sudo -u www-data php tools/db/migrate.php
+sudo -u www-data php tools/db/grant-application-account.php --apply
 ```
 
-Never put this file in GitHub or email.
+## 6. Licence signing key
 
-## 8. THE SWITCH
+From the office PC (Command Prompt):
+
+```bat
+scp C:\laragon\www\SmartPRS3\storage\keys\license_private.pem ametecsssh@35.200.195.98:/tmp/
+```
+
+Then on the server:
 
 ```bash
-cd ~
-mv public_html public_html_smartprs2
-ln -s ~/smartprs3/public public_html
+cd /var/www/client_apps/SmartPRS3
+sudo mv /tmp/license_private.pem storage/keys/
+sudo chown www-data:www-data storage/keys/license_private.pem && sudo chmod 600 storage/keys/license_private.pem
+sudo -u www-data php tools/licence-keys.php status      # must say OK … matches
 ```
 
-smartprs.com now serves SmartPRS 3. (No Terminal? Add a one-off cPanel Cron Job running exactly those two lines,
-wait a minute, then delete the cron job.)
-
-## 9. Cron jobs
-
-cPanel → **Cron Jobs**, add each (replace PHP with the full path above):
-
-```
-*/5 * * * *  PHP /home/CPUSER/smartprs3/tools/cron.php >> /home/CPUSER/smartprs3/storage/cron.log 2>&1
-*/5 * * * *  PHP /home/CPUSER/smartprs3/tools/db/schedule.php timers >> /home/CPUSER/smartprs3/storage/cron.log 2>&1
-15 6 * * *   PHP /home/CPUSER/smartprs3/tools/db/schedule.php absence >> /home/CPUSER/smartprs3/storage/cron.log 2>&1
-20 6 * * *   PHP /home/CPUSER/smartprs3/tools/db/schedule.php unauthorized-absence >> /home/CPUSER/smartprs3/storage/cron.log 2>&1
-30 1 * * *   PHP /home/CPUSER/smartprs3/tools/db/schedule.php archive >> /home/CPUSER/smartprs3/storage/cron.log 2>&1
-45 23 * * *  PHP /home/CPUSER/smartprs3/tools/db/schedule.php anchor >> /home/CPUSER/smartprs3/storage/cron.log 2>&1
-```
-
-Remove SmartPRS 2's old cron jobs from the same screen (note them down first, for Rollback).
-
-## 10. First Super Admin and settings
+## 7. First Super Admin
 
 ```bash
-cd ~/smartprs3 && PHP tools/make-super-admin.php you@ametecsindia.com "Your Name"
+cd /var/www/client_apps/SmartPRS3
+sudo -u www-data php tools/make-super-admin.php <your email> "<Your Name>"
 ```
 
-It prints a one-time password. Sign in at **https://smartprs.com/super**, change it under Platform Staff, then set:
-Payment Gateways (Razorpay keys), Platform Email (SMTP), WhatsApp. Fill the GSTIN in `config/gst.json` → `seller`.
+Note the one-time password it prints.
 
-## 11. Check
+## 8. THE SWITCH (nginx)
+
+```bash
+F=/etc/nginx/sites-available/smartprs
+sudo cp /var/www/client_apps/SmartPRS3/deploy/nginx-smartprs3-routes.conf /etc/nginx/snippets/
+sudo sed -i 's#root /var/www/client_apps/SmartPRS2/public;#root /var/www/client_apps/SmartPRS3/public;\n    include snippets/nginx-smartprs3-routes.conf;#' $F
+sudo sed -i 's#index index.php index.html;#index app.php;#' $F
+sudo sed -i 's#try_files $uri $uri/ /index.php?$query_string;#try_files $uri $uri/ /app.php$is_args$args;#' $F
+sudo grep -n "root\|include snippets/nginx\|index app\|app.php" $F
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+The grep must show the SmartPRS3 root, the include, `index app.php` and the `app.php` try_files line.
+`nginx -t` must say *test is successful* — if it does not, nothing was reloaded; run Rollback step 1 and send me the error.
+
+## 9. Scheduler
+
+```bash
+sudo crontab -u www-data -e
+```
+
+Put `#` at the start of the SmartPRS 2 line (`… SmartPRS2' && … artisan smartprs:tick …`) and add at the bottom:
+
+```
+*/5 * * * *  /usr/bin/php /var/www/client_apps/SmartPRS3/tools/cron.php >> /var/www/client_apps/SmartPRS3/storage/cron.log 2>&1
+*/5 * * * *  /usr/bin/php /var/www/client_apps/SmartPRS3/tools/db/schedule.php timers >> /var/www/client_apps/SmartPRS3/storage/cron.log 2>&1
+15 6 * * *   /usr/bin/php /var/www/client_apps/SmartPRS3/tools/db/schedule.php absence >> /var/www/client_apps/SmartPRS3/storage/cron.log 2>&1
+20 6 * * *   /usr/bin/php /var/www/client_apps/SmartPRS3/tools/db/schedule.php unauthorized-absence >> /var/www/client_apps/SmartPRS3/storage/cron.log 2>&1
+30 1 * * *   /usr/bin/php /var/www/client_apps/SmartPRS3/tools/db/schedule.php archive >> /var/www/client_apps/SmartPRS3/storage/cron.log 2>&1
+45 23 * * *  /usr/bin/php /var/www/client_apps/SmartPRS3/tools/db/schedule.php anchor >> /var/www/client_apps/SmartPRS3/storage/cron.log 2>&1
+```
+
+Leave the SmartEPT, Leadger and vi_consumer lines exactly as they are.
+
+## 10. Check
 
 | Open | Expect |
 |---|---|
 | https://smartprs.com/ | SmartPRS 3.0 landing page |
 | https://smartprs.com/signup | Signup page with plans |
-| https://smartprs.com/super | Super Admin sign-in |
 | https://smartprs.com/privacy-policy | Privacy policy |
+| https://smartprs.com/super | Super Admin sign-in — use the step 7 password, then change it |
 | https://smartprs.com/iclock/getrequest?SN=TEST | `OK` |
 
-If the site shows a 500 error: `tail -50 ~/smartprs3/public/error_log` and cPanel → **Errors**.
+Then in Super Admin: Payment Gateways (Razorpay keys), Platform Email (SMTP), WhatsApp. Fill the GSTIN in
+`config/gst.json` → `seller`.
+
+A 500 error: `sudo tail -30 /var/log/nginx/error.log` and send me the output.
 
 ---
 
-## Rollback — back to SmartPRS 2 in two minutes
+## Rollback — back to SmartPRS 2
 
 ```bash
-cd ~
-rm public_html                     # removes only the link, not SmartPRS 3
-mv public_html_smartprs2 public_html
+sudo cp ~/backups/smartprs.nginx.bak /etc/nginx/sites-available/smartprs
+sudo nginx -t && sudo systemctl reload nginx
+sudo crontab -u www-data ~/backups/www-data.crontab.bak
 ```
 
-MultiPHP Manager → set smartprs.com back to its old PHP version, and restore the old cron jobs.
-SmartPRS 2's database was never touched.
+SmartPRS 2's code and database were never changed.
+
+## Updating SmartPRS 3 later
+
+```bash
+cd /var/www/client_apps/SmartPRS3
+git pull
+composer install --no-dev --no-scripts --optimize-autoloader
+rm -f surface/screens/dev-*.php surface/actions/dev-*.php public/dev-fieldtest*.js public/diag.php
+sudo -u www-data php tools/db/migrate.php
+sudo cp deploy/nginx-smartprs3-routes.conf /etc/nginx/snippets/ && sudo nginx -t && sudo systemctl reload nginx
+```
 
 ## What stops working for SmartPRS 2 users at the switch
 
-Its 4 live clients' logins, mobile app, biometric devices and on-prem licence checks at smartprs.com now reach
-SmartPRS 3, which has none of their data. Each client needs a SmartPRS 3 workspace (Super Admin → Tenants) and
-their data moved before or right after the switch.
+Its 4 live clients' logins, mobile app, biometric devices and on-prem licence checks at smartprs.com reach SmartPRS 3,
+which has none of their data. Each needs a SmartPRS 3 workspace (Super Admin → Tenants) and their data moved.
