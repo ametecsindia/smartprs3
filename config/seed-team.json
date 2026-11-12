@@ -1,0 +1,50 @@
+{
+  "note": "THE DEMO TEAM tools/seed-team.php builds, as data. Two branches of one company, each with a manager, two team leaders (one for Collections, one for Recovery) and its executives split across the two teams; two branch admins; one HR manager. CTC bands are annual, in lakhs, per role; PF and ESI applicability follow the CTC (basic = basic_percent_of_ctc of CTC; PF applies when monthly basic is within pf_monthly_basic_ceiling, ESI when monthly gross is within esi_monthly_gross_ceiling — the same ceilings the tenant's PF & ESI settings hold). Attendance runs from `from` to `to` on the tenant's own working days and shifts; the rates below are per working day and are what a real team looks like, not an outlier. Leaves are applied from the employee's own login and decided by a manager, branch admin or HR — never by the seed itself. Nothing here creates a payslip.",
+  "password": "Welcome@123",
+  "email_domain": "demo.smartprs.local",
+  "from": "2026-01-01",
+  "to": "2026-09-09",
+  "company_code": null,
+  "branches": [
+    {"name": "Kondapur", "code": "KDP", "city": "Hyderabad", "state": "Telangana", "executives": 12},
+    {"name": "Mindspace", "code": "MSP", "city": "Hyderabad", "state": "Telangana", "executives": 15}
+  ],
+  "departments": {"CO": "Collections", "RO": "Recovery", "HR": "Human Resources", "ADMIN": "Administration"},
+  "teams": {"CO": "Collections (CO)", "RO": "Recovery (RO)"},
+  "designations": {
+    "executive": ["Collection Executive", "Field Agent"],
+    "leader": "Team Leader",
+    "manager": "Manager",
+    "admin": "Branch Admin",
+    "hr": "HR Manager"
+  },
+  "ctc_lpa": {
+    "executive": ["1.5", "3.5"],
+    "leader": ["4.5", "6"],
+    "manager": ["8", "10"],
+    "admin": ["12", "15"],
+    "hr": ["8", "10"]
+  },
+  "basic_percent_of_ctc": "50",
+  "pf_monthly_basic_ceiling": "15000",
+  "esi_monthly_gross_ceiling": "21000",
+  "pt_state": "Telangana",
+  "shift_source": {"office": "biometric", "field": "mobile"},
+  "attendance_rates_percent": {
+    "late_past_grace": 7,
+    "early_exit_half_day": 2,
+    "absent_unplanned": 1
+  },
+  "leave": {
+    "spells_per_employee": [3, 6],
+    "spell_days": {"CL": [1, 2], "SL": [1, 3], "EL": [2, 4]},
+    "mix_percent": {"CL": 50, "SL": 35, "EL": 15},
+    "reasons": {
+      "CL": ["Personal work", "Family function", "Out of station", "House shifting", "Bank and documentation work"],
+      "SL": ["Fever", "Not well", "Doctor's appointment", "Viral fever", "Back pain"],
+      "EL": ["Family trip", "Native visit", "Wedding in the family", "Festival at native place"]
+    },
+    "approver_weights_percent": {"manager": 60, "hr": 25, "admin": 15}
+  },
+  "joined_in_year_count": 4
+}

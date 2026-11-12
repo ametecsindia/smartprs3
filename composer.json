@@ -1,0 +1,75 @@
+{
+    "name": "ametecs/smartprs3",
+    "description": "SmartPRS 3 \u2014 a configuration-driven HR, attendance and payroll platform for India.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "laravel/framework": "^12.0",
+        "phpoffice/phpspreadsheet": "^2.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "larastan/larastan": "^3.1",
+        "qossmic/deptrac": "^2.0",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SmartPRS\\Platform\\": "src/Platform/",
+            "SmartPRS\\Surface\\": "surface/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/pest/"
+        }
+    },
+    "scripts": {
+        "test:primitives": "php tests/run.php",
+        "test": [
+            "@test:primitives",
+            "pest"
+        ],
+        "db:migrate": "php tools/db/migrate.php",
+        "db:seed-attendance": "php tools/db/seed-attendance.php",
+        "db:sweep": "php tools/db/schedule.php timers",
+        "db:anchor": "php tools/db/schedule.php anchor",
+        "db:health": "php tools/db/schedule.php health",
+        "serve": "php -S localhost:8000 -t public",
+        "smoke": "php tools/demo/smoke-console.php",
+        "gates": "php tools/gates/gate.php --fix-hint",
+        "gates:self-test": "php tools/gates/self-test.php",
+        "blueprint": "php tools/blueprint/compile-worked-rules.php",
+        "conformance": "php tools/conformance/run.php",
+        "analyse": "phpstan analyse --memory-limit=3G",
+        "deptrac:layers": "deptrac analyse --config-file=deptrac.layers.yaml",
+        "deptrac:modules": "deptrac analyse --config-file=deptrac.modules.yaml",
+        "deptrac": [
+            "@deptrac:layers",
+            "@deptrac:modules"
+        ],
+        "check": [
+            "@gates",
+            "@blueprint",
+            "@conformance",
+            "@analyse",
+            "@deptrac",
+            "@test",
+            "@smoke"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

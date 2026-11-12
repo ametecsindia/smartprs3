@@ -1,0 +1,97 @@
+{
+  "note": "THE PAYROLL GOLDEN-TEST MATRIX — Part XXX §4, and Phase 5's ENTRY gate: Part XXXII requires it 'written and failing' before the pipeline is built. Every figure is exact integer paise, computed independently of the engine. A matrix whose expectations were copied from what the code returned proves only that the code is consistent with itself, and on a payslip that is the difference between a number that is right and a number that is reproducible.",
+  "components": [
+    { "code": "C-BASIC",   "kind": "earning",   "basis": "percent_of_gross", "rate": 50, "flags": { "pf_base": true,  "esi_base": true,  "pt_base": true,  "prorates": true } },
+    { "code": "C-HRA",     "kind": "earning",   "basis": "percent_of",      "of": "C-BASIC", "rate": 40, "flags": { "pf_base": false, "esi_base": true, "pt_base": true, "prorates": true } },
+    { "code": "C-SPECIAL", "kind": "earning",   "basis": "balance",         "flags": { "pf_base": false, "esi_base": true, "pt_base": true, "prorates": true } },
+    { "code": "D-PT",      "kind": "deduction", "basis": "flat",            "amount": "200.00", "flags": { "prorates": false } },
+    { "code": "D-LOAN",    "kind": "recovery",  "basis": "schedule",        "flags": { "prorates": false } }
+  ],
+  "cases": [
+    {
+      "id": "PR-01",
+      "title": "a full month: ₹50,000 gross splits 50 / 40-of-basic / balance, and the parts sum to the whole",
+      "gross": "50000.00",
+      "payable_days": 30,
+      "period_days": 30,
+      "expect": {
+        "lines": { "C-BASIC": "25000.00", "C-HRA": "10000.00", "C-SPECIAL": "15000.00", "D-PT": "200.00" },
+        "gross_earnings": "50000.00",
+        "total_deductions": "200.00",
+        "net_pay": "49800.00"
+      },
+      "why": "Basic is half of gross, HRA is 40% of basic, and SPECIAL is whatever is left — which is what makes the three sum to exactly the gross rather than to the gross plus or minus a rounding artefact."
+    },
+    {
+      "id": "PR-02",
+      "title": "THE RESIDUE CASE: ₹50,000 prorated 22/24 — naive independent rounding gives ₹45,833.34 and must not",
+      "gross": "50000.00",
+      "payable_days": 22,
+      "period_days": 24,
+      "expect": {
+        "lines": { "C-BASIC": "22916.67", "C-HRA": "9166.67", "C-SPECIAL": "13749.99", "D-PT": "200.00" },
+        "gross_earnings": "45833.33",
+        "total_deductions": "200.00",
+        "net_pay": "45633.33",
+        "naive_gross": "45833.34"
+      },
+      "why": "The balance component absorbs the residue. Rounding each of the three independently gives 22916.67 + 9166.67 + 13750.00 = 45833.34, a paisa more than the prorated gross — and a payslip whose lines do not sum to its own gross is the arithmetic an employee can see is wrong."
+    },
+    {
+      "id": "PR-03",
+      "title": "a flat deduction does NOT prorate: a half-month employee still pays the full professional tax",
+      "gross": "50000.00",
+      "payable_days": 15,
+      "period_days": 30,
+      "expect": {
+        "lines": { "C-BASIC": "12500.00", "C-HRA": "5000.00", "C-SPECIAL": "7500.00", "D-PT": "200.00" },
+        "gross_earnings": "25000.00",
+        "total_deductions": "200.00",
+        "net_pay": "24800.00"
+      },
+      "why": "Professional tax is a flat statutory amount for the month, not a rate on earnings. Prorating it would under-deduct and the return would not reconcile. Whether a component prorates is a FLAG on the component, which is why this needs no special case."
+    },
+    {
+      "id": "PR-04",
+      "title": "deductions exceeding gross produce a NEGATIVE net, stated, not clamped to zero",
+      "gross": "1000.00",
+      "payable_days": 1,
+      "period_days": 30,
+      "expect": {
+        "lines": { "C-BASIC": "16.67", "C-HRA": "6.67", "C-SPECIAL": "9.99", "D-PT": "200.00" },
+        "gross_earnings": "33.33",
+        "total_deductions": "200.00",
+        "net_pay": "-166.67"
+      },
+      "why": "SmartPRS 2 clamps net at zero while leaving total_deductions at full value, so the stored gross - deductions no longer equals net and the payslip PDF prints an equation that is arithmetically wrong on the document the employee receives. Here the negative is the answer, RC-03 holds, and a recovery is somebody's decision rather than a silent max(0, ...)."
+    },
+    {
+      "id": "PR-05",
+      "title": "a loan recovery is a line, and it reverses to exactly zero",
+      "gross": "50000.00",
+      "payable_days": 30,
+      "period_days": 30,
+      "recovery": { "code": "D-LOAN", "amount": "5000.00", "outstanding_before": "20000.00" },
+      "expect": {
+        "lines": { "C-BASIC": "25000.00", "C-HRA": "10000.00", "C-SPECIAL": "15000.00", "D-PT": "200.00", "D-LOAN": "5000.00" },
+        "gross_earnings": "50000.00",
+        "total_deductions": "5200.00",
+        "net_pay": "44800.00",
+        "outstanding_after": "15000.00",
+        "outstanding_after_reversal": "20000.00"
+      },
+      "why": "Every recovery reverses cleanly is the fifth exit criterion. A reversal is a compensating ledger entry, not a deletion, so the outstanding returns to exactly what it was and the history says a recovery was taken and then given back."
+    }
+  ],
+  "reconciliation": {
+    "note": "R-XIV-069: a deliberate one-paisa perturbation injected into any line MUST cause the corresponding check to fail. This is a standing test, not a belief. SmartPRS 2 has no reconciliation check of any kind — net_total is a running float sum never compared to SUM(payslips.net), and the bank-file total is computed twice by two different float paths with no cross-check.",
+    "structural": {
+      "checks": ["RC-01", "RC-02", "RC-03", "RC-08"],
+      "why": "These four CANNOT fail on a perturbed line, and that is the design rather than a gap in the test. A Payslip has no stored gross, no stored deductions and no stored net — every total is summed from the lines on read, so moving a line moves the total with it and the equation still holds. That is precisely the defect being engineered out: SmartPRS 2 stores payroll_runs.net_total at generate and never corrects it, so its total and its lines drift apart with nothing comparing them. The checks are kept because a stored total is exactly the optimisation somebody adds later, and the day it appears these stop being vacuous. Until then the gate reports them as structurally satisfied rather than as passing, because a check that cannot fail has proven nothing."
+    },
+    "perturbations": [
+      { "line": "C-BASIC", "paise": 1, "expect_fails": ["RC-04"], "why": "A perturbed earning line only becomes visible against a header stated INDEPENDENTLY of the lines — an imported total, or the original run's, which is what a re-run reconciles against." },
+      { "line": "D-PT", "paise": 1, "expect_fails": ["RC-05"], "why": "The same for deductions: the run header is the only figure in the system not derived from the very lines that moved." }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+ "section": "platform",
+ "items": [
+  {
+   "key": "platform-dashboard",
+   "route": "platform-dashboard",
+   "label": "Platform Dashboard",
+   "icon": "fa-gauge-high",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "tenants",
+   "route": "tenants",
+   "label": "Tenants",
+   "icon": "fa-building-user",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "demo-requests",
+   "route": "demo-requests",
+   "label": "Demo Requests",
+   "icon": "fa-key",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "plans",
+   "label": "Plans & Pricing",
+   "icon": "fa-tags",
+   "permission": "tenant.settings.update",
+   "module": "plans"
+  },
+  {
+   "key": "subscriptions",
+   "label": "Subscriptions",
+   "icon": "fa-arrows-rotate",
+   "permission": "tenant.settings.update",
+   "module": "subscriptions"
+  },
+  {
+   "key": "invoices",
+   "label": "Invoices",
+   "icon": "fa-file-invoice-dollar",
+   "permission": "tenant.settings.update",
+   "module": "invoices"
+  },
+  {
+   "key": "payments",
+   "label": "Payments",
+   "icon": "fa-money-bill-transfer",
+   "permission": "tenant.settings.update",
+   "module": "payments"
+  },
+  {
+   "key": "gateways",
+   "module": "payment-gateways",
+   "label": "Payment Gateways",
+   "icon": "fa-credit-card",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "feature-flags",
+   "route": "feature-flags",
+   "label": "Feature Flags",
+   "icon": "fa-toggle-on",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "platform-email",
+   "route": "platform-email",
+   "label": "Platform Email (SMTP)",
+   "icon": "fa-envelope-circle-check",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "platform-whatsapp",
+   "route": "platform-whatsapp",
+   "label": "WhatsApp API (Interakt)",
+   "icon": "fa-comment-dots",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "platform-wa-templates",
+   "route": "platform-wa-templates",
+   "label": "WhatsApp Templates",
+   "icon": "fa-message",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "landing-cms",
+   "route": "landing-cms",
+   "label": "Landing Page (CMS)",
+   "icon": "fa-globe",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "admin-leads",
+   "route": "leads",
+   "label": "Leads (Demo Requests)",
+   "icon": "fa-bullseye",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "admin-quotations",
+   "route": "quotations",
+   "label": "Quotations",
+   "icon": "fa-file-invoice",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "admin-coupons",
+   "module": "coupons",
+   "label": "Discount Coupons",
+   "icon": "fa-ticket",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "admin-onprem",
+   "route": "onprem",
+   "label": "On-Prem Clients & Licences",
+   "icon": "fa-building-lock",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "admin-releases",
+   "route": "releases",
+   "label": "Releases & Updates",
+   "icon": "fa-cloud-arrow-up",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "admin-staff",
+   "route": "platform-staff",
+   "label": "Platform Staff",
+   "icon": "fa-user-shield",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "onprem-invoice",
+   "route": "onprem-invoice",
+   "label": "Licence Invoice",
+   "icon": "fa-file-invoice",
+   "permission": "tenant.settings.update",
+   "hidden": true
+  }
+ ]
+}

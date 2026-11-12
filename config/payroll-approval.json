@@ -1,0 +1,15 @@
+{
+  "note": "Who signs a closed payroll run before it is payable, in order. Register::approve() and the Salary Approval screen (public/app.php) are entirely generic over this list -- no code change is needed to add, rename, reorder or remove a step, only this file. Each step needs a 'key' (used in the run's stored status as '<key>_approved'), a 'label' (shown on the screen) and a 'permission' (checked by $may() before letting someone sign). 'prompt' is the placeholder text on that step's note field. ONE STEP, ONE PERMISSION -- by the owner's instruction (11 Sep 2026): either HR Manager or Administrator may sign, and whichever of them does it first closes the run for payment; there is no second, separate sign-off waiting behind it. 'payroll.run.approve' already reads as granted for both roles at any tier above 'No access' (HR Manager: Edit, Administrator: Full) via Roles & Permissions -> Salary Approval, so no role change was needed to make this work -- only collapsing the two steps below into one. The previous two-step chain (HR then a separate payroll.payout.authorise-gated Finance step) is preserved here as a comment in case a second sign-off is wanted again later: {key: 'hr', label: 'HR Approval', permission: 'payroll.run.approve'}, {key: 'finance', label: 'Finance Approval', permission: 'payroll.payout.authorise'}.",
+  "steps": [
+    {
+      "key": "final",
+      "label": "Approval",
+      "permission": "payroll.run.approve",
+      "prompt": "Checked and approved for payment"
+    }
+  ],
+  "delete_roles": ["HR Admin", "Company Admin"],
+  "delete_roles_note": "Owner, 22 Oct 2026: after a payroll is generated (and even after approval) these roles — and Administrator — may Delete it, so the month can be generated again after corrections. Role names as in Organization Configuration -> Role/Designation Setup (case-insensitive). The deleted run is kept in the history with its reason.",
+  "allow_discard": false,
+  "allow_discard_note": "DEFAULT ONLY, for a new installation before anyone touches the switch. The real setting is the on-screen switch 'Delete payroll (testing)' on Salary Schedule / Pay Cycle → Lots generated, saved per client in its own database. Off by default so a client installation never starts with deleting enabled."
+}

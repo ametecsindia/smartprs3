@@ -1,0 +1,10 @@
+{
+  "note": "The lead pipeline: SmartPRS 2 worked new → contacted → closed; converted marks a lead that became a tenant.",
+  "statuses": {
+    "new": {"label": "New", "badge": "amber"},
+    "contacted": {"label": "Contacted", "badge": "gray"},
+    "converted": {"label": "Converted", "badge": "green"},
+    "closed": {"label": "Closed", "badge": "red"}
+  },
+  "sources": ["landing", "whatsapp", "live-demo", "referral", "event", "manual"]
+}

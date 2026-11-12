@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.ametecs.smartprs3.employee'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.ametecs.smartprs3.employee'
+        minSdk 24
+        targetSdk 34
+        versionCode 4
+        versionName '1.3'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// RELEASES FOLDER (owner, 5 Nov 2026), like C:\SmartEPT-Releases: every APK Android Studio builds is
+// also copied to C:\SmartPRS3-Releases\Mobile-Apps\SmartPRS3 Mobile app\v<version>\ — a newer build of
+// the same version replaces the older file. Change versionName above for a new version folder.
+def releasesRoot = 'C:/SmartPRS3-Releases/Mobile-Apps'
+
+android.applicationVariants.all { variant ->
+    variant.assembleProvider.configure {
+        doLast {
+            copy {
+                from variant.outputs.collect { it.outputFile }
+                into "${releasesRoot}/SmartPRS3 Mobile app/v${variant.versionName}"
+                rename { "SmartPRS3-Mobile-app-${variant.versionName}-${variant.buildType.name}.apk" }
+            }
+            copy {
+                from rootProject.file('RELEASES-README.txt')
+                into releasesRoot
+                rename { 'README.txt' }
+            }
+        }
+    }
+}

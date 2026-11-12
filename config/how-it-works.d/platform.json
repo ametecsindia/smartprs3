@@ -1,0 +1,16 @@
+{"items": {
+  "platform-dashboard": "Tenants, live subscriptions, MRR (Σ plan monthly price at seats), invoices due/overdue, this month's leads, licences expiring — every tile from SaasPlatform::dashboard() over the platform-wide store.",
+  "tenants": "The customer book: code, name, GST state, domain, status; plan and employee count read through a store scoped to each tenant. Suspend / reactivate are status moves, never deletes.",
+  "plans": "Name, base price per month for the included employees, extra-employee price, default cycle, status, and the modules the plan unlocks ticked from the module registry into the features JSON.",
+  "subscriptions": "Tenant × plan × seats × cycle; the amount is computed (plan monthly price × cycle months). Renew moves the period on by one cycle; Cancel keeps the row.",
+  "invoices": "Raised per subscription with GST from config/gst.json — CGST+SGST for the home state, IGST elsewhere — numbered prefix-year-sequence; Mark paid records the payment and settles it.",
+  "payments": "Every payment, gateway or manual, against its invoice with mode and reference; a succeeded payment settles the invoice when the balance reaches zero.",
+  "gateways": "A register of gateway credentials — gateway, test/live, key and secret as password fields, webhook URL, status.",
+  "feature-flags": "Keys declared in config/feature-flags.json; a global row or a per-tenant row overrides the default, resolved tenant → global → default.",
+  "admin-leads": "Website enquiries with source and a New → Contacted → Closed pipeline (config/leads.json), notes, one-tap call/WhatsApp/email, live-demo entries beneath, and Convert to tenant.",
+  "admin-quotations": "Plan × seats × cycle months, less a coupon (validated) or a typed discount, plus GST for the buyer's state, valid till a date; Accept creates the tenant and its subscription at the quoted figures.",
+  "admin-coupons": "Campaign codes: percent or flat, a valid window, max uses and a used count written only by redemption, plan/cycle/context rules — a register with unique codes.",
+  "admin-staff": "Every login of the operator's tenant whose role holds tenant.settings.update — the people who can see every tenant. Managed in User Management.",
+  "admin-onprem": "Perpetual-licence clients: price, AMC %, payments against the price, licence keys (hash + last four kept, key shown once), servers, events, Extend AMC and Revoke.",
+  "admin-releases": "A version with notes, published on a date, granted to on-prem clients who report back what they applied; the cloud's own version is config/version.json."
+}}

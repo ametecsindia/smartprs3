@@ -1,0 +1,47 @@
+{
+  "note": "Messages the Employees tab sends (10 Sep audit): the transfer order with its acknowledgement link, the acknowledgement itself, probation milestone reminders to HR and the reporting manager, and the confirmation note. Queued through Surface\\Notifications with a dedupe key per employee and per milestone, so a sweep that runs twice sends once. Nothing is transmitted until a transport is declared — see config/notifications.json.",
+  "events": {
+    "transfer.approved": {
+      "channels": ["email", "in_app"],
+      "title": "Your transfer order — effective {effective}",
+      "body": "{name} ({code}): your {type} transfer to {to} is approved, effective {effective}. Reason: {reason}. Please acknowledge the transfer order: {link}",
+      "audience": "employee",
+      "audience_note": "The person being moved. The approver just decided it."
+    },
+    "transfer.acknowledged": {
+      "channels": ["in_app"],
+      "title": "Transfer acknowledged by {name}",
+      "body": "{name} ({code}) acknowledged the transfer order effective {effective} on {when}.",
+      "audience": "hr",
+      "audience_note": "Whoever raised the transfer."
+    },
+    "probation.reminder": {
+      "channels": ["email", "in_app"],
+      "title": "Probation ends in {days} day(s): {name}",
+      "body": "{name} ({code}), {designation}, {company}: probation ends on {end} ({days} day(s) left). Confirm or extend it on People → Probation; confirming asks which of PF, ESI, PT, LWF and TDS apply from then on.",
+      "audience": "hr_and_manager",
+      "audience_note": "The roles named in Probation → Who is told (Admin and HR Admin by default), and the reporting manager when the company's settings say so. One message per milestone crossed."
+    },
+    "probation.last_day": {
+      "channels": ["email", "in_app"],
+      "title": "Probation ends TODAY: {name}",
+      "body": "{name} ({code}), {designation}, {company}: today, {end}, is the last day of probation. Confirm or extend it on People → Probation — remarks are required either way.",
+      "audience": "hr_and_manager",
+      "audience_note": "Sent on the last day itself (the 0-day milestone) instead of a \"0 day(s) left\" reminder."
+    },
+    "probation.overdue": {
+      "channels": ["email", "in_app"],
+      "title": "Probation overdue: {name}",
+      "body": "{name} ({code}) passed the probation end date {end} and is neither confirmed nor extended. Every month unnoticed is a month of wrong statutory deductions.",
+      "audience": "hr_and_manager",
+      "audience_note": "HR always; the reporting manager when Probation Settings says so."
+    },
+    "probation.confirmed": {
+      "channels": ["email", "in_app"],
+      "title": "Congratulations — you are confirmed",
+      "body": "Dear {name}, your probation is complete and you are confirmed as a permanent employee with effect from {on}. Welcome aboard.",
+      "audience": "employee",
+      "audience_note": "Sent only when Probation Settings turns on the congratulations note."
+    }
+  }
+}

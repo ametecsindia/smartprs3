@@ -1,0 +1,45 @@
+[
+ {
+  "section": "time",
+  "items": [
+   {
+    "key": "roster",
+    "route": "roster",
+    "label": "Roster",
+    "icon": "fa-route",
+    "permission": "attendance.day.view"
+   }
+  ]
+ },
+ {
+  "section": "admin",
+  "items": [
+   {
+    "key": "asset-stock",
+    "route": "asset-stock",
+    "label": "Asset Stock",
+    "icon": "fa-boxes-stacked",
+    "permission": "employee.view"
+   },
+   {
+    "key": "asset-issue",
+    "route": "asset-issue",
+    "label": "Asset Issue & Returns",
+    "icon": "fa-right-left",
+    "permission": "employee.view"
+   }
+  ]
+ },
+ {
+  "section": "main",
+  "items": [
+   {
+    "key": "my-assets",
+    "route": "my-assets",
+    "permission": "asset.mine.view",
+    "label": "My Assets",
+    "icon": "fa-laptop"
+   }
+  ]
+ }
+]

@@ -1,0 +1,88 @@
+{
+ "note": "Leave types are DATA. Which types exist, what they accrue, whether they are paid, and where they stop accumulating are business decisions — none of them appears in a PHP file. A new type, a changed accrual rate or a state-specific cap is an edit here. Whether a type is ENCASHABLE is declared here too — paid and encashable are different questions, and assuming the first implies the second pays a leaver for sick leave they never took. carry_forward says whether an unused balance survives the year end; a type that does not carry forward is LAPSED on 31 December by the year-end action under Organization Setup → Leave Types. The tenant's own list, saved there, replaces this one. hidden_for_marital_status and hidden_for_gender each name employees.marital_status / employees.gender values a type is hidden for — declared per type here, never a column on the Leave Types screen, never a code check against a type's own code. ML and PL name every OTHER marital status (Single, Divorced, Widowed) and the opposite gender rather than naming Married/Female or Married/Male directly, because the rule is a positive match on a value a type is hidden for, not an allow-list — 'only Married women' is 'hidden for everyone who is Single, Divorced or Widowed, and hidden for Male'. Their opening_days equals their own maximum_days (182 / 15) rather than 0, on the owner's explicit instruction that a qualifying employee sees and can request the full statutory entitlement in Self Service the moment they qualify — no HR grant needed first; HR still adjusts the ledger by hand for a specific case (twins, a shorter leave actually taken, and so on) the same way any ledger can be adjusted. scope is Company/Branch/Role/Designation — set as columns on the same Leave Types screen, after Note — and works the other way round from the hidden_for_* facts: blank matches everybody, and every dimension named there must match before the type applies at all, in leave requests and in grants alike.",
+ "self_approval_roles": ["Company Admin", "administrator"],
+ "self_approval_note": "Roles that may approve or reject their OWN leave (Leave Approvals) and their OWN attendance regularizations (Attendance Regularization) — nobody above them to ask. Matched case-insensitively against the account's role; 'administrator' is the built-in access tier, 'Company Admin' the Role/Designation Setup role. DEFAULT ONLY for a new installation: the real setting is on screen — Organization Setup → Leave & Absence → Self-approval — saved per client in its own database.",
+ "types": [
+  {
+   "code": "EL",
+   "name": "Earned leave",
+   "paid": true,
+   "opening_days": "0",
+   "accrual_days_per_month": "1.5",
+   "maximum_days": "45",
+   "note": "Accrues monthly and carries forward to a cap. The cap is where accrual stops, not where the balance is truncated — an employee who has reached it keeps what they earned. Encashable on exit: the balance is money the employee has earned.",
+   "encashable": true,
+   "carry_forward": true
+  },
+  {
+   "code": "CL",
+   "name": "Casual leave",
+   "paid": true,
+   "opening_days": "12",
+   "accrual_days_per_month": "0",
+   "maximum_days": "12",
+   "note": "Credited in full at the start and does not accrue. NOT encashable: it is an entitlement to be absent, not a sum owed, and paying it out on exit would hand a leaver a month's salary for days nobody took.",
+   "encashable": false,
+   "carry_forward": false
+  },
+  {
+   "code": "SL",
+   "name": "Sick leave",
+   "paid": true,
+   "opening_days": "12",
+   "accrual_days_per_month": "0",
+   "maximum_days": "12",
+   "note": "Credited in full at the start and does not accrue. NOT encashable: it is an entitlement to be absent, not a sum owed, and paying it out on exit would hand a leaver a month's salary for days nobody took.",
+   "encashable": false,
+   "carry_forward": false
+  },
+  {
+   "code": "LOP",
+   "name": "Loss of pay",
+   "paid": false,
+   "opening_days": "0",
+   "accrual_days_per_month": "0",
+   "maximum_days": "0",
+   "note": "Unpaid. It has no balance to draw on — it is recorded so the days are visible on the payslip as days not paid, rather than absent from both.",
+   "encashable": false,
+   "carry_forward": true
+  },
+  {
+   "code": "CO",
+   "name": "Compensatory off",
+   "paid": true,
+   "opening_days": "0",
+   "accrual_days_per_month": "0",
+   "maximum_days": "30",
+   "note": "EARNED, NOT ACCRUED. A comp-off is credited by config/attendance-earn-rules.json when somebody works a full shift on a weekly off or a declared holiday — so accrual_days_per_month is zero and that zero is the point: nothing here grants a comp-off, an attendance day does. The cap is where crediting stops, not where the balance is truncated.",
+   "encashable": false,
+   "carry_forward": true
+  },
+  {
+   "code": "ML",
+   "name": "Maternity leave",
+   "paid": true,
+   "opening_days": "182",
+   "accrual_days_per_month": "0",
+   "maximum_days": "182",
+   "note": "The full 26-week statutory entitlement is available from day one to every eligible employee — Married, Female — visible and requestable in Self Service with no HR grant needed first. NOT encashable: it is time off around childbirth, not a balance to be paid out.",
+   "encashable": false,
+   "carry_forward": false,
+   "hidden_for_marital_status": ["Single", "Divorced", "Widowed"],
+   "hidden_for_gender": ["Male", "Other", "Prefer not to say"]
+  },
+  {
+   "code": "PL",
+   "name": "Paternity leave",
+   "paid": true,
+   "opening_days": "15",
+   "accrual_days_per_month": "0",
+   "maximum_days": "15",
+   "note": "The full entitlement is available from day one to every eligible employee — Married, Male — visible and requestable in Self Service with no HR grant needed first. NOT encashable: it is time off, not a balance to be paid out.",
+   "encashable": false,
+   "carry_forward": false,
+   "hidden_for_marital_status": ["Single", "Divorced", "Widowed"],
+   "hidden_for_gender": ["Female", "Other", "Prefer not to say"]
+  }
+ ]
+}

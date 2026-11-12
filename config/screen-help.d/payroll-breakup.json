@@ -1,0 +1,24 @@
+{
+ "routes": {"salary-breakup": "salary-breakup"},
+ "screens": {
+  "salary-breakup": {
+   "m": "Payroll",
+   "t": "Salary Breakup",
+   "g": "Every employee's salary from their CTC, component by component",
+   "w": "One row per active employee: CTC, every earning (Basic, HRA, allowances), gross, every deduction (PF, ESI, PT), net take-home, every employer contribution (PF, ESI, NPS) and cost to company. Worked out by the same engine a payroll close uses, from the Salary Structure rules in Organization Configuration that win for that person — company, branch and its city/state, department, designation, team, gender or the employee — at a full month with no loss of pay. A Difference column flags anyone whose cost to company does not add back to their CTC. Click a name to see the rule behind each figure.",
+   "f": [
+    ["fa-building", "Company and Branch buttons, organisation and employee filters"],
+    ["fa-calendar", "Monthly or annual amounts"],
+    ["fa-file-excel", "Excel and CSV download of exactly what is shown"]
+   ],
+   "s": [
+    "Pick the company, branch or other filters.",
+    "Switch between Monthly and Annual.",
+    "Click a name for the rule behind each component; download Excel or CSV."
+   ],
+   "tip": "To change a figure, change the rule in Organization Configuration → Salary Structure; this page follows it at once.",
+   "r": ["Admin & HR", "Payroll"],
+   "rel": "structure"
+  }
+ }
+}

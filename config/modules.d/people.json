@@ -1,0 +1,71 @@
+{
+  "note": "EMPLOYEES-tab register screens at SmartPRS 2 parity (10 Sep audit). A key here SUPERSEDES the entry of the same key in modules.json. `bgv` is SmartPRS 2's Background Verification register: employee, company, agency, the SIX checks (Identity / KYC, Address, Education, Previous employment, Criminal / court record, References) each Pending / Clear / Flag / N/A, the overall status, Verified On, Re-verify every (months), Next Re-verify Due. The colours are declared under `display.badges` (clear = green, flag = red, pending = amber, na = gray) so the register reads like PRS2's; the per-employee desk with the derived status and the due-within-30-days highlight is ?r=bgv (surface/Bgv.php writes these same columns). The check list itself is config/bgv.json.",
+  "modules": [
+    {
+      "key": "bgv",
+      "group": "People",
+      "label": "Background Verification",
+      "description": "Structured BGV per employee — per-check results and a re-verification schedule. Overdue and upcoming re-verifications show in Compliance Alerts; the BGV desk (?r=bgv) highlights next-due dates.",
+      "table": "bgv",
+      "columns": [
+        "employee_id",
+        "employer_company_id",
+        "branch_id",
+        "agency",
+        "agency_email",
+        "chk_identity",
+        "chk_address",
+        "chk_education",
+        "chk_employment",
+        "chk_criminal",
+        "chk_references",
+        "status",
+        "verified_on",
+        "next_due"
+      ],
+      "search": ["agency", "status"],
+      "permissions": {"view": "employee.view", "edit": "employee.update"},
+      "display": {
+        "badges": {
+          "chk_identity": {"clear": "green", "flag": "red", "pending": "amber", "na": "gray"},
+          "chk_address": {"clear": "green", "flag": "red", "pending": "amber", "na": "gray"},
+          "chk_education": {"clear": "green", "flag": "red", "pending": "amber", "na": "gray"},
+          "chk_employment": {"clear": "green", "flag": "red", "pending": "amber", "na": "gray"},
+          "chk_criminal": {"clear": "green", "flag": "red", "pending": "amber", "na": "gray"},
+          "chk_references": {"clear": "green", "flag": "red", "pending": "amber", "na": "gray"},
+          "status": {"clear": "green", "discrepancy": "red", "in_progress": "blue", "pending": "amber"}
+        },
+        "money": [],
+        "stats": [
+          {"label": "Verified clear", "measure": "count", "where": {"status": ["clear"]}, "icon": "fa-user-shield", "tint": "green"},
+          {"label": "Discrepancy flagged", "measure": "count", "where": {"status": ["discrepancy"]}, "icon": "fa-flag", "tint": "red"},
+          {"label": "In progress", "measure": "count", "where": {"status": ["in_progress"]}, "icon": "fa-bars-progress", "tint": "blue"},
+          {"label": "Pending", "measure": "count", "where": {"status": ["pending"]}, "icon": "fa-hourglass-half", "tint": "amber"}
+        ]
+      },
+      "fields": {
+        "employee_id": {
+          "label": "Employee",
+          "required": true,
+          "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]},
+          "help": "From the Directory"
+        },
+        "employer_company_id": {"label": "Company", "empty": "ALL", "help": "From Organization Setup → Companies"},
+        "branch_id": {"label": "Branch", "help": "Follows the employee (Directory)"},
+        "agency": {"label": "Agency", "help": "Verification agency, if outsourced"},
+        "agency_email": {"label": "Agency email", "help": "Several: separate with commas"},
+        "chk_identity": {"label": "Identity / KYC", "options": ["Pending", "Clear", "Flag", "Na"], "help": "pending · clear · flag (a discrepancy) · na (not checked)"},
+        "chk_address": {"label": "Address", "options": ["Pending", "Clear", "Flag", "Na"], "help": "pending · clear · flag · na"},
+        "chk_education": {"label": "Education", "options": ["Pending", "Clear", "Flag", "Na"], "help": "pending · clear · flag · na"},
+        "chk_employment": {"label": "Previous employment", "options": ["Pending", "Clear", "Flag", "Na"], "help": "pending · clear · flag · na"},
+        "chk_criminal": {"label": "Criminal / court record", "options": ["Pending", "Clear", "Flag", "Na"], "help": "pending · clear · flag · na"},
+        "chk_references": {"label": "References", "options": ["Pending", "Clear", "Flag", "Na"], "help": "pending · clear · flag · na"},
+        "status": {"label": "Overall Status", "options": ["Pending", "In_progress", "Clear", "Discrepancy"], "help": "Any flag = discrepancy; all clear / N/A = clear"},
+        "verified_on": {"label": "Verified On", "type": "date"},
+        "completed_on": {"label": "Completed on", "type": "date", "help": "Same as Verified On on the BGV desk"},
+        "revalidate_months": {"label": "Re-verify every (months)", "type": "number", "min": 0, "max": 120},
+        "next_due": {"label": "Next Re-verify Due", "type": "date", "help": "Verified On + the interval; Compliance Alerts read this"}
+      }
+    }
+  ]
+}

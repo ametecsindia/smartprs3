@@ -1,0 +1,18 @@
+{
+  "note": "Administration → Mobile Devices. SmartPRS 2's mobile app registers a phone as `pending`; an administrator approves it (the phone unlocks), rejects it (the phone shows the reason) or revokes an approved one (a lost phone is locked out on its next check). Which moves are allowed from which status is declared here; the screen and the action both read it.",
+  "table": "mobile_devices",
+  "registered": "pending",
+  "statuses": {
+    "pending": {"label": "Pending", "badge": "amber"},
+    "approved": {"label": "Approved", "badge": "green"},
+    "rejected": {"label": "Rejected", "badge": "red"},
+    "revoked": {"label": "Revoked", "badge": "gray"}
+  },
+  "transitions": {
+    "approve": {"from": ["pending", "rejected"], "to": "approved", "label": "Approve", "reason_required": false},
+    "reject": {"from": ["pending"], "to": "rejected", "label": "Reject", "reason_required": true},
+    "revoke": {"from": ["approved"], "to": "revoked", "label": "Revoke", "reason_required": false, "default_reason": "Access revoked by your administrator."}
+  },
+  "activation": {"note": "SmartEPT-style first sign-in on a phone (owner, 12 Nov 2026): the activation code an administrator issues, how long it lasts, wrong tries per phone before a pause, and how long the app's one-time login link lives.", "code_length": 8, "valid_hours": 72, "attempts": 5, "lock_minutes": 5, "login_link_seconds": 120},
+  "platforms": ["Android", "iOS", "Other"]
+}

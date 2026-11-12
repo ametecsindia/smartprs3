@@ -1,0 +1,11 @@
+{
+ "note": "Performance & Rewards → Attrition. Joiners are employees whose date of joining falls in the month; leavers are employees whose exit date (the `exit_date` column, else the timeline's exit event) falls in the month. Rate = leavers ÷ average headcount, where average headcount = (opening + closing) ÷ 2 and headcount on a day = employees joined on or before it and not exited before it. Shown exactly as a fraction and as a truncated percentage.",
+ "percent_places": 2,
+ "left_statuses": [
+  "exited",
+  "left"
+ ],
+ "leaver_statuses_note": "A status of `exited` with no exit date is listed as 'left, date unknown' and excluded from the rate — a rate cannot count a leaver it cannot place in a month.",
+ "default_period": "fy",
+ "default_period_note": "The range shown when none is picked: one of month, lastmonth, year, fy, ytd, mtd, week. Rows stop at the current month."
+}

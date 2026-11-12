@@ -1,0 +1,19 @@
+{
+ "note": "Performance & Rewards → Points. A Points Rule row says what an EVENT is worth (negative deducts); this file says where each event's COUNT comes from when the rules are auto-applied for a month. The rule amounts are never in code: an event with no rule row awards nothing. `Auto:` entries carry the month as `source_ref` so a month is never applied twice.",
+ "auto_note_prefix": "Auto: ",
+ "categories": ["positive", "negative"],
+ "events": {
+  "Late arrival": {"source": "attendance.late_days", "applied_as": "points × late days that month"},
+  "Absent": {"source": "attendance.status", "status": "ABSENT", "applied_as": "points × absent days"},
+  "Perfect attendance": {"source": "attendance.perfect", "absent_status": "ABSENT", "applied_as": "points once, if the month had no late day and no absent day"},
+  "Award received": {"source": "awards", "applied_as": "points × awards dated in the month"},
+  "Test passed": {"source": "tests.passed", "applied_as": "points × tests passed in the month"},
+  "Target achieved": {"source": "manual", "applied_as": "entered by hand on the ledger"},
+  "On-time streak": {"source": "attendance.streak", "present_status": "PRESENT", "streak_days": 20, "applied_as": "points once, if at least `streak_days` present days in the month with no late mark"}
+ },
+ "leaderboard": {
+  "note": "Rank is by net points; ties share a rank (1, 1, 3).",
+  "period_kind": "month",
+  "history_months": 12
+ }
+}

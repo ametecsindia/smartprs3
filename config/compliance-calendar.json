@@ -1,0 +1,24 @@
+{
+  "note": "The statutory due-date register the Compliance Alerts screen runs, and the statutory HEADS the PF & ESI and TDS summaries read from closed payroll runs. Due days are DATA: a state that files PT on a different day, or a tenant with a different TDS cycle, changes this file and no code.",
+  "lead_days": 7,
+  "periods_shown": 6,
+  "heads": {
+    "PF": {"label": "Provident Fund", "line_codes": ["PF", "EPF", "D-PF", "PF_EMPLOYEE"], "employer_line_codes": ["PF_EMPLOYER"]},
+    "ESI": {"label": "Employees' State Insurance", "line_codes": ["ESI", "ESIC", "D-ESI", "ESI_EMPLOYEE"], "employer_line_codes": ["ESI_EMPLOYER"]},
+    "PT": {"label": "Professional Tax", "line_codes": ["PT", "D-PT"]},
+    "TDS": {"label": "Tax Deducted at Source", "line_codes": ["TDS", "D-TDS"]}
+  },
+  "heads_note": "employer_line_codes are the employer-contribution lines of the same head (PF & ESI Remittances: To be paid = employee + employer lines of the completed payroll). line_codes are the payslip line codes that count towards a head: the statutory engine writes the head itself (PF, ESI, PT, TDS) and a structure-level deduction may carry a component code such as D-PT. A tenant whose structure names its PT line differently adds the code here.",
+  "obligations": [
+    {"key": "pf-ecr", "head": "PF", "label": "PF ECR filing & remittance", "authority": "EPFO", "frequency": "monthly", "due_day": 15, "months_after": 1, "blocks": "PF remittance for the wage month; late payment attracts damages and interest"},
+    {"key": "esi-contribution", "head": "ESI", "label": "ESI contribution & return", "authority": "ESIC", "frequency": "monthly", "due_day": 15, "months_after": 1, "blocks": "ESI coverage of the insured persons for the month"},
+    {"key": "pt-return", "head": "PT", "label": "Professional tax remittance", "authority": "State", "frequency": "monthly", "due_day": 20, "months_after": 1, "blocks": "the state PT return; the due day differs by state and is set here"},
+    {"key": "tds-payment", "head": "TDS", "label": "TDS deposit (challan 281)", "authority": "Income Tax", "frequency": "monthly", "due_day": 7, "months_after": 1, "blocks": "credit of tax deducted to the deductee; interest under 201(1A) from the day it is late"},
+    {"key": "tds-return", "head": "TDS", "label": "TDS return 24Q", "authority": "Income Tax", "frequency": "quarterly", "quarters": [
+      {"code": "Q1", "months": [4, 5, 6], "due": "07-31"},
+      {"code": "Q2", "months": [7, 8, 9], "due": "10-31"},
+      {"code": "Q3", "months": [10, 11, 12], "due": "01-31", "due_year_offset": 1},
+      {"code": "Q4", "months": [1, 2, 3], "due": "05-31"}
+    ], "blocks": "Form 16 for every employee; late filing fee under 234E per day"}
+  ]
+}

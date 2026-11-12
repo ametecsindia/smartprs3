@@ -1,0 +1,108 @@
+# SmartPRS 3 — Deptrac
+#
+# NOT YET EXERCISED. `composer install` is not currently possible in this
+# environment, so nothing below has ever been run. It encodes the layer table of
+# Part IV §IV.2.1 and the fifteen modules of §IV.3, and starts with:
+#
+#     composer require --dev deptrac/deptrac
+#     vendor/bin/deptrac analyse
+#
+# Until then, tools/gates/checks/module-boundaries.php and
+# tools/gates/checks/no-framework-in-domain.php enforce the same two rules with
+# the tokeniser and no dependencies. Deptrac supersedes neither; it adds the
+# transitive graph those two cannot see.
+
+deptrac:
+  paths:
+    - ./src
+
+  exclude_files:
+    # Deliberate violations, proved by tools/gates/self-test.php.
+    - '#tools/gates/fixtures#'
+
+  layers:
+    # -- the five architecture layers (Part IV §IV.2.1) ----------------------
+    - name: Interface
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Interface\\.*' }]
+    - name: Application
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Application\\.*' }]
+    - name: Domain
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Domain\\.*' }]
+    - name: Persistence
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Persistence\\.*' }]
+    - name: Infrastructure
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Infrastructure\\.*' }]
+
+    # -- the declared public surface of every module (§IV.3.1) ---------------
+    - name: Contracts
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Contracts\\.*' }]
+
+    # -- the framework, so a Domain dependency on it is a named violation ----
+    - name: Framework
+      collectors:
+        - { type: classLike, value: '^Illuminate\\.*' }
+        - { type: classLike, value: '^Laravel\\.*' }
+        - { type: classLike, value: '^Symfony\\.*' }
+
+    # -- the fifteen modules (§IV.3). Internals only; Contracts sit above. ---
+    - name: Platform
+      collectors: [{ type: classLike, value: '^SmartPRS\\Platform\\(?!Contracts\\).*' }]
+    - name: IdentityAccess
+      collectors: [{ type: classLike, value: '^SmartPRS\\IdentityAccess\\(?!Contracts\\).*' }]
+    - name: Organisation
+      collectors: [{ type: classLike, value: '^SmartPRS\\Organisation\\(?!Contracts\\).*' }]
+    - name: People
+      collectors: [{ type: classLike, value: '^SmartPRS\\People\\(?!Contracts\\).*' }]
+    - name: TimeAttendance
+      collectors: [{ type: classLike, value: '^SmartPRS\\TimeAttendance\\(?!Contracts\\).*' }]
+    - name: Absence
+      collectors: [{ type: classLike, value: '^SmartPRS\\Absence\\(?!Contracts\\).*' }]
+    - name: Payroll
+      collectors: [{ type: classLike, value: '^SmartPRS\\Payroll\\(?!Contracts\\).*' }]
+    - name: Statutory
+      collectors: [{ type: classLike, value: '^SmartPRS\\Statutory\\(?!Contracts\\).*' }]
+    - name: MoneyMovement
+      collectors: [{ type: classLike, value: '^SmartPRS\\MoneyMovement\\(?!Contracts\\).*' }]
+    - name: Talent
+      collectors: [{ type: classLike, value: '^SmartPRS\\Talent\\(?!Contracts\\).*' }]
+    - name: Compliance
+      collectors: [{ type: classLike, value: '^SmartPRS\\Compliance\\(?!Contracts\\).*' }]
+    - name: Communication
+      collectors: [{ type: classLike, value: '^SmartPRS\\Communication\\(?!Contracts\\).*' }]
+    - name: Integration
+      collectors: [{ type: classLike, value: '^SmartPRS\\Integration\\(?!Contracts\\).*' }]
+    - name: Configuration
+      collectors: [{ type: classLike, value: '^SmartPRS\\Configuration\\(?!Contracts\\).*' }]
+    - name: Audit
+      collectors: [{ type: classLike, value: '^SmartPRS\\Audit\\(?!Contracts\\).*' }]
+
+  ruleset:
+    # Dependencies inside a layer are always allowed by Deptrac, so each entry
+    # below is only what the layer may reach OUTSIDE itself.
+
+    # Part IV §IV.2.1, row by row.
+    Interface: [Application, Contracts, Framework]
+    Application: [Domain, Contracts, Framework]
+    Domain: [Contracts]                 # "Domain may depend on Domain only"
+    Persistence: [Domain, Contracts, Framework]
+    Infrastructure: [Contracts, Framework]
+    Contracts: []                       # the surface depends on nothing
+    Framework: []
+
+    # §IV.3.1: "a module only references another module through Contracts".
+    # Every module gets exactly the same entry; that uniformity is the rule.
+    Platform: [Contracts, Framework]
+    IdentityAccess: [Contracts, Framework]
+    Organisation: [Contracts, Framework]
+    People: [Contracts, Framework]
+    TimeAttendance: [Contracts, Framework]
+    Absence: [Contracts, Framework]
+    Payroll: [Contracts, Framework]
+    Statutory: [Contracts, Framework]
+    MoneyMovement: [Contracts, Framework]
+    Talent: [Contracts, Framework]
+    Compliance: [Contracts, Framework]
+    Communication: [Contracts, Framework]
+    Integration: [Contracts, Framework]
+    Configuration: [Contracts, Framework]
+    Audit: [Contracts, Framework]

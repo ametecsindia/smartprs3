@@ -1,0 +1,16 @@
+{"items": {
+  "pf-esi": "Per employee, the PF and ESI the closed runs actually deducted; the rates come from a signed pack, and when the only pack is synthetic the screen refuses figures and says why.",
+  "pf-esi-register": "Whether PF and ESI apply to each employee, the UAN / ESI number and from when.",
+  "tds": "TDS deducted per employee from the closed runs; declarations and quarterly returns are their own registers.",
+  "tds-declarations": "The employee's investment declaration per financial year: PAN, regime, 80C / 80D, exemptions.",
+  "tds-returns": "Quarterly 24Q tracker per company: deducted, deposited, due, filed and the acknowledgement.",
+  "pt": "Professional tax slabs by state and wage band.",
+  "gratuity": "Accrued liability per employee: last drawn basic × 15/26 × completed years from 5 years' service, capped — every rule in config/gratuity.json, working on every row.",
+  "bonus": "Payment of Bonus Act working per employee from the closed runs: eligible months, wage counted up to the ceiling, bonus at both ends of the band — config/statutory-bonus.json.",
+  "bonus-register": "Form C: the bonus declared and paid per employee per financial year.",
+  "min-wages": "Notified minimum wage by state / zone / category, effective-dated.",
+  "compliance-alerts": "PF ECR, ESI, PT and TDS due dates per period from config/compliance-calendar.json — overdue, due, upcoming or filed, with the filing recorded against the company.",
+  "posh": "Confidential complaints to the Internal Committee; visible only to those who may read employee documents.",
+  "audit-reports": "Every statutory register with its count and a CSV, scoped by Organization Setup.",
+  "statutory-config": "Which rate packs are in force and where every statutory rule lives — read-only, nothing typed into a settings row."
+}}

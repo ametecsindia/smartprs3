@@ -1,0 +1,36 @@
+{
+  "note": "MODULES WHOSE ROWS ARE OTHER PEOPLE'S DATA with no per-employee column to scope by, or that are tenant-wide logs, need more than the default employee.view that every employee login holds (owner, 28 Sep: an Employee/Agent sees only their own data). Per-employee modules (employee_id) are scoped row by row instead and are not listed. Change a permission here, or grant it on Roles & Permissions.",
+  "view": {
+    "attendance-logs": "attendance.day.view.history",
+    "pending-punches": "attendance.day.view.history",
+    "onboarding": "employee.create",
+    "self-onboarding": "employee.create",
+    "onboarding-tracker": "employee.create",
+    "candidates": "employee.create",
+    "job-openings": "employee.create",
+    "interviews": "employee.create",
+    "hiring-drives": "employee.create",
+    "offroll-agents": "employee.update",
+    "escalations": "request.view",
+    "messages-log": "audit.tenant.read",
+    "greetings": "audit.tenant.read",
+    "notifications": "audit.tenant.read",
+    "activity": "audit.tenant.read",
+    "employee-import": "employee.create"
+  },
+  "redirect": {
+    "leave-types": "leave-absence",
+    "leaves": "leave-approvals",
+    "salary-components": "structure",
+    "complaints": "complaints",
+    "pf-esi-remittances": "pf-esi-remittances",
+    "tds-declarations": "tds-declaration",
+    "tds-remittances": "tds-remittances",
+    "pt-remittances": "pt-remittances",
+    "advances": "salary-advance",
+    "loans": "loans",
+    "pt-slabs": "pt-slabs",
+    "incentive-schemes": "m&k=commission-setup"
+  },
+  "redirect_note": "Generic registers that duplicate a real screen open that screen instead (28 Sep): one place to set leave types, one to see leave applications, one salary component catalogue. 29 Oct (owner: \"Salary advance entry … why it is manual again?\"): the raw Salary Advance / Loans / PT slabs registers open the designed Salary Advance, Loans and PT Slabs screens — same tables, the designed form."
+}

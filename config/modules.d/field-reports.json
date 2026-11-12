@@ -1,0 +1,449 @@
+{
+  "note": "FIELD FORCE register screens. A key here SUPERSEDES the entry of the same key in modules.json. Off-roll agents rebuilt 23 Oct 2026 (migration 2026_10_23_000300): identity, deployment, the supervising Directory employee, bank, PAN / TDS, DRA and PCC certificates with issue and expiry dates, and who is paid (the agent or the vendor). The pay structure, daily activity and payouts are their own screens (surface/OffrollPay.php). The expiry window that orders Agent Authorisations, DRA Certificates and the agents' certificate bands lives in config/field-reports.json.",
+  "modules": [
+    {
+      "key": "offroll-agents",
+      "group": "Field Force",
+      "label": "Off-roll Agents",
+      "description": "Vendor / contract field agents deployed under a company and branch — not employees: nothing here reaches payroll. Their pay is Field Force → Agent Pay Structure, their days Agent Attendance & Activity, their money Agent Payouts.",
+      "table": "offroll_agents",
+      "columns": [
+        "agent_code",
+        "name",
+        "employer_company_id",
+        "branch_id",
+        "vendor_id",
+        "paid_to",
+        "mobile",
+        "dra_expiry",
+        "pcc_expiry",
+        "status"
+      ],
+      "search": [
+        "agent_code",
+        "name",
+        "mobile",
+        "pan"
+      ],
+      "permissions": {
+        "view": "employee.view",
+        "edit": "employee.update"
+      },
+      "fields": {
+        "agent_code": {
+          "label": "Agent code",
+          "help": "e.g. OFR-0021 — leave blank to use OFR- and the record number"
+        },
+        "name": {
+          "label": "Agent name",
+          "required": true
+        },
+        "mobile": {
+          "label": "Mobile",
+          "pattern": "^[6-9]\\d{9}$",
+          "pattern_hint": "a 10-digit Indian mobile number"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "gender": {
+          "label": "Gender",
+          "options": [
+            "Male",
+            "Female",
+            "Other"
+          ]
+        },
+        "dob": {
+          "label": "Date of birth",
+          "type": "date"
+        },
+        "pan": {
+          "label": "PAN",
+          "pattern": "^[A-Z]{5}\\d{4}[A-Z]$",
+          "pattern_hint": "a PAN like ABCDE1234F",
+          "help": "Without a PAN, TDS is deducted at the higher no-PAN rate"
+        },
+        "aadhaar_last4": {
+          "label": "Aadhaar (last 4 digits only)",
+          "pattern": "^\\d{4}$",
+          "pattern_hint": "the last 4 digits"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "city": {
+          "label": "City"
+        },
+        "employer_company_id": {
+          "label": "Company",
+          "required": true,
+          "empty": "— pick —",
+          "help": "From Organization Setup → Companies; a payout run is per company"
+        },
+        "branch_id": {
+          "label": "Branch",
+          "empty": "— pick —",
+          "help": "From Organization Setup → Branches"
+        },
+        "supervisor_employee_id": {
+          "label": "Supervisor (employee)",
+          "empty": "— none —",
+          "lookup": {
+            "table": "employees",
+            "value": "id",
+            "show": [
+              "emp_code",
+              "name"
+            ]
+          },
+          "help": "The Directory employee this agent reports to in the field"
+        },
+        "client_bank": {
+          "label": "Client bank deployed for",
+          "lookup": {
+            "table": "banks",
+            "value": "name",
+            "show": [
+              "name"
+            ]
+          },
+          "empty": "— none —",
+          "help": "From Organization Setup → Banks"
+        },
+        "portfolio": {
+          "label": "Portfolio",
+          "help": "e.g. credit cards, two-wheeler loans, bucket 2"
+        },
+        "joining_date": {
+          "label": "Deployed from",
+          "type": "date",
+          "required": true
+        },
+        "exit_date": {
+          "label": "Exit date",
+          "type": "date",
+          "help": "Activity after this day is refused"
+        },
+        "paid_to": {
+          "label": "Payout goes to",
+          "options": {
+            "agent": "The agent directly",
+            "vendor": "The vendor / agency"
+          },
+          "required": true
+        },
+        "vendor_id": {
+          "label": "Vendor / agency",
+          "empty": "— none —",
+          "lookup": {
+            "table": "offroll_vendors",
+            "value": "id",
+            "show": [
+              "name"
+            ]
+          },
+          "required_when": {
+            "paid_to": [
+              "vendor"
+            ]
+          },
+          "help": "Field Force → Off-roll Vendors"
+        },
+        "entity_type": {
+          "label": "TDS payee type",
+          "options": {
+            "individual": "Individual",
+            "huf": "HUF",
+            "other": "Firm / company / other"
+          },
+          "help": "Decides the contract-work TDS rate (1% individual / HUF, 2% others)"
+        },
+        "tds_section": {
+          "label": "TDS section",
+          "options": {
+            "commission": "Commission / brokerage (393(1) Sl. 1(ii))",
+            "contract": "Contract work (393(1) Sl. 6(i))",
+            "none": "No TDS"
+          },
+          "help": "Blank = the default in Organization Configuration → Off-roll Agent Payouts"
+        },
+        "bank_name": {
+          "label": "Bank name"
+        },
+        "bank_account": {
+          "label": "Bank account number",
+          "pattern": "^\\d{9,18}$",
+          "pattern_hint": "9 to 18 digits"
+        },
+        "ifsc": {
+          "label": "IFSC",
+          "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+          "pattern_hint": "an IFSC like HDFC0001234"
+        },
+        "upi": {
+          "label": "UPI ID"
+        },
+        "dra_cert_no": {
+          "label": "DRA certificate number",
+          "help": "IIBF Debt Recovery Agent certificate"
+        },
+        "dra_issue_date": {
+          "label": "DRA issued on",
+          "type": "date"
+        },
+        "dra_expiry": {
+          "label": "DRA valid up to",
+          "type": "date",
+          "help": "Working after this date is flagged or held on the payout (Organization Configuration)"
+        },
+        "pcc_cert_no": {
+          "label": "Police clearance (PCC) number"
+        },
+        "pcc_issue_date": {
+          "label": "PCC issued on",
+          "type": "date"
+        },
+        "pcc_expiry": {
+          "label": "PCC valid up to",
+          "type": "date"
+        },
+        "status": {
+          "label": "Status",
+          "options": [
+            "Onboarded",
+            "Active",
+            "Suspended",
+            "Terminated"
+          ],
+          "required": true
+        },
+        "vendor": {
+          "label": "Vendor (old text)",
+          "hidden": true
+        },
+        "payout_type": {
+          "label": "Payout type (old)",
+          "hidden": true
+        },
+        "rate": {
+          "label": "Rate (old)",
+          "hidden": true
+        },
+        "dra": {
+          "label": "DRA (old)",
+          "hidden": true
+        },
+        "pcc": {
+          "label": "PCC (old)",
+          "hidden": true
+        }
+      }
+    },
+    {
+      "key": "agent-authorizations",
+      "group": "Field Force",
+      "label": "Agent Authorisations",
+      "description": "The bank's authorisation letter / ID issued to an employee OR an off-roll agent for a portfolio: letter number, validity from and to. The Agent Authorisations screen lists the ones expiring within the configured window first.",
+      "table": "agent_authorizations",
+      "columns": [
+        "employee_id",
+        "agent_id",
+        "employer_company_id",
+        "bank",
+        "portfolio",
+        "auth_no",
+        "valid_from",
+        "valid_to",
+        "status"
+      ],
+      "search": [
+        "bank",
+        "portfolio",
+        "auth_no"
+      ],
+      "permissions": {
+        "view": "employee.view",
+        "edit": "employee.update"
+      },
+      "fields": {
+        "employee_id": {
+          "label": "Employee",
+          "empty": "— none —",
+          "lookup": {
+            "table": "employees",
+            "value": "id",
+            "show": [
+              "emp_code",
+              "name"
+            ]
+          },
+          "help": "Pick the employee, or the off-roll agent below"
+        },
+        "agent_id": {
+          "label": "Off-roll agent",
+          "empty": "— none —",
+          "lookup": {
+            "table": "offroll_agents",
+            "value": "id",
+            "show": [
+              "agent_code",
+              "name"
+            ]
+          },
+          "help": "Pick the off-roll agent, or the employee above"
+        },
+        "employer_company_id": {
+          "label": "Company",
+          "empty": "ALL"
+        },
+        "bank": {
+          "label": "Bank",
+          "required": true,
+          "lookup": {
+            "table": "banks",
+            "value": "name",
+            "show": [
+              "name"
+            ]
+          },
+          "empty": "— pick —",
+          "help": "From Organization Setup → Banks"
+        },
+        "portfolio": {
+          "label": "Portfolio",
+          "required": true,
+          "help": "e.g. credit cards, two-wheeler loans, bucket 2"
+        },
+        "auth_no": {
+          "label": "Letter / authorisation number",
+          "required": true
+        },
+        "valid_from": {
+          "label": "Valid from",
+          "type": "date"
+        },
+        "valid_to": {
+          "label": "Valid to",
+          "type": "date",
+          "required": true
+        },
+        "status": {
+          "label": "Status",
+          "options": [
+            "Valid",
+            "Expiring",
+            "Expired",
+            "Revoked"
+          ]
+        }
+      }
+    },
+    {
+      "key": "offroll-vendors",
+      "group": "Field Force",
+      "label": "Off-roll Vendors",
+      "description": "The agencies off-roll agents come through. A vendor-paid agent's payout is paid to the vendor, with TDS on the vendor's PAN and section.",
+      "table": "offroll_vendors",
+      "columns": [
+        "name",
+        "employer_company_id",
+        "contact_person",
+        "mobile",
+        "pan",
+        "tds_section",
+        "agreement_to",
+        "status"
+      ],
+      "search": [
+        "name",
+        "contact_person",
+        "mobile",
+        "pan"
+      ],
+      "permissions": {
+        "view": "employee.view",
+        "edit": "employee.update"
+      },
+      "fields": {
+        "name": {
+          "label": "Vendor / agency name",
+          "required": true
+        },
+        "employer_company_id": {
+          "label": "Company",
+          "empty": "ALL"
+        },
+        "contact_person": {
+          "label": "Contact person"
+        },
+        "mobile": {
+          "label": "Mobile",
+          "pattern": "^[6-9]\\d{9}$",
+          "pattern_hint": "a 10-digit Indian mobile number"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "pan": {
+          "label": "PAN",
+          "pattern": "^[A-Z]{5}\\d{4}[A-Z]$",
+          "pattern_hint": "a PAN like ABCDE1234F"
+        },
+        "gstin": {
+          "label": "GSTIN",
+          "pattern": "^\\d{2}[A-Z]{5}\\d{4}[A-Z][A-Z0-9]Z[A-Z0-9]$",
+          "pattern_hint": "a 15-character GSTIN"
+        },
+        "entity_type": {
+          "label": "TDS payee type",
+          "options": {
+            "individual": "Individual",
+            "huf": "HUF",
+            "other": "Firm / company / other"
+          },
+          "required": true
+        },
+        "tds_section": {
+          "label": "TDS section",
+          "options": {
+            "commission": "Commission / brokerage (393(1) Sl. 1(ii))",
+            "contract": "Contract work (393(1) Sl. 6(i))",
+            "none": "No TDS"
+          },
+          "help": "Blank = the default in Organization Configuration → Off-roll Agent Payouts"
+        },
+        "bank_name": {
+          "label": "Bank name"
+        },
+        "bank_account": {
+          "label": "Bank account number",
+          "pattern": "^\\d{9,18}$",
+          "pattern_hint": "9 to 18 digits"
+        },
+        "ifsc": {
+          "label": "IFSC",
+          "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+          "pattern_hint": "an IFSC like HDFC0001234"
+        },
+        "agreement_from": {
+          "label": "Agreement from",
+          "type": "date"
+        },
+        "agreement_to": {
+          "label": "Agreement to",
+          "type": "date"
+        },
+        "status": {
+          "label": "Status",
+          "options": [
+            "Active",
+            "Suspended",
+            "Terminated"
+          ],
+          "required": true
+        }
+      }
+    }
+  ]
+}

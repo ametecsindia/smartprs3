@@ -1,0 +1,7 @@
+{"items": {
+  "roster": "A Working Shift assigned to one person or a whole scope for a date range; the month grid is employee × day, and the newest row covering a day wins.",
+  "zkteco-devices": "The ZKTeco rows of the device register, the push URL each must point at, the last punch heard per serial, and the device-side steps from config/zkteco.json.",
+  "assets": "The asset register: unique code, category, make/model, serial, cost to the paisa, holder, condition, status.",
+  "asset-issue": "Issue, return, repair or retire an asset along config/assets.json's transitions, stamped with who and when; filtered to a person it is the clearance list.",
+  "calc-logic": "How a payslip is computed, step by step, every number read from the live configuration and naming the file or row it came from."
+}}

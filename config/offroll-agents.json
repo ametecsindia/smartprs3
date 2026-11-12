@@ -1,0 +1,227 @@
+{
+  "note": "Field Force → Off-roll Agents (rebuilt 23 Oct 2026). Vendor / contract agents outside payroll: the register is the offroll-agents module (config/modules.d/field-reports.json); this file declares the KYC document slots, the manual ledger kinds (adjustment / deduction), the pay-structure components, the daily activity vocabulary, the payout run, TDS (Government rules, with source) and the Organization Configuration settings with their shipped defaults. Engine: surface/OffrollPay.php. Money is exact paise.",
+  "documents": {
+    "doc_photo": "Photo",
+    "doc_id_proof": "ID proof (Aadhaar / Voter ID / DL)",
+    "doc_pan": "PAN card",
+    "doc_dra": "DRA certificate",
+    "doc_pcc": "Police clearance certificate",
+    "doc_agreement": "Vendor / agent agreement"
+  },
+  "payout_types": {
+    "per_visit": "Per visit",
+    "fixed": "Fixed",
+    "percent": "Percent of amount collected"
+  },
+  "kinds": {
+    "visit": {
+      "label": "Field visits",
+      "sign": "+",
+      "basis": "qty_x_rate",
+      "note": "visits × the per-visit rate"
+    },
+    "collection": {
+      "label": "Collection (amount)",
+      "sign": "+",
+      "basis": "percent_of_base",
+      "note": "rate % of the amount collected"
+    },
+    "fixed": {
+      "label": "Fixed payout",
+      "sign": "+",
+      "basis": "rate",
+      "note": "the agent's fixed rate"
+    },
+    "adjustment": {
+      "label": "Adjustment / bonus",
+      "sign": "+",
+      "basis": "amount",
+      "note": "the amount typed"
+    },
+    "deduction": {
+      "label": "Deduction",
+      "sign": "-",
+      "basis": "amount",
+      "note": "the amount typed, taken off before TDS (penalty, short collection)"
+    },
+    "recovery": {
+      "label": "Recovery (advance / loss) — after TDS",
+      "sign": "-",
+      "basis": "amount",
+      "note": "the amount typed, taken off the net after TDS",
+      "after_tds": true
+    }
+  },
+  "statuses": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "counted_status": "approved",
+  "kinds_manual": [
+    "adjustment",
+    "deduction",
+    "recovery"
+  ],
+  "customisation_key": "offroll-payouts",
+  "code_prefix": "OFR-",
+  "day_statuses": {
+    "present": {
+      "label": "Present",
+      "short": "P",
+      "days": "1"
+    },
+    "half_day": {
+      "label": "Half day",
+      "short": "H",
+      "days": "0.5"
+    },
+    "absent": {
+      "label": "Absent",
+      "short": "A",
+      "days": "0"
+    },
+    "leave": {
+      "label": "Leave",
+      "short": "L",
+      "days": "0"
+    },
+    "week_off": {
+      "label": "Week off",
+      "short": "WO",
+      "days": "0"
+    }
+  },
+  "approvals": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "sources": {
+    "manual": "Entered",
+    "upload": "Bulk upload",
+    "app": "Mobile app"
+  },
+  "visit_outcomes": {
+    "visited": "Visited — no payment",
+    "ptp": "Promise to pay",
+    "paid": "Paid / part paid",
+    "not_found": "Customer not found",
+    "refused": "Refused to pay",
+    "shifted": "Address shifted"
+  },
+  "plan_components": {
+    "fixed_monthly": {
+      "label": "Fixed per month (₹)",
+      "basis": "fixed"
+    },
+    "per_day_rate": {
+      "label": "Per day present (₹)",
+      "basis": "days"
+    },
+    "per_visit_rate": {
+      "label": "Per field visit (₹)",
+      "basis": "visits"
+    },
+    "per_ptp_rate": {
+      "label": "Per promise-to-pay (₹)",
+      "basis": "ptp"
+    },
+    "per_paid_account_rate": {
+      "label": "Per account paid (₹)",
+      "basis": "paid_accounts"
+    },
+    "collection_percent": {
+      "label": "% of amount collected",
+      "basis": "collection"
+    }
+  },
+  "payout_statuses": {
+    "draft": "Draft",
+    "approved": "Approved"
+  },
+  "payment_statuses": {
+    "pending": "Pending payment",
+    "paid": "Paid",
+    "on_hold": "On hold"
+  },
+  "payment_modes": {
+    "neft": "NEFT",
+    "imps": "IMPS",
+    "rtgs": "RTGS",
+    "upi": "UPI",
+    "cheque": "Cheque",
+    "cash": "Cash"
+  },
+  "tds": {
+    "source": "Income-tax Act, 2025 (in force from 01-04-2026): section 393(1) Table Sl. No. 1(ii) commission or brokerage — 2%, Rs. 20,000; Sl. No. 6(i) contract work — 1% individual / HUF, 2% others, Rs. 30,000 a sum or Rs. 1,00,000 in the year; section 397(2): no PAN — 20% (or the higher rate). https://www.incometaxindia.gov.in/w/section-393-6",
+    "sections": {
+      "commission": {
+        "label": "Commission / brokerage — s.393(1) Sl. 1(ii) (old 194H)",
+        "rates": {
+          "individual": "2",
+          "huf": "2",
+          "other": "2"
+        },
+        "single_threshold": null,
+        "year_threshold": "20000"
+      },
+      "contract": {
+        "label": "Contract work — s.393(1) Sl. 6(i) (old 194C)",
+        "rates": {
+          "individual": "1",
+          "huf": "1",
+          "other": "2"
+        },
+        "single_threshold": "30000",
+        "year_threshold": "100000"
+      },
+      "none": {
+        "label": "No TDS",
+        "rates": {
+          "individual": "0",
+          "huf": "0",
+          "other": "0"
+        },
+        "single_threshold": null,
+        "year_threshold": null
+      }
+    },
+    "no_pan_rate": "20",
+    "entity_types": {
+      "individual": "Individual",
+      "huf": "HUF",
+      "other": "Firm / company / other"
+    },
+    "round_to_rupee": true
+  },
+  "settings_options": {
+    "fixed_basis": {
+      "full": "Full fixed amount, whatever the attendance",
+      "prorata_working": "Pro-rated: fixed × days present ÷ working days of the month (company W.OFF / holiday schedule)",
+      "prorata_calendar": "Pro-rated: fixed × days present ÷ calendar days of the month",
+      "prorata_fixed": "Pro-rated: fixed × days present ÷ a fixed number of days (below)"
+    },
+    "count_basis": {
+      "approved": "Only approved activity counts",
+      "all": "Approved and pending activity counts (rejected never)"
+    },
+    "expired_certificate": {
+      "allow": "Pay normally",
+      "flag": "Pay, and flag the line",
+      "hold": "Put the line on hold until the certificate is renewed"
+    },
+    "tds_enabled": {
+      "yes": "Deduct TDS",
+      "no": "Do not deduct TDS"
+    }
+  },
+  "settings_defaults": {
+    "fixed_basis": "prorata_working",
+    "fixed_days": "26",
+    "count_basis": "approved",
+    "expired_certificate": "hold",
+    "tds_enabled": "yes",
+    "tds_section": "commission"
+  }
+}

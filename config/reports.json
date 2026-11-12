@@ -1,0 +1,220 @@
+{
+  "note": "A REPORT IS A ROW HERE, NOT A CONTROLLER. table — where the rows come from. group_by — the column to break them down by. measure — count, sum or average. column — what to sum or average, when the measure is not a count. lookup {table, value, show[]} — turns grouping keys into names, so a report grouped by department_id reads as Finance rather than 3. where {column: [values]} — narrows the rows before grouping. Every report states how many rows it counted, and counts rows it could NOT group separately rather than dropping them. date_column — when set, the report takes the period picker (month / year / financial year / YTD / MTD / custom dates) on that column. Every report takes the Organization Setup filters (through the employees the rows belong to) and exports to Excel or CSV.",
+  "reports": [
+    {
+      "key": "headcount-by-department",
+      "group": "People",
+      "label": "Headcount by department",
+      "question": "Where are our people?",
+      "table": "employees",
+      "group_by": "department_id",
+      "measure": "count",
+      "lookup": {
+        "table": "departments",
+        "value": "id",
+        "show": [
+          "name"
+        ]
+      },
+      "where": {
+        "status": [
+          "active",
+          "probation",
+          "notice"
+        ]
+      }
+    },
+    {
+      "key": "headcount-by-status",
+      "group": "People",
+      "label": "Headcount by status",
+      "question": "How many are active, on probation, on notice or gone?",
+      "table": "employees",
+      "group_by": "status",
+      "measure": "count"
+    },
+    {
+      "key": "headcount-by-branch",
+      "group": "People",
+      "label": "Headcount by branch",
+      "question": "Which offices are people attached to?",
+      "table": "employees",
+      "group_by": "branch_id",
+      "measure": "count",
+      "lookup": {
+        "table": "branches",
+        "value": "id",
+        "show": [
+          "name",
+          "city"
+        ]
+      }
+    },
+    {
+      "key": "headcount-by-type",
+      "group": "People",
+      "label": "Headcount by employee type",
+      "question": "How much of the workforce is on-roll?",
+      "table": "employees",
+      "group_by": "type",
+      "measure": "count"
+    },
+    {
+      "key": "ctc-by-department",
+      "group": "Cost",
+      "label": "Annual CTC by department",
+      "question": "What does each department cost?",
+      "table": "employees",
+      "group_by": "department_id",
+      "measure": "sum",
+      "column": "ctc",
+      "money": true,
+      "lookup": {
+        "table": "departments",
+        "value": "id",
+        "show": [
+          "name"
+        ]
+      },
+      "where": {
+        "status": [
+          "active",
+          "probation",
+          "notice"
+        ]
+      }
+    },
+    {
+      "key": "average-ctc-by-designation",
+      "group": "Cost",
+      "label": "Average CTC by designation",
+      "question": "Are people on the same grade paid the same?",
+      "table": "employees",
+      "group_by": "designation_id",
+      "measure": "average",
+      "column": "ctc",
+      "money": true,
+      "lookup": {
+        "table": "designations",
+        "value": "id",
+        "show": [
+          "name"
+        ]
+      }
+    },
+    {
+      "key": "loans-outstanding",
+      "group": "Cost",
+      "label": "Loans outstanding by status",
+      "question": "How much is still to be recovered?",
+      "table": "loans",
+      "group_by": "status",
+      "measure": "sum",
+      "column": "outstanding",
+      "money": true
+    },
+    {
+      "key": "advances-outstanding",
+      "group": "Cost",
+      "label": "Advances by status",
+      "question": "What has been advanced and not yet recovered?",
+      "table": "advances",
+      "group_by": "status",
+      "measure": "sum",
+      "column": "amount",
+      "money": true
+    },
+    {
+      "key": "leave-by-status",
+      "group": "Leave & attendance",
+      "label": "Leave applications by status",
+      "question": "How many decisions are still pending?",
+      "table": "leaves",
+      "group_by": "status",
+      "measure": "count",
+      "date_column": "from_date"
+    },
+    {
+      "key": "leave-days-by-type",
+      "group": "Leave & attendance",
+      "label": "Leave days taken by type",
+      "question": "Which leave types are actually used?",
+      "table": "leaves",
+      "group_by": "type_id",
+      "measure": "sum",
+      "column": "days",
+      "lookup": {
+        "table": "leave_types",
+        "value": "id",
+        "show": [
+          "name"
+        ]
+      },
+      "where": {
+        "status": [
+          "approved"
+        ]
+      },
+      "date_column": "from_date"
+    },
+    {
+      "key": "punches-by-source",
+      "group": "Leave & attendance",
+      "label": "Punches by source",
+      "question": "Where do the punches come from — device, mobile, manual entry?",
+      "table": "attendance_logs",
+      "group_by": "source",
+      "measure": "count",
+      "date_column": "log_date"
+    },
+    {
+      "key": "regularisations-by-status",
+      "group": "Leave & attendance",
+      "label": "Regularisations by status",
+      "question": "How many corrections are waiting on somebody?",
+      "table": "attendance_corrections",
+      "group_by": "status",
+      "measure": "count",
+      "date_column": "log_date"
+    },
+    {
+      "key": "pf-esi-applicability",
+      "group": "Statutory",
+      "label": "PF applicability",
+      "question": "How many employees are inside PF?",
+      "table": "employees",
+      "group_by": "pf_applicable",
+      "value_labels": {"1": "Yes", "0": "No", "(not set)": "Not set"},
+      "measure": "count"
+    },
+    {
+      "key": "pt-by-state",
+      "group": "Statutory",
+      "label": "Employees by professional tax state",
+      "question": "Which states do we owe PT in?",
+      "table": "employees",
+      "group_by": "pt_state",
+      "measure": "count"
+    },
+    {
+      "key": "payroll-runs-by-status",
+      "group": "Payroll",
+      "label": "Payroll runs by status",
+      "question": "Is any month still unapproved?",
+      "table": "payroll_runs",
+      "group_by": "status",
+      "measure": "count",
+      "date_column": "pay_date"
+    },
+    {
+      "key": "complaints-by-status",
+      "group": "Off-roll",
+      "label": "Complaints by status",
+      "question": "What is still open against agents?",
+      "table": "complaints",
+      "group_by": "status",
+      "measure": "count",
+      "date_column": "date"
+    }
+  ]
+}

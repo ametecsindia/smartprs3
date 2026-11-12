@@ -1,0 +1,32 @@
+{
+  "note": "Notifications screen \u2192 the screen an item refers to (SmartPRS 2's 'jump to the related screen'). Matched on the event kind's prefix, longest first; a kind with no match has no link. A message stored with its own `url` wins over this map.",
+  "routes": {
+    "leave.": "leave",
+    "attendance.absent": "attendance-corrections",
+    "attendance.": "daily-attendance",
+    "approval.": "inbox",
+    "transfer.": "transfers",
+    "probation.": "probation",
+    "bgv.": "bgv",
+    "onboarding.": "onboarding-status",
+    "recruitment.": "recruitment",
+    "recruitment.onboarding": "self-onboarding",
+    "recruitment.bgv": "bgv",
+    "request.raised.leave": "leave-approvals",
+    "request.raised.resignation": "resignations",
+    "request.raised.regularization": "attendance-corrections",
+    "request.raised.workflow": "inbox",
+    "request.raised.transfer": "transfers",
+    "request.raised.module.advances": "m&k=advances",
+    "request.raised.module.loans": "m&k=loans",
+    "request.raised.module.expenses": "m&k=expenses",
+    "request.raised.module.exits": "m&k=exits",
+    "request.raised.module.helpdesk": "m&k=helpdesk",
+    "request.raised.module.leaves": "m&k=leaves",
+    "request.raised.module.attendance-corrections": "m&k=attendance-corrections",
+    "request.raised.module.commissions": "m&k=commissions",
+    "request.raised.module.bonus": "m&k=bonus",
+    "request.raised.mobile-device": "mobile-devices"
+  },
+  "list_limit": 200
+}

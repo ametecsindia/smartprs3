@@ -1,0 +1,92 @@
+{
+ "section": "admin",
+ "items": [
+  {
+   "key": "admin-users",
+   "route": "users",
+   "label": "User Management",
+   "icon": "fa-user-gear",
+   "permission": "access.user.list"
+  },
+  {
+   "key": "roles",
+   "route": "roles",
+   "label": "Roles & Permissions",
+   "icon": "fa-user-lock",
+   "permission": "tenant.settings.view"
+  },
+  {
+   "key": "smtp-settings",
+   "module": "smtp-settings",
+   "label": "Email / SMTP Settings",
+   "icon": "fa-envelope",
+   "permission": "tenant.settings.view",
+   "hidden": true
+  },
+  {
+   "key": "admin-fin-year",
+   "route": "setup-financial-year",
+   "label": "Financial Year",
+   "icon": "fa-calendar-days",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "my-subscription",
+   "route": "my-subscription",
+   "label": "My Subscription",
+   "icon": "fa-receipt",
+   "permission": "tenant.settings.view"
+  },
+  {
+   "key": "general-settings",
+   "route": "general-settings",
+   "label": "General Settings",
+   "icon": "fa-gear",
+   "permission": "tenant.settings.view"
+  },
+  {
+   "key": "sys-updates",
+   "route": "sys-updates",
+   "label": "Updates & Licence",
+   "icon": "fa-cloud-arrow-down",
+   "permission": "tenant.settings.view"
+  },
+  {
+   "key": "probation-settings",
+   "route": "probation-settings",
+   "label": "Probation Settings",
+   "icon": "fa-hourglass-start",
+   "permission": "tenant.settings.view",
+   "hidden": true
+  },
+  {
+   "key": "mobile-devices",
+   "route": "mobile-devices",
+   "label": "Mobile Devices",
+   "icon": "fa-mobile-screen-button",
+   "permission": "tenant.settings.view"
+  },
+  {
+   "key": "admin-audit-log",
+   "route": "audit-log",
+   "label": "Audit Log",
+   "icon": "fa-clock-rotate-left",
+   "permission": "audit.tenant.read"
+  },
+  {
+   "key": "admin-trail",
+   "route": "trail",
+   "label": "Activity Logs",
+   "icon": "fa-clock-rotate-left",
+   "permission": "audit.tenant.read",
+   "hidden": true
+  },
+  {
+   "key": "admin-health",
+   "route": "health",
+   "label": "System Health",
+   "icon": "fa-heart-pulse",
+   "permission": "tenant.settings.view"
+  }
+ ]
+}

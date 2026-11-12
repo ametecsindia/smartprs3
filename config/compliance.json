@@ -1,0 +1,58 @@
+{
+  "note": "WHAT EXPIRES, AND WHAT HAPPENS WHEN IT HAS. Each check names the table, the column holding the date the credential runs out, and how many days of warning are useful. `applies_when` narrows it to the rows the obligation is actually on — an exited employee's lapsed certificate is not a finding. `blocks` says, in words, what must not happen while it is lapsed, because a compliance screen that reports a date without saying what the date stops is a list nobody acts on. A row whose date is NOT SET is reported as not determined and never as compliant: 'no expiry recorded' and 'in date' are opposite facts and look identical in a count.",
+  "checks": [
+    {
+      "key": "dra",
+      "label": "DRA certification",
+      "group": "Recovery agents",
+      "table": "employees",
+      "expiry": "dra_expiry",
+      "status": "dra_status",
+      "lead_days": 60,
+      "show": ["emp_code", "name", "branch", "designation"],
+      "applies_when": { "status": ["active", "probation", "notice"] },
+      "blocks": "allocation of recovery work — the DRA certificate is the RBI-facing credential, and an agent working on a lapsed one is a finding against the bank as well as against us",
+      "why": "Sixty days of warning because a DRA refresher has to be booked, sat and certified, and none of that happens in a week."
+    },
+    {
+      "key": "pcc",
+      "label": "Police clearance certificate",
+      "group": "Recovery agents",
+      "table": "employees",
+      "expiry": "pcc_expiry",
+      "status": "pcc_status",
+      "lead_days": 45,
+      "show": ["emp_code", "name", "branch", "designation"],
+      "applies_when": { "status": ["active", "probation", "notice"] },
+      "blocks": "field visits and client-site deployment — most bank contracts require a current PCC on file for every agent they let near a customer",
+      "why": "Forty-five days because a PCC is issued by a police station on its own timetable, not ours."
+    },
+    {
+      "key": "agent-authorisation",
+      "label": "Bank authorisation letter",
+      "group": "Recovery agents",
+      "table": "agent_authorizations",
+      "expiry": "valid_to",
+      "status": "status",
+      "subject_id": "employee_id",
+      "lead_days": 30,
+      "show": ["bank", "portfolio", "auth_no"],
+      "blocks": "collection on that portfolio — an agent calling a customer on an expired authorisation is doing it without the bank's mandate",
+      "why": "Thirty days: renewing is a request to the bank, and banks answer in weeks."
+    },
+    {
+      "key": "documents",
+      "label": "Employee documents",
+      "group": "People",
+      "table": "documents",
+      "expiry": "expiry",
+      "status": "status",
+      "subject_id": "employee_id",
+      "lead_days": 30,
+      "show": ["kind", "status"],
+      "applies_when": { "status": ["submitted", "verified"] },
+      "blocks": "nothing on its own, but an expired identity or address document is the one somebody discovers during an audit rather than before it",
+      "why": "Thirty days is enough to ask for a replacement copy."
+    }
+  ]
+}

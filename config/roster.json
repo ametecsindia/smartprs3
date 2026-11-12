@@ -1,0 +1,9 @@
+{
+  "note": "Roster (SmartPRS 2 → Employees → Roster). A roster row puts an employee on a Working Shift (Organization Setup → Working Shifts) for a date range; where no row covers a day the scoped shift from Working Shifts applies. The MOST RECENT row covering a date wins, so a one-day override is a one-day row saved later. Rows are never edited: cancelling one sets `cancelled_status`, which the register treats as retired.",
+  "table": "rosters",
+  "active_status": "active",
+  "cancelled_status": "inactive",
+  "max_range_days": 366,
+  "grid_empty_mark": "—",
+  "default_mark_note": "A cell with no roster row shows the employee's scoped shift from Working Shifts in a lighter tone; a roster row shows in bold."
+}

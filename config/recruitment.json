@@ -1,0 +1,93 @@
+{
+  "note": "THE HIRING PIPELINE IS A DECLARATION. SmartPRS 2's RecruitmentController (rev 60) carries the stages, approval states, interview modes and recommendations as PHP constants, so a customer who screens in two rounds or wants a 'shortlisted' stage needs a release. Here they are data. The ORDER of `stages` is the order a candidate moves in; `terminal` stages end the pipeline; `hire_from` names the stage a hire may be made from.",
+  "requisition": {
+    "code_prefix": "REQ",
+    "approval": ["pending", "pending_hr", "approved", "rejected"],
+    "approval_steps_note": "Owner, 12 Oct 2026: a requisition is approved by the respective department's Director or the Branch Admin, then by HR Admin. Each step: the status the requisition sits in while waiting, its label, and the login roles that decide it; \"department\" / \"branch\" means only for the requisition's own department / location, \"\" means any. A final approver (config/approval-authority.json: Company Admin, HR Admin / HR Manager, administrator) approves at any step and that approval is final.",
+    "approval_steps": [
+      {"status": "pending", "label": "Department Director / Branch Admin", "roles": {"Director": "department", "Branch Admin": "branch"}},
+      {"status": "pending_hr", "label": "HR Admin", "roles": {"HR Admin": "", "HR Manager": ""}}
+    ],
+    "priority": ["normal", "urgent", "critical"],
+    "engagement": ["on_roll", "off_roll", "contract", "intern"]
+  },
+  "stages": ["applied", "screening", "interview", "offer", "hired", "rejected", "offer_rejected"],
+  "terminal": ["hired", "rejected", "offer_rejected"],
+  "offer_rejected_note": "Owner, 22 Oct 2026: a candidate who was offered and turned it down is marked Offer Rejected with a reason (from this list) and a note. Only from the offer stage.",
+  "offer_rejected_from": ["offer"],
+  "offer_rejected_reasons": ["Accepted another offer", "Compensation not acceptable", "Counter-offer from current employer", "Location / relocation", "Role or responsibilities", "Personal / family reasons", "Joining date not suitable", "No response from candidate", "Other"],
+  "drive_note": "Owner, 22 Oct 2026: Hiring Drives. Imported invitees become candidates (source below, against the drive's requisition, else the talent pool). On the day, saving a row moves the candidate in the Pipeline: attended → drive_outcome_stage.attended, then the outcome's stage (forward only, one step at a time; rejected needs the reason, which is the row's notes or a default). A stage of \"\" leaves the candidate where they are. drive_invite_email placeholders: {name} {title} {position} {company} {date} {time} {venue} {location_link} {coordinator} {phone} {instructions}.",
+  "drive_source": "walk_in",
+  "drive_outcome_stage": {"attended": "screening", "selected": "offer", "hold": "", "rejected": "rejected", "absent": ""},
+  "drive_invite_email": {
+    "subject": "Invitation: {title} on {date} — {company}",
+    "body": "Dear {name},\n\nYou are invited to our walk-in hiring drive for {position} at {company}.\n\nDate: {date}\nTime: {time}\nVenue: {venue}\n{location_link}\nContact: {coordinator} {phone}\n\n{instructions}\n\nPlease carry an updated resume, a photo ID and this email. At the venue, give the email address this message was sent to.\n\nRegards,\nHR — {company}"
+  },
+  "hire_from": ["offer"],
+  "reject_needs_reason": true,
+ "stage_on_interview_note": "Owner, 21 Oct 2026: scheduling an interview moves a candidate who is still before this stage up to it, so the stage shown everywhere is the current status.",
+ "stage_on_interview": "interview",
+ "onboarding_notify_roles_note": "Owner, 21 Oct 2026 flow: the login roles told (bell) when a joiner submits self-onboarding and when a background verification opens.",
+ "onboarding_notify_roles": ["HR Admin", "HR Manager", "Company Admin", "administrator"],
+  "sources": ["naukri", "linkedin", "indeed", "foundit", "shine", "apna", "workindia", "company_website", "referral", "walk_in", "agency", "campus", "social", "portal", "other"],
+  "portals_note": "Owner, 12 Oct 2026: the job portals HR posts on and downloads applicants from. `key` is also the candidate's source, so the source report shows what each portal brought. `how_to_post` and `how_to_download` are the steps shown on screen; portal menus change, so they are data here, not code. `post_url` opens the portal's employer sign-in.",
+  "portals": [
+    {"key": "naukri", "label": "Naukri.com", "post_url": "https://recruit.naukri.com",
+     "how_to_post": "Sign in to Naukri Recruiter → Jobs → Post a Job. Paste each field below into the box with the same name, pick Industry and Department from Naukri's own lists, then Publish. Copy the Job ID Naukri shows and record it here under Mark as posted.",
+     "how_to_download": "Jobs → open the job → Responses. Tick all (or the ones you shortlisted) → Download → Excel. Import that file here as it is — no retyping."},
+    {"key": "linkedin", "label": "LinkedIn", "post_url": "https://www.linkedin.com/talent/post-a-job",
+     "how_to_post": "Sign in → Post a free job (or Jobs → Post a job). Job title, company, workplace type, location, employment type → paste the description → add up to 10 skills → Post.",
+     "how_to_download": "Jobs → Manage job posts → Applicants. A basic LinkedIn job post has no spreadsheet export: download each resume, or type the shortlisted few into the sample file. LinkedIn Recruiter can export a CSV — import it here."},
+    {"key": "indeed", "label": "Indeed", "post_url": "https://employers.indeed.com",
+     "how_to_post": "Sign in to Indeed for Employers → Post a job → fill the fields below in order → choose free or sponsored → Confirm.",
+     "how_to_download": "Candidates → filter the job → select all → Export candidates (CSV). Import that CSV here."},
+    {"key": "foundit", "label": "foundit (Monster)", "post_url": "https://recruiter.foundit.in",
+     "how_to_post": "Sign in to foundit Recruiter → Post Job → paste the fields → Publish.",
+     "how_to_download": "Responses → select → Download (Excel). Import it here."},
+    {"key": "shine", "label": "Shine.com", "post_url": "https://recruiter.shine.com",
+     "how_to_post": "Sign in to Shine Recruiter → Post a Job → paste the fields → Post.",
+     "how_to_download": "Applications → select → Download. Import it here."},
+    {"key": "apna", "label": "apna", "post_url": "https://employer.apna.co",
+     "how_to_post": "Good for tele-calling and field roles. Sign in → Post a job → title, salary, location, requirements → Post.",
+     "how_to_download": "Candidates → Download / Export Excel (on plans that allow it). Import it here."},
+    {"key": "workindia", "label": "WorkIndia", "post_url": "https://www.workindia.in/employers/",
+     "how_to_post": "Sign in (app or web) → Post job → paste the fields → Post.",
+     "how_to_download": "Candidates → download the list where the plan allows; otherwise type the shortlisted ones into the sample file."},
+    {"key": "company_website", "label": "Company website / careers email", "post_url": "",
+     "how_to_post": "Use Download job post (Word) and put it on your careers page, WhatsApp groups, or send it to consultants.",
+     "how_to_download": "Collect applicants in the sample file (one row each) and import it."}
+  ],
+  "import_columns_note": "The column names each portal uses in its download, matched case-insensitively. Add a name here when a portal changes its spreadsheet; nothing else changes.",
+  "import_columns": {
+    "name": ["name", "candidate name", "full name", "applicant name", "candidate"],
+    "first_name": ["first name", "firstname"],
+    "last_name": ["last name", "lastname", "surname"],
+    "email": ["email", "email id", "email address", "e-mail", "e-mail id", "mail id"],
+    "mobile": ["mobile", "phone", "phone number", "mobile number", "mobile no", "mobile no.", "contact number", "contact no", "phone no"],
+    "location": ["location", "current location", "city", "candidate location"],
+    "experience_years": ["experience (years)", "experience", "total experience", "work experience", "years of experience", "exp"],
+    "current_company": ["current company", "current company name", "current employer", "company name", "most recent company", "company"],
+    "current_designation": ["current designation", "designation", "current title", "most recent title", "current role"],
+    "current_ctc": ["current ctc", "annual salary", "current salary", "ctc", "salary"],
+    "expected_ctc": ["expected ctc", "expected salary"],
+    "skills": ["skills", "key skills"],
+    "resume_url": ["resume url", "resume", "resume link", "cv", "cv link"],
+    "notice_period": ["notice period", "notice"],
+    "education": ["education", "highest education", "qualification", "ug degree", "pg degree"],
+    "preferred_location": ["preferred location", "preferred locations"],
+    "source": ["source"],
+    "position": ["position", "applied for", "job applied", "job title"],
+    "requisition": ["requisition", "job", "req code"]
+  },
+  "job_post": {
+    "status": ["draft", "live", "closed"],
+    "channel_status": ["live", "closed"]
+  },
+  "interview": {
+    "modes": ["phone", "video", "in_person", "online_test"],
+    "status": ["scheduled", "completed", "cancelled", "no_show", "on_hold"],
+    "recommendation": ["strong_hire", "hire", "hold", "no_hire", "strong_no_hire"],
+    "score_min": 1,
+    "score_max": 10
+  }
+}

@@ -1,0 +1,7 @@
+# A config that covers Spx and nothing else. The Orphan class below is in no
+# layer, which is precisely what ignore_uncovered_internal_classes: false calls
+# a violation.
+deptrac:
+  layers:
+    - name: Kernel
+      collectors: [{ type: classLike, value: '^SmartPRS\\Platform\\Spx\\.*' }]

@@ -1,0 +1,13 @@
+{
+ "note": "Time & Attendance → Attendance Correction: what an employee may say went wrong when raising a correction (SmartPRS 2's 'what went wrong' list). The type is prefixed to the reason on each regularisation request, so the approver reads it in the queue. Add a line to add a type.",
+ "types": [
+  "Forgot to punch in",
+  "Forgot to punch out",
+  "Device did not read my finger / face",
+  "On official duty outside",
+  "Work from home",
+  "Worked on W.OFF / Holiday / approved leave day",
+  "Late due to transport / weather",
+  "Other"
+ ]
+}

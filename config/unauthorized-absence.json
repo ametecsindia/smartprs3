@@ -1,0 +1,27 @@
+{
+  "note": "UNAUTHORIZED ABSENCE ESCALATION. A DIFFERENT QUESTION FROM config/absence.json's morning-after sweep: that one tells somebody about ONE day; this one watches for an unexplained absence turning into a RUN and escalates as it crosses each day the tenant names below. Every day-count and every designation list is the tenant's own choice, versioned in module_customisations under the key below — nothing here is a number picked in code. Ships OFF, for the same reason config/absence.json does: turning this on for a tenant mid-way through a punch-import backlog would escalate people who were at their desk the whole time.",
+  "customisation_key": "unauthorized-absence",
+  "defaults": {
+    "enabled": false,
+    "abscond_days": 3,
+    "first_warning_day": 3,
+    "second_warning_day": 7,
+    "final_fnf_day": 15,
+    "run_at": "09:00",
+    "always_cc_designations": ["Company Admin", "Branch Admin", "HR Admin", "HR Manager"]
+  },
+  "stage_labels": {
+    "abscond": "Abscond considered",
+    "first_warning": "First Warning",
+    "second_warning": "Second Warning",
+    "final_fnf": "Final FnF"
+  },
+  "hierarchy_note": "Who the escalation reaches UP THE EMPLOYEE'S OWN REPORTING CHAIN — their manager, their manager's manager, and so on, unconditionally. Every chain member is told; there is no designation filter to configure here.",
+  "always_cc_designations_note": "Who is copied on EVERY escalation for every employee, regardless of the reporting chain — preferring a holder in the absent employee's own company, reaching tenant-wide only when this company has none. Shipped with the four designations SmartPRS 2 customers named; a tenant that has not yet created a designation by one of these exact names simply has nobody matched under it, not an error.",
+  "what_a_run_means": "A day is ABSENT by config/attendance-rules.json's own published rules — the same verdict the muster and the payslip use. A weekly off or a holiday inside a run neither counts toward it nor breaks it; a real punch or an approved leave ends it. This file does not decide any of that, only who is told once a run reaches a named day count.",
+  "events": {
+    "employee": "attendance.unauthorized_absence.employee",
+    "hierarchy": "attendance.unauthorized_absence.hierarchy",
+    "cc": "attendance.unauthorized_absence.cc"
+  }
+}

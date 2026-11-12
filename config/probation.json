@@ -1,0 +1,50 @@
+{
+  "note": "PROBATION IS A PERIOD WITH AN END DATE, and confirmation is an EVENT on the employee timeline. SmartPRS 2's ProbationService (F7/F6) derives the end from doj + a default number of months unless the employee carries an override, confirms by clearing a flag, extends by moving the date, and nudges HR and the manager at milestones. The numbers below are its defaults, declared; a tenant changes them from the screen and the change is versioned.",
+  "customisation_key": "probation",
+  "settings_module": "companies",
+  "settings_module_note": "WHERE THE SETTINGS ARE EDITED (owner, 23 Sep): on Organization Configuration -> Companies, one box per company, because probation is a company's rule and a group running three companies runs three policies. Named here rather than compared as a literal in public/app.php, so the module that carries the section is a declaration and not a string buried in a template.",
+  "defaults": {
+    "default_months": 6,
+    "default_days": 0,
+    "reminder_days": [
+      30,
+      15,
+      7,
+      0
+    ],
+    "notify_hr": true,
+    "notify_manager": true,
+    "congratulate_employee": false
+  },
+  "statutory_during_probation": {
+    "PF": false,
+    "ESI": false,
+    "PT": false,
+    "LWF": false,
+    "TDS": false
+  },
+  "statutory_during_probation_note": "WHICH STATUTORY HEADS APPLY WHILE AN EMPLOYEE IS ON PROBATION (owner, 8 Oct): by default none — PF, ESIC, PT, LWF and TDS are not considered during probation. A tenant changes the default on People -> Probation, and each company can choose its own on Organization Configuration -> Companies. true = applicable during probation. Heads are config/statutory-applicability.json's.",
+  "on_probation_stage": "probation",
+  "probation_types": [
+    "Probationary",
+    "Probation"
+  ],
+  "probation_types_note": "THE DIRECTORY'S \"Employee Type\" VALUES THAT MEAN PROBATION (owner, 28 Sep). The board used to read only employment_stage, so somebody added on the Directory as Probationary never appeared on it. Either field now puts an employee on the board.",
+  "confirmed_stage": "Permanent",
+  "confirmed_type": "Permanent",
+  "confirmed_note": "WHAT CONFIRMATION WRITES (owner, 28 Sep: \"the Employment stage or status ... should be updated in the Directory for the relevant employee as Permanent\"): both employment_stage and employment_type, so neither column keeps saying probation.",
+  "notify_roles": [
+    "administrator",
+    "Company Admin",
+    "HR Admin"
+  ],
+  "notify_roles_note": "WHO IS TOLD WHEN A PROBATION IS ENDING (owner, 28 Sep: \"the Admin and HR Admins get notifications in their logins according to the interval set\"). Roles, not people: every login holding one sees the reminder on Notifications and the top-bar bell. The shipped default only — the tenant picks its own on the Probation screen. A company's \"tell HR\" switch still decides whether its employees' reminders go to these roles at all.",
+  "events_note": "probation_events is the ported table; action is confirm or extend. Confirmation ALSO lands on employment_events through Surface\\Timeline, so payroll's statutory applicability and the F&F both read one fact.",
+  "actions": {
+    "confirm": "confirm",
+    "extend": "extend"
+  },
+  "reminders_note": "Reminders are queued through Surface\\Notifications (events probation.reminder / probation.overdue / probation.confirmed in config/notifications.d/people.json) once per employee per milestone — the dedupe key is code:milestone — so a sweep that runs twice sends once. `hr_recipient` is the recipient code HR messages are queued under.",
+  "hr_recipient": "hr",
+  "hr_recipient_note": "RETIRED 28 Sep: no login holds the code \"hr\", so every reminder queued to it reached nobody. Reminders now go to notify_roles."
+}

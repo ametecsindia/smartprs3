@@ -1,0 +1,53 @@
+[
+  {
+    "effective_from": "2026-01-01",
+    "contracted_cost_basis": "yearly",
+    "basis_note": "WHAT THE NUMBER ON THE CONTRACT MEANS. `employees.ctc` is one figure and it is read by payroll every month, so whether it is a year's cost or a month's is the single most consequential fact about it \u2014 and it was nowhere. The column held annual figures (\u20b97,20,000) and the register used them as the month's gross, so every payslip in the product was twelve times too high, under a per-line derivation that was arithmetically perfect and therefore completely convincing. It is declared here, not assumed in code, because it differs by customer: an agency quoting monthly CTC sets `monthly` and changes no code. It sits on the effective-dated version because a company that switches its contracts over does so FROM A DATE, and payslips issued before that date must keep meaning what they meant.",
+    "note": "The structure this build ships with. It is DATA: nothing below appears in a PHP file, so a new component, a changed percentage or a new statutory flag is an edit here, not a release.",
+    "components": [
+      {
+        "code": "C-BASIC",
+        "kind": "earning",
+        "basis": "percent_of_gross",
+        "rate_percent": 50,
+        "flags": {
+          "prorates": true,
+          "pf_base": true,
+          "is_synth_base": true
+        },
+        "sequence": 10,
+        "note": "is_synth_base is the wage-base flag the synthetic statutory pack asks for. A statutory scheme this build has not met yet is a FLAG SOMEBODY ADDS HERE, not a release \u2014 which is why the pack names a flag and never a list of component codes."
+      },
+      {
+        "code": "C-HRA",
+        "kind": "earning",
+        "basis": "percent_of",
+        "of_component": "C-BASIC",
+        "rate_percent": 40,
+        "flags": {
+          "prorates": true
+        },
+        "sequence": 20
+      },
+      {
+        "code": "C-SPECIAL",
+        "kind": "earning",
+        "basis": "balance",
+        "flags": {
+          "prorates": true
+        },
+        "sequence": 90
+      },
+      {
+        "code": "D-PT",
+        "kind": "deduction",
+        "basis": "flat",
+        "flat_amount": "200.00",
+        "flags": {
+          "prorates": false
+        },
+        "sequence": 100
+      }
+    ]
+  }
+]

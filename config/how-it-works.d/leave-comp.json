@@ -1,0 +1,20 @@
+{
+ "items": {
+  "leave-apply": "Employees apply, managers approve, balances update and payroll picks it up \u2014 the leave types and holidays set up here are what it reads.",
+  "leave-types": "Leave categories with their annual entitlement; paid leave counts as present in payroll.",
+  "holidays": "Non-working days for payroll: paid, and removed from the LOP working days.",
+  "commissions": "Every commission claim with its collection evidence: what the customer paid, what is claimed (gross \u2212 TDS = net), and the status that decides whether payroll pays it.",
+  "incentive-schemes": "How a scheme pays (percent / fixed / slab / open), its target gate, TDS rate, who it applies to and its window \u2014 the Calculator computes from this row.",
+  "commission-calc": "Pick a scheme and a month, type the figures, preview with the working, create the entries; the scheme decides the money, never the form.",
+  "expenses": "Field expenses claimed with amount and note; pending until Claim Approvals decides.",
+  "advance": "Part of salary early; on approval the payslip recovers it per month as its own line, read from the closed runs.",
+  "claims": "Expense claims and advances waiting for a decision \u2014 approve or reject with a reason; who and when land on the row, why in the trail.",
+  "loans": "Requested \u2192 sanctioned \u2192 Manager / Director / HR Admin decisions \u2192 tenure \u2192 EMI derived \u2192 EMI start \u2192 disbursed; payroll recovers one EMI per closed run as line LOAN-<id>. Same flow as Salary Advance.",
+  "loan-schedule": "The planned EMIs month by month against what the closed runs actually recovered; outstanding = opening \u2212 recovered.",
+  "clawbacks": "A commission paid on a case that bounced, recovered on the payslip of its month once approved.",
+  "bonus-enc": "Statutory or festival bonus and leave encashment, approved and paid through payroll.",
+  "increments": "Old CTC to new CTC with the percentage, optional promotion and effective date, routed for approval.",
+  "exits": "Exit and Full-and-Final: clearance, last working day and the settlement.",
+  "bank-pack": "One CSV per approved payroll run \u2014 employee, account, IFSC, net \u2014 reconciled to the run or not produced."
+ }
+}

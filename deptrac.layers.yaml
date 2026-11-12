@@ -1,0 +1,123 @@
+# SmartPRS 3 — Deptrac, axis 1 of 2: THE ARCHITECTURE LAYERS (Part IV §IV.2.1).
+#
+#     vendor/bin/deptrac analyse --config-file=deptrac.layers.yaml
+#
+# Two configs, not one, because the codebase has two independent axes — layer
+# and module — and a class belongs to one of each. Expressed as a single layer
+# set they overlap: `SmartPRS\Platform\Persistence\Repository` is in both
+# `Persistence` and `Platform`, so its perfectly legal use of a Platform class
+# is reported as `Persistence -> Platform`. Splitting the axes makes each config
+# a clean partition, and each violation names one thing that is actually wrong.
+# See deptrac.modules.yaml for axis 2.
+#
+# NOT YET EXERCISED — packagist is unreachable in the authoring environment, so
+# deptrac has never run against this tree. tools/gates/checks/deptrac-coverage.php
+# stands in for the one failure mode that has actually bitten: a namespace
+# added with no layer, which `ignore_uncovered_internal_classes: false` turns
+# into a violation per class. It checks coverage only, and says so.
+#
+# tools/gates/checks/no-framework-in-domain.php and no-clock-in-domain.php
+# enforce the Domain row with the tokeniser and no dependencies. Deptrac
+# supersedes neither; it adds the transitive graph.
+
+deptrac:
+  paths:
+    - ./src
+
+  exclude_files:
+    # Deliberate violations, proved by tools/gates/self-test.php.
+    - '#tools/gates/fixtures#'
+
+  # A class in no layer is a hole in this file, not a pass. Report it.
+  ignore_uncovered_internal_classes: false
+
+  layers:
+    # -- the shared kernel ---------------------------------------------------
+    # Money, Rational, Clock, Scope, EffectiveRange, CalculationTrace. Every
+    # module's Domain uses these directly, so under the §IV.2.1 rule as written
+    # they would have to be Contracts. They are better described as what they
+    # are: a shared kernel of value objects that depends on nothing, is pure,
+    # and is versioned with the platform rather than with any module.
+    #
+    # It is NOT under Domain/ on purpose: SystemClock reads the wall clock — it
+    # is the seam that lets everything else stay deterministic — and would fail
+    # no-clock-in-domain, correctly, if it claimed to be domain code.
+    - name: SharedKernel
+      collectors: [{ type: classLike, value: '^SmartPRS\\Platform\\Support\\.*' }]
+
+    # -- the Phase 2 kernel --------------------------------------------------
+    # The engines and platform services built before any business module exists:
+    # SPX, the rule engine, authorisation, identity, org units, tenancy, config
+    # resolution, the audit hash chain. They are pure and deterministic, and are
+    # Domain in everything but namespace.
+    #
+    # TRIGGER: this layer is temporary. Part XXXII Phase 3 builds the first
+    # business modules; as each of these concerns finds its module it moves to
+    # src/<Module>/Domain/ and leaves here. When this layer is empty, delete it.
+    # Until then it is declared rather than left uncovered, so that a class in
+    # no layer stays a real finding.
+    #
+    # The `must_not` list is the interesting half. Five classes live in a kernel
+    # namespace and hold a \PDO, because they are the WRITE SIDE of a kernel
+    # concept — Publisher writes a config version, AuditLedger writes the
+    # ledger, TenantSweep writes a heartbeat. They belong to Persistence, and
+    # excluding them here is what keeps `Kernel: [Contracts, SharedKernel]`
+    # true. That rule is the one worth protecting: SPX, the rule engine and the
+    # formula engine must not be able to reach a database, and they cannot.
+    - name: Kernel
+      collectors:
+        - type: bool
+          must:
+            - { type: classLike, value: '^SmartPRS\\Platform\\(Spx|Rules|Formula|Workflow|Scheduler|Access|Identity|Organisation|Tenancy|Config|Audit|Entity|Calendar|Attendance|Leave|Payroll|Statutory|Compliance|ModulePack|Reporting|Dashboard|Notification|Operations|Migration|Lifecycle|Api|Webhook)\\.*' }
+          must_not:
+            - { type: classLike, value: '^SmartPRS\\Platform\\Workflow\\Persistence\\.*' }
+            - { type: classLike, value: '^SmartPRS\\Platform\\Config\\(Publisher|ConfigVersionRepository)$' }
+            - { type: classLike, value: '^SmartPRS\\Platform\\Audit\\AuditLedger$' }
+            - { type: classLike, value: '^SmartPRS\\Platform\\Scheduler\\TenantSweep$' }
+            - { type: classLike, value: '^SmartPRS\\Platform\\Workflow\\WorkflowPublisher$' }
+
+    # -- the five layers of the table, row for row ---------------------------
+    - name: Interface
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Interface\\.*' }]
+    - name: Application
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Application\\.*' }]
+    - name: Domain
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Domain\\.*' }]
+    # The mirror of Kernel's must_not: a repository nested one level deeper
+    # (Platform\Workflow\Persistence) is still Persistence, and so is a
+    # kernel-namespaced class that holds a connection.
+    - name: Persistence
+      collectors:
+        - { type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Persistence\\.*' }
+        - { type: classLike, value: '^SmartPRS\\[A-Za-z]+\\[A-Za-z]+\\Persistence\\.*' }
+        - { type: classLike, value: '^SmartPRS\\Platform\\Config\\(Publisher|ConfigVersionRepository)$' }
+        - { type: classLike, value: '^SmartPRS\\Platform\\Audit\\AuditLedger$' }
+        - { type: classLike, value: '^SmartPRS\\Platform\\Scheduler\\TenantSweep$' }
+        - { type: classLike, value: '^SmartPRS\\Platform\\Workflow\\WorkflowPublisher$' }
+    - name: Infrastructure
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Infrastructure\\.*' }]
+
+    # -- the declared public surface of every module (§IV.3.1) ---------------
+    - name: Contracts
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Contracts\\.*' }]
+
+    # -- the framework, so a Domain dependency on it is a named violation ----
+    - name: Framework
+      collectors:
+        - { type: classLike, value: '^Illuminate\\.*' }
+        - { type: classLike, value: '^Laravel\\.*' }
+        - { type: classLike, value: '^Symfony\\.*' }
+
+  ruleset:
+    # Deptrac always permits dependencies inside a layer, so each entry is only
+    # what that layer may reach OUTSIDE itself.
+    Interface: [Application, Contracts, SharedKernel, Framework]
+    Application: [Domain, Kernel, Contracts, SharedKernel, Framework]
+    Domain: [Contracts, SharedKernel]     # "Domain may depend on Domain only"
+    Persistence: [Domain, Kernel, Contracts, SharedKernel, Framework]
+    Infrastructure: [Contracts, SharedKernel, Framework]
+
+    Kernel: [Contracts, SharedKernel]     # as pure as Domain, and held to it
+    SharedKernel: []                      # depends on nothing, by definition
+    Contracts: []                         # the surface depends on nothing
+    Framework: []

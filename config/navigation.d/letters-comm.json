@@ -1,0 +1,131 @@
+[
+ {
+  "section": "letters",
+  "items": [
+   {
+    "key": "letters-offer",
+    "route": "letters-offer",
+    "label": "Offer Letters",
+    "icon": "fa-file-signature",
+    "permission": "employee.letters.view"
+   },
+   {
+    "key": "letters-increment",
+    "route": "letters-increment",
+    "label": "Increment Letters",
+    "icon": "fa-file-arrow-up",
+    "permission": "employee.letters.view"
+   },
+   {
+    "key": "letters-warning",
+    "route": "letters-warning",
+    "label": "Warning Letters",
+    "icon": "fa-triangle-exclamation",
+    "permission": "employee.letters.view"
+   },
+   {
+    "key": "letters-relieving",
+    "route": "letters-relieving",
+    "label": "Relieving Letters",
+    "icon": "fa-file-export",
+    "permission": "employee.letters.view"
+   },
+   {
+    "key": "letters-nda",
+    "route": "letters-nda",
+    "label": "NDA / Confidentiality",
+    "icon": "fa-user-shield",
+    "permission": "employee.letters.view"
+   },
+   {
+    "key": "letters-mine",
+    "route": "letters-mine",
+    "label": "My Letters",
+    "icon": "fa-envelope-open-text",
+    "permission": "employee.view"
+   },
+   {
+    "key": "letter-signoff",
+    "route": "letter-signoff",
+    "label": "NDA Sign-off Report",
+    "icon": "fa-signature",
+    "permission": "employee.letters.view"
+   },
+   {
+    "key": "letters-templates",
+    "route": "letters-templates",
+    "label": "Letter Templates",
+    "icon": "fa-file-lines",
+    "permission": "employee.letters.view"
+   }
+  ]
+ },
+ {
+  "section": "communication",
+  "items": [
+   {
+    "key": "send-message",
+    "route": "send-message",
+    "label": "Send Message",
+    "icon": "fa-paper-plane",
+    "permission": "employee.update"
+   },
+   {
+    "key": "notice-board",
+    "route": "notice-board",
+    "label": "Notice Board",
+    "icon": "fa-bullhorn",
+    "permission": "employee.view"
+   },
+   {
+    "key": "messages-log",
+    "module": "messages-log",
+    "label": "Messages Log",
+    "icon": "fa-comments",
+    "permission": "employee.view"
+   },
+   {
+    "key": "greetings",
+    "label": "Greetings",
+    "icon": "fa-cake-candles",
+    "permission": "employee.view",
+    "route": "greetings"
+   },
+   {
+    "key": "wa-templates",
+    "module": "wa-templates",
+    "label": "WhatsApp Templates",
+    "icon": "fa-comment-medical",
+    "permission": "tenant.settings.view"
+   },
+   {
+    "key": "wa-settings",
+    "module": "wa-settings",
+    "label": "WhatsApp API",
+    "icon": "fa-comment-dots",
+    "permission": "tenant.settings.view"
+   },
+   {
+    "key": "sms-templates",
+    "module": "sms-templates",
+    "label": "SMS Templates",
+    "icon": "fa-comment-sms",
+    "permission": "tenant.settings.view"
+   },
+   {
+    "key": "sms-settings",
+    "module": "sms-settings",
+    "label": "SMS Settings",
+    "icon": "fa-sliders",
+    "permission": "tenant.settings.view"
+   },
+   {
+    "key": "greetings-log",
+    "label": "Greetings Log",
+    "icon": "fa-clock-rotate-left",
+    "permission": "employee.view",
+    "route": "greetings"
+   }
+  ]
+ }
+]

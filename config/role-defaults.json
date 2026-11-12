@@ -1,0 +1,28 @@
+{
+ "note": "Shipped defaults for roles set up under Organization Setup → Role/Designation Setup, before anybody saves Roles & Permissions for them (what is ticked there always wins). every_role: self-service every employee needs — own leave (row reach stays their own line). not_by_default: a menu permission left off for the roles named (matched ignoring case, spaces and punctuation) — owner, 6 Nov 2026: AI Assistant not for the Employee profile. preset: roles nobody has set up yet start with Company Admin's full access ('full') or the reporting manager's ('manager') — owner, 6 Nov 2026.",
+ "every_role": [
+  "leave.request.view",
+  "leave.request.submit",
+  "leave.balance.view"
+ ],
+ "not_by_default": {
+  "assistant.view": [
+   "Employee/Agent",
+   "Employee",
+   "Agent"
+  ]
+ },
+ "preset": {
+  "full": [
+   "HR Admin",
+   "HR Manager"
+  ],
+  "manager": [
+   "Branch Admin",
+   "Team Lead",
+   "Manager",
+   "Reporting Manager",
+   "Director"
+  ]
+ }
+}

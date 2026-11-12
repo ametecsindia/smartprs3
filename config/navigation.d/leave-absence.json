@@ -1,0 +1,14 @@
+[
+ {
+  "section": "setup",
+  "items": [
+   {
+    "key": "leave-absence",
+    "route": "leave-absence",
+    "label": "Leave & Absence",
+    "icon": "fa-plane-departure",
+    "permission": "tenant.settings.update"
+   }
+  ]
+ }
+]

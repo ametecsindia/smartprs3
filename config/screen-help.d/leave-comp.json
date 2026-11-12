@@ -1,0 +1,20 @@
+{
+ "routes": {
+  "leave": "leave-apply",
+  "setup-leave-types": "leave-types",
+  "setup-holidays": "holidays",
+  "commissions": "commissions",
+  "incentive-schemes": "incentive-schemes",
+  "expenses": "expenses",
+  "advances": "advance",
+  "claims": "approvals-inbox",
+  "loans": "loans",
+  "loan-schedule": "loans",
+  "clawbacks": "clawbacks",
+  "bonus": "bonus-enc",
+  "increments": "increments",
+  "exits": "exits",
+  "bank-pack": "bank-pack",
+  "salary-advance": "advance"
+ }
+}

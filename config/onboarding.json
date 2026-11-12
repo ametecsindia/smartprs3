@@ -1,0 +1,22 @@
+{
+ "note": "Hiring & Onboarding → Onboarding Status. The checklist a new joiner (or a transferred-in employee) works through. SmartPRS 2 has these as PHP constants (DEFAULT_ITEMS, TRANSFER_ITEMS); here they are data, and a tenant's own list under `customisation_key` replaces them. A board's items are copied at the moment it starts, so changing the list later does not rewrite boards already in progress.",
+ "customisation_key": "onboarding-checklist",
+ "checklists": {
+  "New joiner": [
+   "Offer accepted",
+   "Documents collected (ID, PAN, address)",
+   "Bank / PF / ESI details captured",
+   "ID card issued",
+   "Email / IT / system access setup",
+   "Orientation & policy briefing done"
+  ],
+  "Transfer": [
+   "Reporting manager & team assigned in the new company",
+   "Salary structure of the new company applied",
+   "ID card re-issued",
+   "Systems access moved"
+  ]
+ },
+ "auto_start_days": 30,
+ "auto_start_note": "Start for all recent joiners considers employees who joined within this many days and have no board yet."
+}

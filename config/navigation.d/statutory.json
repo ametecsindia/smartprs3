@@ -1,0 +1,158 @@
+{
+ "section": "statutory",
+ "items": [
+  {
+   "key": "pf-esi",
+   "label": "PF & ESI",
+   "icon": "fa-shield-halved",
+   "permission": "payroll.view",
+   "route": "pf-esi-deductions"
+  },
+  {
+   "key": "pf-esi-register",
+   "module": "pf-esi-register",
+   "label": "PF & ESI Registrations",
+   "icon": "fa-id-card",
+   "permission": "employee.view",
+   "hidden": true
+  },
+  {
+   "key": "pf-esi-remittances",
+   "route": "pf-esi-remittances",
+   "label": "PF & ESI Remittances",
+   "icon": "fa-building-columns",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "tds",
+   "route": "tds",
+   "label": "TDS",
+   "icon": "fa-file-invoice",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "tds-remittances",
+   "route": "tds-remittances",
+   "label": "TDS Remittances",
+   "icon": "fa-building-columns",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "tds-declaration",
+   "route": "tds-declaration",
+   "label": "TDS Declaration",
+   "icon": "fa-file-signature",
+   "permission": "employee.view"
+  },
+  {
+   "key": "tds-proofs",
+   "route": "tds-proofs",
+   "label": "Investment Proofs",
+   "icon": "fa-file-arrow-up",
+   "permission": "employee.view"
+  },
+  {
+   "key": "tds-settings",
+   "route": "tds-settings",
+   "label": "TDS Settings",
+   "icon": "fa-sliders",
+   "permission": "payroll.structure.publish"
+  },
+  {
+   "key": "tds-returns",
+   "module": "tds-returns",
+   "label": "TDS Returns",
+   "icon": "fa-file-arrow-up",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "form16",
+   "route": "form16",
+   "label": "Form 16",
+   "icon": "fa-file-contract",
+   "permission": "employee.view"
+  },
+  {
+   "key": "pt",
+   "label": "Professional Tax",
+   "icon": "fa-landmark",
+   "permission": "payroll.view",
+   "route": "pt-remittances"
+  },
+  {
+   "key": "pt-slabs",
+   "module": "pt-slabs",
+   "label": "PT Slabs",
+   "icon": "fa-table",
+   "permission": "payroll.view",
+   "hidden": true
+  },
+  {
+   "key": "gratuity",
+   "route": "gratuity",
+   "label": "Gratuity",
+   "icon": "fa-gift",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "bonus",
+   "route": "statutory-bonus",
+   "label": "Statutory Bonus",
+   "icon": "fa-coins",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "bonus-register",
+   "module": "bonus-register",
+   "label": "Bonus Register",
+   "icon": "fa-book",
+   "permission": "payroll.view",
+   "hidden": true
+  },
+  {
+   "key": "min-wages",
+   "module": "min-wages",
+   "label": "Minimum Wages",
+   "icon": "fa-indian-rupee-sign",
+   "permission": "payroll.structure.view",
+   "hidden": true
+  },
+  {
+   "key": "compliance-alerts",
+   "route": "compliance-alerts",
+   "label": "Compliance Alerts",
+   "icon": "fa-triangle-exclamation",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "compliance-watch",
+   "route": "compliance",
+   "label": "Compliance Watch",
+   "icon": "fa-shield-halved",
+   "permission": "employee.view"
+  },
+  {
+   "key": "posh",
+   "module": "posh",
+   "label": "POSH Complaints",
+   "icon": "fa-shield-heart",
+   "permission": "employee.document.view",
+   "hidden": true
+  },
+  {
+   "key": "audit-reports",
+   "route": "audit-reports",
+   "label": "Audit Reports",
+   "icon": "fa-user-shield",
+   "permission": "payroll.view"
+  },
+  {
+   "key": "statutory-config",
+   "route": "statutory-config",
+   "label": "Statutory Configuration",
+   "icon": "fa-scale-balanced",
+   "permission": "payroll.structure.view",
+   "hidden": true
+  }
+ ]
+}

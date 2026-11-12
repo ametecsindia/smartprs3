@@ -1,0 +1,16 @@
+{"items": {
+  "letters-offer": "Pick an employee, the offer template renders from its fields (CTC as money and in words); a blank placeholder refuses; issued text is kept as issued.",
+  "letters-increment": "Record the revised CTC on the employee first, then issue — the letter quotes what payroll will actually pay.",
+  "letters-warning": "Warning letter from the template, kept as the text that went out; needs employee.update only, never the salary permission.",
+  "letters-relieving": "Relieving letter per employee, issued copies listed with print / PDF.",
+  "letters-nda": "Confidentiality undertaking rendered from the employee; print for signature, file the signed copy under Document Tracker.",
+  "letters-templates": "Every template in config/letters.json with its placeholders, permissions and issued count; Change wording is versioned per tenant.",
+  "send-message": "Scope by company / branch / department / designation / team / employee with ALL, tick Email / WhatsApp / SMS, preview who resolves to an address, then queue one row per recipient and channel — no transport is configured, so nothing is sent.",
+  "notice-board": "Notices with a validity window: current / upcoming / expired / draft; Notices::current() is what a dashboard shows.",
+  "messages-log": "One row per recipient and channel from Send Message and Greetings, with status queued / sent / failed and the batch it belonged to.",
+  "greetings": "Who is due a birthday or work-anniversary greeting today and this week from DOB and DOJ; the wording renders through the letter engine; Queue writes it to the Messages Log; the log below is the greetings log.",
+  "wa-templates": "Approved WhatsApp templates (name, language, category, body with {{n}} variables) offered as a starting text on Send Message.",
+  "wa-settings": "WhatsApp provider connection: API key, sender number, WABA id, status.",
+  "sms-templates": "DLT-approved SMS templates with their template ids, offered on Send Message.",
+  "sms-settings": "SMS gateway connection: provider, API URL and key, sender id, DLT entity id."
+}}

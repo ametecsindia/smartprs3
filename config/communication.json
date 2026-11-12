@@ -1,0 +1,26 @@
+{
+  "note": "SEND MESSAGE AND GREETINGS. Channels name the employee column that holds the address; a recipient with no address on that channel is reported, not silently dropped. No transport is configured in this build: a send QUEUES one row per recipient and channel in messages_log with status 'queued', and the screen says so. Greeting templates are rendered by the letter engine ({{field}}, {{field|date}}, {{field|upper}}); a placeholder that resolves to nothing refuses the greeting rather than sending a blank.",
+  "channels": {
+    "email": {"label": "Email", "address": "email"},
+    "whatsapp": {"label": "WhatsApp", "address": "whatsapp", "fallback": "mobile"},
+    "sms": {"label": "SMS", "address": "mobile"}
+  },
+  "queued_status": "queued",
+  "kinds": {"message": "message", "greeting": "greeting"},
+  "greetings": {
+    "week_days_ahead": 7,
+    "birthday": {
+      "enabled": true,
+      "channel": "whatsapp",
+      "subject": "Happy birthday, {{name}}!",
+      "message": "Dear {{name}},\n\nWishing you a very happy birthday from all of us at {{company}}. May the year ahead bring you health, happiness and success.\n\nWarm regards,\n{{company}}"
+    },
+    "anniversary": {
+      "enabled": true,
+      "channel": "whatsapp",
+      "min_years": 1,
+      "subject": "Happy work anniversary, {{name}}!",
+      "message": "Dear {{name}},\n\nCongratulations on completing {{years}} year(s) with {{company}} today. Thank you for your commitment and contribution.\n\nWarm regards,\n{{company}}"
+    }
+  }
+}

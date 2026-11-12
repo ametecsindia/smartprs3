@@ -1,0 +1,9 @@
+{
+ "note": "Organization Setup → Certificate-linked Deductions (owner, 13 Oct). A deduction (e.g. DRA / PCC) is taken every month by its Salary Structure rule — calculation 'Employee Status', on the certificate's status field — while the certificate is pending. When the employee's status reads one of `cleared_values`, the NEXT payroll pays back everything held so far as one earning line (`refund_code`). Held and refunded are read from the closed payrolls, never marked, so a regenerated month is identical and nothing is paid twice. `on_exit`: 'refund' pays the balance in the employee's last payroll; 'forfeit' keeps it and says so on the payslip. Rules ship OFF; the organisation turns each on and saves. Saved versions live in the tenant's Customisation under `customisation_key`.",
+ "customisation_key": "certificate-holds",
+ "on_exit_options": {"forfeit": "Forfeit — the company keeps it", "refund": "Refund in the last payroll"},
+ "rules": [
+  {"key": "dra", "label": "DRA certificate", "active": false, "deduction_code": "DRA_DEDUCTION", "refund_code": "DRA_REFUND", "status_field": "dra_status", "cleared_values": ["Submitted", "Verified"], "on_exit": "forfeit"},
+  {"key": "pcc", "label": "PCC certificate", "active": false, "deduction_code": "PCC_DEDUCTION", "refund_code": "PCC_REFUND", "status_field": "pcc_status", "cleared_values": ["Submitted", "Verified"], "on_exit": "forfeit"}
+ ]
+}

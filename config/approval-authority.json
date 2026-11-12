@@ -1,0 +1,4 @@
+{
+  "note": "FINAL APPROVERS (owner, 12 Oct 2026): \"The Company Admin approval or HR Admin approval for any requests overrides any other approvals and even if the other approvals are not available, this can be considered as Approved and proceed with next action.\" A person whose login role is listed here approves ANY step of ANY multi-step approval (workflow requests, manpower requisitions) and that approval is the final one: the steps still open are not waited for. A rejection is still a rejection at the step it is made. Role names match case-insensitively. 'HR Admin' and 'HR Manager' are both listed because this install calls the HR role 'HR Manager'. The administrator is listed because Admin has no restrictions (D-OWN-01).",
+  "final_roles": ["administrator", "Company Admin", "HR Admin", "HR Manager"]
+}

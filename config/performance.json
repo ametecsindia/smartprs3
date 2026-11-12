@@ -1,0 +1,33 @@
+{
+ "note": "Performance & Rewards → Performance. SmartPRS 2 stored one 1-5 rating per employee per cycle; here a review carries a self rating, a manager rating and a final rating on the scale below. The reviewer is the employee's reporting manager from the employee record. The final rating defaults to the manager's rating (`final_defaults_to`) and HR may override it when finalising.",
+ "scale": [
+  {"value": 1, "label": "Needs improvement"},
+  {"value": 2, "label": "Below expectations"},
+  {"value": 3, "label": "Meets expectations"},
+  {"value": 4, "label": "Exceeds expectations"},
+  {"value": 5, "label": "Outstanding"}
+ ],
+ "final_defaults_to": "manager_rating",
+ "periods": {
+  "note": "The review cycles offered. A cycle is a label; `kind` says how the offered labels are generated from today's date.",
+  "kind": "half_year",
+  "labels": {"half_year": ["H1", "H2"], "quarter": ["Q1", "Q2", "Q3", "Q4"], "year": ["FY"]},
+  "history_years": 2
+ },
+ "statuses": {
+  "draft": "Draft",
+  "self_submitted": "Self-assessment in",
+  "submitted": "Manager rated",
+  "finalised": "Finalised"
+ },
+ "prg": {
+  "note": "Performance-related growth: the final rating maps to a recommended increment band, which the Increments register (compensation) reads as a suggestion, never as an instruction.",
+  "bands": [
+   {"rating": 5, "increment_pct": "12"},
+   {"rating": 4, "increment_pct": "8"},
+   {"rating": 3, "increment_pct": "5"},
+   {"rating": 2, "increment_pct": "2"},
+   {"rating": 1, "increment_pct": "0"}
+  ]
+ }
+}

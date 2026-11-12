@@ -1,0 +1,82 @@
+{
+  "routes": {
+    "pf-esi": "pf-esic", "pf-esi-register": "pf-esic", "pf-esi-remittances": "pf-esi-remittances", "tds": "tds", "tds-declarations": "tds", "tds-returns": "tds-returns",
+    "pt-slabs": "pt", "gratuity": "gratuity", "statutory-bonus": "bonus", "bonus-register": "bonus",
+    "compliance-alerts": "compliance-alerts", "posh": "posh", "min-wages": "min-wages", "audit-reports": "audit-reports",
+    "statutory-config": "statutory-config"
+  },
+  "screens": {
+    "tds-remittances": {
+      "m": "Statutory & Compliance", "t": "TDS Remittances", "g": "TDS deducted vs deposited, month by month",
+      "w": "Three totals — TDS deducted from employees (completed payroll), TDS deposited (challans uploaded) and the balance still to deposit — and one row per wage month and company: TAN, employees, salary paid, TDS to be paid (payroll), deposited, balance, challan date, BSR code and challan number. The template lists every active employee with the month's salary and TDS already filled from the completed payroll; HR adds the challan details and uploads. A line counts as deposited once its challan date is filled. Per-employee lines stay hidden and feed the quarterly return (Form 138, old 24Q).",
+      "f": [["fa-file-excel", "Template pre-filled from payroll; add BSR code, date, challan serial"], ["fa-filter", "Period, Company and Branch buttons, organisation filters"], ["fa-scale-balanced", "To be paid (payroll) vs deposited, balance per month"]],
+      "s": ["Pick the month, download the template.", "Fill the challan details from the ITNS 281 receipt.", "Upload; re-uploading a month supersedes the earlier lines."],
+      "tip": "TDS for a month is due by the 7th of the next month (30 April for March).",
+      "r": ["Admin & HR", "Payroll"], "rel": "pf-esi-remittances"
+    },
+    "tds-declaration": {
+      "m": "Statutory & Compliance", "t": "TDS Declaration", "g": "Regime, investments and the tax worked out — Form 124 (old 12BB)",
+      "w": "Employees pick the tax regime and declare rent (HRA), LTA, home-loan interest, Section 123 (80C) investments, NPS, health insurance (80D), other deductions, other income and a previous employer's salary. The page shows their monthly package from the salary structure, the year's projected gross, and the full tax computation under BOTH regimes side by side — updated as they type — with the monthly TDS. Declaring is possible only while the organisation's declaration window is open (new joiners get their own days); last year's declaration pre-fills a new year. HR sees every employee, declares on someone's behalf and exports to Excel.",
+      "f": [["fa-scale-balanced", "New vs old regime, side by side, with the lower one marked"], ["fa-calculator", "Taxable income, rebate, cess and monthly TDS — live"], ["fa-file-excel", "HR export: every item, rent, both regimes' tax, monthly TDS"]],
+      "s": ["Open while the declaration window is open.", "Pick the regime, enter what you plan to invest and your rent.", "Watch the tax update, then Submit declaration.", "Upload proofs on Investment Proofs when that window opens."],
+      "tip": "Monthly TDS in payroll is worked out from this declaration every close.",
+      "r": ["Employee", "Admin & HR", "Payroll"], "rel": "tds-proofs"
+    },
+    "tds-proofs": {
+      "m": "Statutory & Compliance", "t": "Investment Proofs", "g": "Upload proofs; HR verifies",
+      "w": "Each declared item that needs evidence is listed with what to upload (rent receipts and landlord PAN, premium receipts, interest certificates…). Employees upload while the proof window is open; HR approves with the amount the proof supports or rejects with a reason, and the employee is told. After the cut-off only approved amounts count (organisation setting) and the remaining months' TDS absorbs the difference. Export to Excel.",
+      "f": [["fa-upload", "Upload per item, several files allowed"], ["fa-check-double", "Approve (any amount up to the claim) or reject with a reason"], ["fa-bell", "Reminders before the window closes"]],
+      "s": ["Upload a proof against each item.", "HR reviews pending proofs first.", "Approved amounts replace declared ones after the cut-off."],
+      "tip": "Proofs are filtered by Company / Branch and status for HR.",
+      "r": ["Employee", "Admin & HR", "Payroll"], "rel": "tds-declaration"
+    },
+    "form16": {
+      "m": "Statutory & Compliance", "t": "Form 16", "g": "Annual TDS certificate — Part A from TRACES, Part B from payroll",
+      "w": "Form 16 (Form 130 under the Income-tax Act, 2025) for every employee paid in the year, leavers included. Part A (TDS deposited) is issued only by TRACES: HR uploads the PDFs or the TRACES ZIP and each file is matched to the employee by the PAN in its name. Part B (salary, exemptions, deductions, tax) is generated from the closed payroll and the employee's declaration by the same engine as the monthly TDS. A 'Ready' column lists what is missing (PAN, company TAN, responsible person, Part A, salary paid before SmartPRS 3). Releasing the year lets each employee download their own.",
+      "f": [["fa-upload", "Upload Part A PDFs or ZIP, matched by PAN"], ["fa-print", "Print one or all Part B (Save as PDF)"], ["fa-file-zipper", "Download all Part A as one ZIP"], ["fa-paper-plane", "Release to employees"]],
+      "s": ["After 31 March file the Q4 return, then download Part A from TRACES.", "Upload the files here.", "Clear the Ready column, check a few Part B, then Release to employees."],
+      "tip": "Form 16 must reach employees by 15 June after the year ends.",
+      "r": ["Employee", "Admin & HR", "Payroll"], "rel": "tds-returns"
+    },
+    "tds-settings": {
+      "m": "Statutory & Compliance", "t": "TDS Settings", "g": "Windows, reminders and how proofs count",
+      "w": "The financial year employees declare for, when the declaration and proof windows open and close, reminder days before each closes, how many days new joiners get, whether only approved proofs count after the cut-off, and whether payroll deducts monthly TDS. Saved as a version; the rules (slabs, limits, cess, HRA cities) are shown from config/income-tax.json.",
+      "f": [["fa-calendar-days", "Declaration and proof windows"], ["fa-bell", "Reminder days"], ["fa-toggle-on", "Monthly TDS in payroll on / off"]],
+      "s": ["Set the windows for the year.", "Pick reminder days.", "Save."],
+      "tip": "Typical: declare in April, proofs January to mid-February.",
+      "r": ["Admin & HR", "Payroll"], "rel": "tds-declaration"
+    },
+    "pf-esi-deductions": {
+      "m": "Statutory & Compliance", "t": "PF & ESI", "g": "PF and ESIC deducted, per employee per month",
+      "w": "Employee ID, name, month and the PF and ESIC deducted, exactly as the completed payroll recorded them (closed runs only). Filter by Company and Branch buttons, Department, Role, Designation, Team, Employee and any period — month, financial year, custom dates. Employees with no PF or ESIC deduction in a month are left out.",
+      "f": [["fa-filter", "Company / Branch buttons, organisation filters and period"], ["fa-calculator", "Totals for everything filtered, across pages"]],
+      "s": ["Pick the company, branch and period.", "Read each employee's PF and ESIC per month; the total row sums all of them."],
+      "tip": "What was actually paid to EPFO and ESIC is on PF & ESI Remittances.",
+      "r": ["Admin & HR", "Payroll"], "rel": "pf-esi-remittances"
+    },
+    "pf-esi-remittances": {
+      "m": "Statutory & Compliance", "t": "PF & ESI Remittances", "g": "Deducted vs remitted to EPFO and ESIC, month by month",
+      "w": "Four totals on top — PF and ESIC deducted from employees, EPF and ESIC remitted (with the balance still to be remitted) — and one row per type, wage month and company: employees, employee and employer share, total due, total remitted, balance to be remitted, date remitted and challan / TRRN. Everything comes from the remittance files you upload (one line per employee per month, kept hidden here). A line counts as remitted once its paid-on date is filled; without it, it is balance to be remitted.",
+      "f": [["fa-file-excel", "Template with every active employee pre-listed: month, UAN and ESI IP number already filled"], ["fa-filter", "Period (month / FY / custom …), Company and Branch buttons, Department, Role, Designation, Team, Employee, Type PF / ESIC"], ["fa-rotate", "Re-uploading a month supersedes the earlier lines — never counted twice"]],
+      "s": ["Pick the wage month and download the template.", "Fill the amounts from your ECR and ESIC contribution files, the TRRN / challan and the paid-on dates.", "Upload it; rows with no amount are skipped, refused rows are listed with the line and reason.", "Use the buttons and filters to see any month, FY, company or branch."],
+      "tip": "Upload before paying (no paid-on dates) to see the balance due, then again after paying with the dates and challan numbers.",
+      "r": ["Admin & HR", "Payroll"], "rel": "compliance-alerts"
+    },
+    "min-wages": {
+      "m": "Statutory & Compliance", "t": "Minimum Wages", "g": "Notified minimum wage register",
+      "w": "The minimum wage notified by state, zone and category with the date it took effect, so a salary structure can be checked against it and an inspector can be shown the register.",
+      "f": [["fa-indian-rupee-sign", "Monthly and daily minimum per state / zone / category"], ["fa-calendar-day", "Effective-dated: a revision is a new row, never an edit"]],
+      "s": ["Add a row per notification with its reference.", "Export the register from Audit Reports."],
+      "tip": "Keep superseded rows as inactive — the inspector asks what applied last year too.",
+      "r": ["Admin & HR", "Payroll"], "rel": "audit-reports"
+    },
+    "audit-reports": {
+      "m": "Statutory & Compliance", "t": "Audit Reports", "g": "Statutory registers, exported",
+      "w": "Every statutory register in one place with its row count and a CSV — PF & ESI registrations, TDS declarations and returns, PT slabs, bonus, minimum wages, compliance filings — scoped by company, branch, department, designation, team or employee.",
+      "f": [["fa-file-csv", "CSV per register, exactly as stored"], ["fa-filter", "Organization Setup filter on employee-keyed registers"], ["fa-user-shield", "POSH is listed but never bulk-exported"]],
+      "s": ["Pick the scope.", "Export the register the auditor asked for.", "Every export is on the audit trail."],
+      "tip": "Gratuity and statutory bonus are computed screens — open them and print.",
+      "r": ["Admin & HR", "Payroll"], "rel": "compliance-alerts"
+    }
+  }
+}

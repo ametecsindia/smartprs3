@@ -1,0 +1,12 @@
+{
+  "note": "Statutory bonus per the Payment of Bonus Act as this tenant applies it. The wage ceilings, the band and the qualifying days are DATA; the Statutory Bonus screen reads them and shows its working.",
+  "eligibility_wage_ceiling": "21000.00",
+  "calculation_wage_ceiling": "7000.00",
+  "min_percent": "8.33",
+  "max_percent": "20",
+  "min_working_days": 30,
+  "financial_year_start_month": 4,
+  "bonus_wage_flag": "pf_base",
+  "bonus_wage_note": "A month's bonus wage is the sum of the closed run's lines whose component carries this flag (basic + DA in most structures). An employee whose month's bonus wage exceeds eligibility_wage_ceiling is not eligible for that month; an eligible month counts the wage capped at calculation_wage_ceiling. Where the notified minimum wage is higher than the calculation ceiling the Act uses that instead — raise calculation_wage_ceiling here for such a tenant.",
+  "formula_note": "annual bonus = sum over eligible months of min(bonus wage, calculation ceiling) x percent, for percent between min_percent and max_percent; the screen shows both ends of the band."
+}

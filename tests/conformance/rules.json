@@ -1,0 +1,1103 @@
+{
+  "engine": "RULES",
+  "spec": "Part XXX §XXX.3.2, spine S6",
+  "note": "Rules are declared compactly — the corpus says what a case is about and the adapter supplies the fixture constants. Every rule here is real SPX compiled against a real decision point's symbol table.",
+  "cases": [
+    {
+      "id": "RC-01.a",
+      "class": "RC-01",
+      "kind": "rules_purity",
+      "title": "evaluating a rule set returns actions and a trace, and holds no connection to write with",
+      "note": "Asserted structurally rather than by counting queries: the engine's constructor takes no PDO and no repository, so there is nothing it could write to.",
+      "expect": {
+        "holds_no_connection": true
+      }
+    },
+    {
+      "id": "RC-03.a",
+      "class": "RC-03",
+      "kind": "rules_decide",
+      "title": "at equal specificity the higher priority wins, and the trace names the loser",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-LOW",
+          "when": "attendance.late_minutes > 10m",
+          "priority": 0,
+          "on_conflict": "highest_priority_only"
+        },
+        {
+          "code": "RL-HIGH",
+          "when": "attendance.late_minutes > 10m",
+          "priority": 5,
+          "on_conflict": "highest_priority_only"
+        }
+      ],
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 30
+        }
+      },
+      "expect": {
+        "status": "matched",
+        "emitted_by": "RL-HIGH",
+        "trace_contains": [
+          "RL-LOW",
+          "outranked"
+        ]
+      }
+    },
+    {
+      "id": "RC-06.a",
+      "class": "RC-06",
+      "kind": "rules_decide",
+      "title": "all_match: every matching rule contributes its actions",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-A",
+          "when": "attendance.late_minutes > 10m",
+          "on_conflict": "all_match",
+          "scope": {
+            "branch": [
+              "HYD"
+            ]
+          }
+        },
+        {
+          "code": "RL-B",
+          "when": "attendance.late_minutes > 20m",
+          "on_conflict": "all_match"
+        }
+      ],
+      "dimensions": {
+        "branch": "HYD"
+      },
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 30
+        }
+      },
+      "expect": {
+        "status": "matched",
+        "action_count": 2
+      }
+    },
+    {
+      "id": "RC-06.b",
+      "class": "RC-06",
+      "kind": "rules_decide",
+      "title": "highest_priority_only over the same candidate set: one outcome, the alternative still traced",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-A",
+          "when": "attendance.late_minutes > 10m",
+          "on_conflict": "highest_priority_only",
+          "scope": {
+            "branch": [
+              "HYD"
+            ]
+          }
+        },
+        {
+          "code": "RL-B",
+          "when": "attendance.late_minutes > 20m",
+          "on_conflict": "highest_priority_only"
+        }
+      ],
+      "dimensions": {
+        "branch": "HYD"
+      },
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 30
+        }
+      },
+      "expect": {
+        "status": "matched",
+        "action_count": 1,
+        "trace_contains": [
+          "outranked"
+        ]
+      }
+    },
+    {
+      "id": "RC-07.a",
+      "class": "RC-07",
+      "kind": "rules_decide",
+      "title": "a rule whose when and except are both true does not apply, and the trace records the exception",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-EXC",
+          "when": "attendance.late_minutes > 10m",
+          "except": "day.is_holiday OR day.is_weekly_off"
+        }
+      ],
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 30
+        },
+        "day.is_holiday": {
+          "boolean": true
+        },
+        "day.is_weekly_off": {
+          "boolean": false
+        }
+      },
+      "expect": {
+        "status": "no_match",
+        "action_count": 0,
+        "trace_contains": [
+          "EXCEPT"
+        ]
+      }
+    },
+    {
+      "id": "RC-14.a",
+      "class": "RC-14",
+      "kind": "rules_decide",
+      "title": "the trace names inputs, rule code, version, the matched condition and the losing candidates",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-TRACED",
+          "when": "attendance.late_minutes > 10m"
+        }
+      ],
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 23
+        }
+      },
+      "expect": {
+        "status": "matched",
+        "trace_contains": [
+          "RL-TRACED",
+          "attendance.late_minutes = 23",
+          "Input digest",
+          "Engine"
+        ]
+      }
+    },
+    {
+      "id": "RC-15.a",
+      "class": "RC-15",
+      "kind": "rules_publish",
+      "title": "a rule emitting an action its decision point does not declare is refused at publish, naming it",
+      "decision_point": "attendance.day.penalise",
+      "rule": {
+        "code": "RL-WRONG-ACTION",
+        "when": "attendance.late_minutes > 10m",
+        "action": "SET_STATUS"
+      },
+      "expect": {
+        "publishable": false,
+        "gate": "R04",
+        "message_contains": "may not be emitted at"
+      }
+    },
+    {
+      "id": "RC-09.a",
+      "class": "RC-09",
+      "kind": "agg_window_table",
+      "title": "every declared window resolves to the range an independently computed table says, at both boundaries",
+      "note": "R-VII-022: payroll_period comes from the employee's effective-dated pay cycle honouring its cut-off day, NEVER from the calendar month. With a cut-off of 25 the August period is 26 July to 25 August, so the 26th of August is NOT in it — which is the day SmartPRS 2 counts in the wrong month.",
+      "financial_year_start_month": 4,
+      "cut_off_day": 25,
+      "cycle_ends_on": "2026-09-25",
+      "joining_date": "2024-08-15",
+      "subject_date": "2026-08-26",
+      "windows": [
+        {
+          "kind": "day",
+          "expect": [
+            "2026-08-26",
+            "2026-08-26"
+          ]
+        },
+        {
+          "kind": "calendar_month",
+          "expect": [
+            "2026-08-01",
+            "2026-08-31"
+          ]
+        },
+        {
+          "kind": "payroll_period",
+          "expect": [
+            "2026-08-26",
+            "2026-09-25"
+          ]
+        },
+        {
+          "kind": "quarter",
+          "expect": [
+            "2026-07-01",
+            "2026-09-30"
+          ]
+        },
+        {
+          "kind": "financial_year",
+          "expect": [
+            "2026-04-01",
+            "2027-03-31"
+          ]
+        },
+        {
+          "kind": "service_year",
+          "expect": [
+            "2026-08-15",
+            "2027-08-14"
+          ]
+        },
+        {
+          "kind": "week",
+          "arguments": {
+            "start_day": "mon"
+          },
+          "expect": [
+            "2026-08-24",
+            "2026-08-30"
+          ]
+        },
+        {
+          "kind": "week",
+          "arguments": {
+            "start_day": "sun"
+          },
+          "expect": [
+            "2026-08-23",
+            "2026-08-29"
+          ]
+        },
+        {
+          "kind": "rolling",
+          "arguments": {
+            "n": 30,
+            "unit": "days"
+          },
+          "expect": [
+            "2026-07-28",
+            "2026-08-26"
+          ]
+        },
+        {
+          "kind": "rolling",
+          "arguments": {
+            "n": 1,
+            "unit": "days"
+          },
+          "expect": [
+            "2026-08-26",
+            "2026-08-26"
+          ]
+        },
+        {
+          "kind": "rolling",
+          "arguments": {
+            "n": 2,
+            "unit": "weeks"
+          },
+          "expect": [
+            "2026-08-13",
+            "2026-08-26"
+          ]
+        },
+        {
+          "kind": "since",
+          "arguments": {
+            "date": "2026-04-01"
+          },
+          "expect": [
+            "2026-04-01",
+            "2026-08-26"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RC-09.b",
+      "class": "RC-09",
+      "kind": "agg_window_disagree",
+      "title": "a rolling(30, days) rule matches a set that a calendar_month rule does not, and vice versa",
+      "note": "The blueprint asks for exactly this: the two windows must be genuinely different, or one of them is decoration. Events are placed so each window sees one the other misses.",
+      "financial_year_start_month": 4,
+      "subject_date": "2026-08-10",
+      "events": [
+        "2026-07-29",
+        "2026-08-02",
+        "2026-08-10",
+        "2026-08-25"
+      ],
+      "expect": {
+        "rolling_30_days": 3,
+        "calendar_month": 3,
+        "only_in_rolling": [
+          "2026-07-29"
+        ],
+        "only_in_month": [
+          "2026-08-25"
+        ]
+      }
+    },
+    {
+      "id": "RC-09.c",
+      "class": "RC-09",
+      "kind": "agg_boundary",
+      "title": "the boundaries are inclusive at both ends, asserted one day either side",
+      "financial_year_start_month": 4,
+      "subject_date": "2026-08-26",
+      "window": {
+        "kind": "rolling",
+        "arguments": {
+          "n": 30,
+          "unit": "days"
+        }
+      },
+      "expect": {
+        "first_day_in": "2026-07-28",
+        "day_before_out": "2026-07-27",
+        "last_day_in": "2026-08-26"
+      }
+    },
+    {
+      "id": "RC-10.a",
+      "class": "RC-10",
+      "kind": "agg_occurrence_index",
+      "title": "the Nth qualifying occurrence carries index N, and a subject that does not itself qualify gets 0",
+      "note": "The zero matters: 'this is the third late' and 'this is not a late at all' are different answers, and a rule reading a missing index as zero-and-therefore-first penalises the wrong day.",
+      "financial_year_start_month": 4,
+      "window": {
+        "kind": "calendar_month"
+      },
+      "events": [
+        {
+          "date": "2026-08-03",
+          "value": 20
+        },
+        {
+          "date": "2026-08-11",
+          "value": 45
+        },
+        {
+          "date": "2026-08-19",
+          "value": 8
+        },
+        {
+          "date": "2026-08-26",
+          "value": 33
+        }
+      ],
+      "predicate_over_minutes": 10,
+      "expect": {
+        "index_on": {
+          "2026-08-03": 1,
+          "2026-08-11": 2,
+          "2026-08-26": 3,
+          "2026-08-19": 0,
+          "2026-08-20": 0
+        }
+      }
+    },
+    {
+      "id": "RC-11.a",
+      "class": "RC-11",
+      "kind": "agg_collapse",
+      "title": "collapse_repeats at the configured window boundary, one second either side",
+      "note": "Each event is compared with the last KEPT one, not with its predecessor, so a stream of taps one second apart is one event however long it runs — which is what a jammed reader produces.",
+      "financial_year_start_month": 4,
+      "subject_date": "2026-08-26",
+      "instants": [
+        "2026-08-26 09:00:00",
+        "2026-08-26 09:00:59",
+        "2026-08-26 09:01:00",
+        "2026-08-26 11:00:00"
+      ],
+      "expect": {
+        "within_60": 3,
+        "within_61": 2,
+        "within_0": 4
+      }
+    },
+    {
+      "id": "RC-12.a",
+      "class": "RC-12",
+      "kind": "agg_streak",
+      "title": "a backward streak over a gap, with the day that ended it named",
+      "financial_year_start_month": 4,
+      "subject_date": "2026-08-26",
+      "days": [
+        "2026-08-21",
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26"
+      ],
+      "expect": {
+        "backward_length": 3,
+        "terminated_by": "2026-08-23"
+      }
+    },
+    {
+      "id": "RC-12.b",
+      "class": "RC-12",
+      "kind": "agg_streak",
+      "title": "and a subject day with no event at all has a streak of zero, not of one",
+      "financial_year_start_month": 4,
+      "subject_date": "2026-08-27",
+      "days": [
+        "2026-08-24",
+        "2026-08-25",
+        "2026-08-26"
+      ],
+      "expect": {
+        "backward_length": 0,
+        "terminated_by": null
+      }
+    },
+    {
+      "id": "RC-13.a",
+      "class": "RC-13",
+      "kind": "agg_balance",
+      "title": "a ledger balance reads AS AT the date, not the current row set, and a superseded entry does not count",
+      "note": "A leave balance recomputed in November for a March decision must give March's answer. SmartPRS 2 reads the current rows, so a re-run of a closed period silently produces a different number.",
+      "ledger": [
+        {
+          "on": "2026-04-01",
+          "amount": 15
+        },
+        {
+          "on": "2026-06-10",
+          "amount": -2
+        },
+        {
+          "on": "2026-07-05",
+          "amount": -3,
+          "superseded_on": "2026-09-01"
+        },
+        {
+          "on": "2026-10-01",
+          "amount": 5
+        }
+      ],
+      "expect": {
+        "as_at": {
+          "2026-05-01": 15,
+          "2026-06-30": 13,
+          "2026-08-01": 10,
+          "2026-09-15": 13,
+          "2026-12-31": 18
+        }
+      }
+    },
+    {
+      "id": "RC-02.a",
+      "class": "RC-02",
+      "kind": "specificity_table",
+      "title": "the higher summed specificity wins, checked against an independently computed weight table over every dimension and 10,000 random combinations",
+      "note": "The weights are spine S3.2's, read from Support\\Scope. The table here re-sums them from the same declaration and compares — so what is asserted is that summing is summing, and that a scope of two dimensions really does outrank a scope of one heavier dimension only when the sum says so.",
+      "trials": 10000
+    },
+    {
+      "id": "RC-04.a",
+      "class": "RC-04",
+      "kind": "rules_publish_conflict",
+      "title": "equal specificity and equal priority with satisfiable overlap BLOCKS publication, naming both rules",
+      "note": "Spine S3.2 has no third tie-break. Picking one by insertion order is how a payslip stops being reproducible, and it is what SmartPRS 2's fall-through does.",
+      "decision_point": "attendance.day.penalise",
+      "siblings": [
+        {
+          "code": "RL-TIE-A",
+          "when": "attendance.late_minutes > 30m"
+        }
+      ],
+      "rule": {
+        "code": "RL-TIE-B",
+        "when": "attendance.late_minutes > 20m"
+      },
+      "expect": {
+        "publishable": false,
+        "gate": "R07",
+        "message_contains": "RL-TIE-A"
+      }
+    },
+    {
+      "id": "RC-05.a",
+      "class": "RC-05",
+      "kind": "rules_publish_conflict",
+      "title": "a provably disjoint pair is NOT reported — a detector with false positives trains operators to ignore it",
+      "note": "§8.2 Example 6: two banded rules, > 120 AND <= 240 against > 240, provably disjoint, publication allowed.",
+      "decision_point": "attendance.day.penalise",
+      "siblings": [
+        {
+          "code": "RL-BAND-LOW",
+          "when": "attendance.late_minutes > 120m AND attendance.late_minutes <= 240m"
+        }
+      ],
+      "rule": {
+        "code": "RL-BAND-HIGH",
+        "when": "attendance.late_minutes > 240m"
+      },
+      "expect": {
+        "publishable": true
+      }
+    },
+    {
+      "id": "RC-05.b",
+      "class": "RC-05",
+      "kind": "rules_publish_conflict",
+      "title": "and one priority keystroke separates a genuine tie, so the refusal is a one-click fix rather than a research project",
+      "decision_point": "attendance.day.penalise",
+      "siblings": [
+        {
+          "code": "RL-TIE-A",
+          "when": "attendance.late_minutes > 30m"
+        }
+      ],
+      "rule": {
+        "code": "RL-TIE-B",
+        "when": "attendance.late_minutes > 20m",
+        "priority": 1
+      },
+      "expect": {
+        "publishable": true
+      }
+    },
+    {
+      "id": "RC-08.a",
+      "class": "RC-08",
+      "kind": "rules_effective_date",
+      "title": "the version in force ON THE EVALUATION DATE applies, never the newest-published",
+      "note": "A recalculation of July, run in August, must compute July. SmartPRS 2 reads the current row, so re-running a closed period silently produces different numbers.",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-DATED",
+          "when": "attendance.late_minutes > 10m",
+          "from": "2026-04-01",
+          "to": "2026-07-31"
+        },
+        {
+          "code": "RL-DATED-2",
+          "when": "attendance.late_minutes > 60m",
+          "from": "2026-08-01"
+        }
+      ],
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 30
+        }
+      },
+      "expect": {
+        "on": {
+          "2026-07-15": "matched",
+          "2026-08-15": "no_match"
+        }
+      }
+    },
+    {
+      "id": "RC-17.a",
+      "class": "RC-17",
+      "kind": "rules_stored_cases",
+      "title": "a rule carrying stored cases whose expectations no longer hold is refused at publish, listing the failing cases",
+      "decision_point": "attendance.day.penalise",
+      "rule": {
+        "code": "RL-REGRESSED",
+        "when": "attendance.late_minutes > 30m"
+      },
+      "cases": [
+        {
+          "name": "forty minutes is penalised",
+          "late_minutes": 40,
+          "expect_match": true
+        },
+        {
+          "name": "ten minutes is not, but the case says it is",
+          "late_minutes": 10,
+          "expect_match": true
+        }
+      ],
+      "expect": {
+        "publishable": false,
+        "gate": "R08",
+        "message_contains": "ten minutes is not"
+      }
+    },
+    {
+      "id": "RC-20.a",
+      "class": "RC-20",
+      "kind": "rules_determinism",
+      "title": "the same corpus evaluated repeatedly in shuffled order gives identical outcomes AND identical traces",
+      "note": "Traces included: a trace that varies between runs cannot be the answer to 'why', which is the only reason it exists.",
+      "runs": 50
+    },
+    {
+      "id": "RC-16.a",
+      "class": "RC-16",
+      "kind": "simulator_equals_production",
+      "title": "the same subject and date through the simulator and through the live path give identical actions and identical traces, byte for byte",
+      "note": "SmartPRS 2's Simulator clamps at a different point from computeSlip, so the two disagree about the same employee. Here the simulator IS the engine — it adds draft visibility and nothing else — and the assertion is over the deterministic trace rendering, not a summary.",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-SIM-A",
+          "when": "attendance.late_minutes > 10m",
+          "on_conflict": "all_match"
+        },
+        {
+          "code": "RL-SIM-B",
+          "when": "attendance.late_minutes > 20m",
+          "on_conflict": "all_match",
+          "scope": {
+            "branch": [
+              "HYD"
+            ]
+          }
+        }
+      ],
+      "dimensions": {
+        "branch": "HYD"
+      },
+      "context": {
+        "attendance.late_minutes": {
+          "minutes": 30
+        }
+      },
+      "expect": {
+        "identical": true
+      }
+    },
+    {
+      "id": "RC-18.a",
+      "class": "RC-18",
+      "kind": "rules_fault_injection",
+      "title": "a fault at each of symbol resolution, aggregation, ledger read and scope resolution produces a named error and no actions",
+      "note": "R-VII-015's mechanism was complete except for the declaration that arms it: Symbol carried the flag, SymbolTable had requiringNotNull(), the evaluator raised ERR_MISSING_INPUT, a unit test asserted the behaviour — and not one decision point declared a symbol, so the branch was unreachable and every missing input read as 'no rule matched'. SmartPRS 2's paidLeaveDays():1065 is the cost of that: an unknown type_id is treated as PAID, and LeaveController::apply() never writes type_id at all.",
+      "faults": [
+        {
+          "name": "symbol resolution: day.date is not supplied",
+          "decision_point": "attendance.day.classify",
+          "rules": [
+            {
+              "code": "R-CLASSIFY",
+              "when": "day.is_holiday = FALSE AND day.date >= #2026-01-01#",
+              "action": "SET_STATUS"
+            }
+          ],
+          "expect_error": "ERR_MISSING_INPUT",
+          "context": {
+            "day.is_holiday": {
+              "boolean": false
+            }
+          }
+        },
+        {
+          "name": "aggregation: no aggregator is available",
+          "decision_point": "attendance.day.classify",
+          "rules": [
+            {
+              "code": "R-AGG",
+              "when": "agg.count(late_arrival, payroll_period) >= 3",
+              "action": "SET_STATUS"
+            }
+          ],
+          "expect_error": "ERR_AGG_UNAVAILABLE",
+          "context": {}
+        },
+        {
+          "name": "ledger read: the leave balance was never read",
+          "decision_point": "leave.request.charge",
+          "rules": [
+            {
+              "code": "R-BAL",
+              "when": "leave.type = 'EL' AND leave.balance('EL') > 0d",
+              "action": "CHARGE_DAY"
+            }
+          ],
+          "expect_error": "ERR_MISSING_INPUT",
+          "context": {
+            "leave.type": {
+              "code": "EL"
+            }
+          }
+        },
+        {
+          "name": "scope resolution: two rules tie on specificity and priority",
+          "decision_point": "attendance.day.classify",
+          "rules": [
+            {
+              "code": "R-TIE-A",
+              "when": "day.is_holiday = FALSE",
+              "priority": 10,
+              "scope": {
+                "branch": "HYD"
+              },
+              "action": "SET_STATUS"
+            },
+            {
+              "code": "R-TIE-B",
+              "when": "day.is_holiday = FALSE",
+              "priority": 10,
+              "scope": {
+                "branch": "HYD"
+              },
+              "action": "SET_STATUS"
+            }
+          ],
+          "expect_error": "ERR_PRECEDENCE_TIE",
+          "dimensions": {
+            "branch": "HYD"
+          },
+          "context": {
+            "day.is_holiday": {
+              "boolean": false
+            },
+            "day.date": {
+              "date": "2026-08-26"
+            }
+          }
+        }
+      ],
+      "controls": [
+        {
+          "name": "the same classify rule with day.date supplied",
+          "decision_point": "attendance.day.classify",
+          "rules": [
+            {
+              "code": "R-CLASSIFY",
+              "when": "day.is_holiday = FALSE AND day.date >= #2026-01-01#",
+              "action": "SET_STATUS"
+            }
+          ],
+          "expect_actions": 1,
+          "context": {
+            "day.is_holiday": {
+              "boolean": false
+            },
+            "day.date": {
+              "date": "2026-08-26"
+            }
+          }
+        },
+        {
+          "name": "the same charge rule with the balance read",
+          "decision_point": "leave.request.charge",
+          "rules": [
+            {
+              "code": "R-BAL",
+              "when": "leave.type = 'EL' AND leave.balance('EL') > 0d",
+              "action": "CHARGE_DAY"
+            }
+          ],
+          "expect_actions": 1,
+          "context": {
+            "leave.type": {
+              "code": "EL"
+            },
+            "leave.balance('EL')": {
+              "days": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "RC-19.a",
+      "class": "RC-19",
+      "kind": "rules_impact_preview",
+      "title": "the previewed changed-employee count and the actual differ by zero, and a preview taken before the effective date does not",
+      "note": "The blueprint asks for the impact preview in six places and it existed in none of them: it runs BEFORE publication on real data, names every affected employee, is stored with the version and shown to the approver, and is mandatory above a fifth of the tenant or for any money action. The 'actual' here is computed WITHOUT going through ImpactPreview — otherwise the case would assert that a function equals itself. The early-preview number is 4 rather than 3 and rather than 0: at 15 September the proposed version is not yet in force, so the four people the CURRENT rule penalises are the ones whose outcome differs between a set that fires and a set that does not. A preview run against 'today' would show that, and it is the wrong answer to the question the approver asked.",
+      "decision_point": "attendance.day.penalise",
+      "effective_from": "2026-10-01",
+      "previewed_early_at": "2026-09-15",
+      "current": [
+        {
+          "code": "R-LATE-30",
+          "when": "attendance.late_minutes > 30m",
+          "from": "2026-04-01",
+          "action": "APPLY_DAY_PENALTY"
+        }
+      ],
+      "proposed": [
+        {
+          "code": "R-LATE-10",
+          "when": "attendance.late_minutes > 10m",
+          "from": "2026-10-01",
+          "action": "APPLY_DAY_PENALTY"
+        }
+      ],
+      "population": [
+        {
+          "subject_id": "E-0001",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 5
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0002",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 12
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0003",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 20
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0004",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 35
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0005",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 60
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0006",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 0
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0007",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 11
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0008",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 31
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0009",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 9
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0010",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 45
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "changed": 3,
+        "errored": 0,
+        "requires_approval": true,
+        "changed_if_previewed_early": 4,
+        "render_contains": [
+          "of 10 subjects change",
+          "money-affecting"
+        ]
+      }
+    },
+    {
+      "id": "RC-19.b",
+      "class": "RC-19",
+      "kind": "rules_impact_preview",
+      "title": "rewording the reason and nothing else is reported as an explanation change, not as the whole tenant's arithmetic moving",
+      "note": "This distinction only became obvious once the preview was on a screen: the first version fingerprinted the rendered actions, so a typo fix in a reason reported every employee as affected. A preview that cries wolf on a typo fix is one people learn to click past — and the click they learn is the one that matters on the version that does change the money. So effect and explanation are counted separately, and neither is hidden: the reworded text is what the employee reads, so the subjects are still named.",
+      "decision_point": "attendance.day.penalise",
+      "effective_from": "2026-10-01",
+      "current": [
+        {
+          "code": "R-LATE-30",
+          "when": "attendance.late_minutes > 30m",
+          "from": "2026-04-01",
+          "action": "APPLY_DAY_PENALTY",
+          "reason": "A late arrival over the grace costs half a day."
+        }
+      ],
+      "proposed": [
+        {
+          "code": "R-LATE-30",
+          "when": "attendance.late_minutes > 30m",
+          "from": "2026-04-01",
+          "action": "APPLY_DAY_PENALTY",
+          "reason": "Arriving more than the permitted grace after shift start costs half a day."
+        }
+      ],
+      "population": [
+        {
+          "subject_id": "E-0001",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 5
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0002",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 12
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0003",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 20
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0004",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 35
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0005",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 60
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0006",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 0
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0007",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 11
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0008",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 31
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0009",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 9
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        },
+        {
+          "subject_id": "E-0010",
+          "context": {
+            "attendance.late_minutes": {
+              "minutes": 45
+            },
+            "day.date": {
+              "date": "2026-10-01"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "changed": 0,
+        "annotation_only": 4,
+        "errored": 0,
+        "requires_approval": true,
+        "render_contains": [
+          "0 of 10 subjects change",
+          "the explanation changed, the arithmetic did not"
+        ]
+      }
+    }
+  ]
+}

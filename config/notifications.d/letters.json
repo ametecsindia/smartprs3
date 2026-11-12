@@ -1,0 +1,13 @@
+{
+ "events": {
+  "letter.acknowledge": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "Please acknowledge: {letter}",
+   "body": "{letter} was issued to you on {issued_on}. Open HR Letters → My Letters, read it and click \"I acknowledge\".",
+   "audience": "employee",
+   "audience_note": "The employee a letter needing acknowledgement was issued to (owner, 23 Oct 2026). One per letter."
+  }
+ }
+}

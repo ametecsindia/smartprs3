@@ -1,0 +1,64 @@
+{
+    "brand": "SmartPRS",
+    "tagline": "by Ametecs",
+    "hero": {
+        "badge": "HRM · Payroll · RBI Audit-Readiness",
+        "title": "HR, payroll & RBI audit-readiness for India's collections & recovery industry",
+        "subtitle": "Biometric attendance with working shifts, automated India-compliant payroll, DRA/PCC agent compliance and one-click RBI audit reports on your own letterhead — be audit-ready before the 1 October 2026 directions.",
+        "cta": "Request a Demo",
+        "cta2": "Sign in",
+        "image": "images/hero.png"
+    },
+    "stats": [
+        {"n": "500+", "l": "Employees managed"},
+        {"n": "16", "l": "HR modules · 119 screens"},
+        {"n": "1-click", "l": "RBI agent audit file"},
+        {"n": "SaaS + On-Prem", "l": "Cloud or L1/L2/L3 licence"}
+    ],
+    "features": [
+        {"icon": "gauge-high", "title": "Dashboard", "desc": "Your live command centre — headcount, attendance, payroll and escalation KPIs at a glance."},
+        {"icon": "user-plus", "title": "Hiring & Onboarding", "desc": "Requisitions with approval, job-portal imports into a talent pool, hiring drives, WhatsApp invites, interviews and one-click hire."},
+        {"icon": "users", "title": "People", "desc": "One source of truth for every employee — profiles, teams, documents and org structure."},
+        {"icon": "fingerprint", "title": "Time & Attendance", "desc": "Biometric (ZKTeco, cloud, CSV) and geo-fenced selfie punch, named working shifts with night allowance, rosters and a wizard-built late policy."},
+        {"icon": "umbrella-beach", "title": "Leave", "desc": "Leave types, balances, holiday calendars and self-service approval workflows."},
+        {"icon": "money-check-dollar", "title": "Payroll", "desc": "Automated, India-compliant payroll — shift-aware late cuts, night allowance, A4 payslips with a plain-English calculation note on every slip."},
+        {"icon": "hand-holding-dollar", "title": "Compensation & Claims", "desc": "Salary structures, reimbursements, expenses, advances and loans — all with approvals."},
+        {"icon": "scale-balanced", "title": "Statutory & Compliance", "desc": "PF, ESI, PT and TDS returns — plus one-click RBI agent audit reports (single or bulk) on your own letterhead, with a verdict per agent."},
+        {"icon": "trophy", "title": "Performance & Rewards", "desc": "Goals, reviews, incentives, points and leaderboards that keep field teams driven."},
+        {"icon": "graduation-cap", "title": "Learning & Knowledge", "desc": "Training programs, courses, assessments, FAQs and a searchable knowledge base."},
+        {"icon": "file-signature", "title": "HR Letters", "desc": "Offer, appointment, increment, warning and relieving letters from smart templates."},
+        {"icon": "route", "title": "Field Force", "desc": "Off-roll agents, DRA/PCC compliance, geo-tracking and the bank escalation desk."},
+        {"icon": "bullhorn", "title": "Communication", "desc": "Notice board, announcements and targeted email, SMS and WhatsApp messaging."},
+        {"icon": "chart-line", "title": "Reports & Analytics", "desc": "Attendance, payroll, compliance and workforce insights — exportable on demand."},
+        {"icon": "sliders", "title": "Administration", "desc": "Companies, roles, masters, policy repository, exit clearance and a tamper-evident (hash-chained) audit trail of every change."},
+        {"icon": "building-user", "title": "SaaS Platform", "desc": "Run multiple companies from one tenant, with plans, billing and GST invoicing."}
+    ],
+    "plans": [
+        {"name": "Starter", "price": "₹1,000", "period": "/mo + GST", "highlight": "0", "features": "Up to 25 employees, All 16 modules included, Extra employee ₹60/mo, Extra company ₹1000/mo, Minimum 3 months advance — 0% discount, 6 months payment — 10% discount, 12 months payment — 25% discount"},
+        {"name": "Growth", "price": "₹2,500", "period": "/mo + GST", "highlight": "1", "features": "Up to 75 employees, All 16 modules included, Extra employee ₹50/mo, Extra company ₹1000/mo, Minimum 3 months advance — 0% discount, 6 months payment — 10% discount, 12 months payment — 25% discount"},
+        {"name": "Professional", "price": "₹5,000", "period": "/mo + GST", "highlight": "0", "features": "Up to 150 employees, All 16 modules included, Extra employee ₹40/mo, Extra company ₹1000/mo, Minimum 3 months advance — 0% discount, 6 months payment — 10% discount, 12 months payment — 25% discount"}
+    ],
+    "clients": [
+        {"name": "Exon"}, {"name": "Storm"}, {"name": "Numero Uno"}, {"name": "Vimal Enterprises"}
+    ],
+    "about": {
+        "eyebrow": "Why SmartPRS",
+        "title": "Built inside the industry, not just for it",
+        "body": "SmartPRS was not designed in a software lab. Since 2019, Ametecs has built every product on a community-development model — growing through regular feedback, real experiences, pain points and ideas shared by industry leaders, experienced professionals and domain experts from India's collections & recovery world.\n\nThat is how SmartDCM, our debt collection platform, was built — by deeply studying each client's requirement and answering it with innovative, practical solutions. The same method now powers SmartPRS: every module — from biometric attendance and statutory payroll to incentive engines and DRA/PCC compliance — exists because someone in the industry asked for it. That is what makes SmartPRS feel familiar from the very first login.",
+        "proof": "SmartDCM by Ametecs today serves 300+ collection agencies with 2,500+ users across India.",
+        "proof_label": "Know more at smartdcm.app",
+        "proof_url": "https://www.smartdcm.app",
+        "founder": "Ejaz Hussain",
+        "founder_role": "Founder & Managing Director, Ametecs India Pvt. Ltd.",
+        "short": "The complete workforce platform for India's collections & recovery industry — built from deep industry experience and the feedback of agency teams across the country. Conceived and led by Ejaz Hussain, Managing Director, Ametecs India."
+    },
+    "contact": {
+        "email": "sales@ametecsindia.com",
+        "phone": "+91 96666 12424, +91 77020 01122",
+        "whatsapp": "919000098877",
+        "lead_email": "sales@ametecsindia.com",
+        "lead_wa": "919000098877",
+        "address": "M/s. Ametecs India Private Limited\nModern Profound Techpark, Ground Floor,\nHive Space, opp. Google, Whitefields,\nKondapur, Hyderabad, Telangana,\nIndia 500084 · GST: 36AAHCT0971F1ZB"
+    },
+    "footer": "© {{YEAR}} Ametecs India Pvt. Ltd. All rights reserved."
+}

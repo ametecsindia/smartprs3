@@ -1,0 +1,706 @@
+{
+  "engine": "WORKFLOW",
+  "spec": "Part XXX §XXX.3.4, spine S8",
+  "note": "The cases here need no database: they exercise the decision rules, the participant resolution and the SLA clock, which are the parts §IX.6.3 calls mechanisms. The persistence mechanisms — the conditional UPDATE and the seq under lock — are proved against a real database in tests/workflow_persistence_test.php and tests/workflow_timers_test.php.",
+  "cases": [
+    {
+      "id": "WC-01.a",
+      "class": "WC-01",
+      "kind": "workflow_decide_twice",
+      "title": "approve then approve again: the second call is refused and the first decision is unchanged",
+      "first": {
+        "state": "approved",
+        "by": "u-mgr",
+        "comment": "cover arranged"
+      },
+      "second": {
+        "state": "approved",
+        "by": "u-other",
+        "comment": ""
+      },
+      "expect": {
+        "refused": true,
+        "comment_unchanged": "cover arranged",
+        "decided_by_unchanged": "u-mgr"
+      }
+    },
+    {
+      "id": "WC-01.b",
+      "class": "WC-01",
+      "kind": "workflow_decide_twice",
+      "title": "approve then reject is the same refusal — a decided step is immutable whatever the second decision says",
+      "note": "SmartPRS 2 re-fires transfer orders and increment letters on re-approval, and its decide() writes remarks unconditionally so a blank re-decide erases the prior reason.",
+      "first": {
+        "state": "approved",
+        "by": "u-mgr",
+        "comment": "approved on cover"
+      },
+      "second": {
+        "state": "rejected",
+        "by": "u-mgr",
+        "comment": ""
+      },
+      "expect": {
+        "refused": true,
+        "comment_unchanged": "approved on cover",
+        "decided_by_unchanged": "u-mgr"
+      }
+    },
+    {
+      "id": "WC-03.a",
+      "class": "WC-03",
+      "kind": "workflow_quorum",
+      "title": "quorum at n−1, n and n+1 approvals",
+      "n": 2,
+      "m": 3,
+      "expect": {
+        "at_n_minus_1": "pending",
+        "at_n": "approved",
+        "at_n_plus_1": "approved"
+      }
+    },
+    {
+      "id": "WC-03.b",
+      "class": "WC-03",
+      "kind": "workflow_parallel",
+      "title": "parallel_all: a rejection decides the node whichever order the decisions arrive in",
+      "expect": {
+        "deterministic": true,
+        "outcome": "rejected"
+      }
+    },
+    {
+      "id": "WC-05.a",
+      "class": "WC-05",
+      "kind": "workflow_sla",
+      "title": "at breach−1s nothing escalates; at breach+1s exactly one escalation",
+      "sla_minutes": 480,
+      "escalation_policy": "notify_only",
+      "expect": {
+        "before": "none",
+        "after": "notify"
+      }
+    },
+    {
+      "id": "WC-05.b",
+      "class": "WC-05",
+      "kind": "workflow_sla",
+      "title": "and an automatic decision on a timer that fired long after its due instant is WITHHELD",
+      "note": "R-IX-066. A scheduler outage followed by a catch-up sweep must never silently approve a backlog.",
+      "sla_minutes": 480,
+      "escalation_policy": "auto_approve",
+      "stale_threshold_minutes": 15,
+      "late_by_minutes": 360,
+      "expect": {
+        "after": "suppressed"
+      }
+    },
+    {
+      "id": "WC-06.a",
+      "class": "WC-06",
+      "kind": "workflow_self_approval",
+      "title": "the requester holding the approver role is excluded, and the trace names the prohibition",
+      "holders": [
+        "u-ejaz",
+        "u-priya",
+        "u-anil"
+      ],
+      "requester": "u-ejaz",
+      "subject": "u-priya",
+      "expect": {
+        "resolved": [
+          "u-anil"
+        ],
+        "render_contains": [
+          "R-IX-036"
+        ]
+      }
+    },
+    {
+      "id": "WC-12.a",
+      "class": "WC-12",
+      "kind": "workflow_terminal",
+      "title": "withdrawal is terminal on a task: any later decision is refused",
+      "first": {
+        "state": "withdrawn",
+        "by": "u-ejaz",
+        "comment": "withdrawn"
+      },
+      "second": {
+        "state": "approved",
+        "by": "u-mgr",
+        "comment": ""
+      },
+      "expect": {
+        "refused": true
+      },
+      "note": "`cancelled` is an INSTANCE state; the terminal task state a requester reaches is `withdrawn`. The corpus said the wrong word and TaskState refused it, which is the closed vocabulary of §IX.4 doing its job — there is no string that is almost a state."
+    },
+    {
+      "id": "WC-02.a",
+      "class": "WC-02",
+      "kind": "workflow_concurrent_decision",
+      "title": "two decisions from two connections in two open transactions: exactly one succeeds, the loser gets the decision that stands, exactly one transition row",
+      "note": "R-IX-045 names this test and names what it must assert. It needs two real connections — one handle deciding twice tests the status column, not the race — so it reports NOT RUN rather than PASS when there is no database.",
+      "at": "2026-08-15 10:00:00"
+    },
+    {
+      "id": "WC-08.a",
+      "class": "WC-08",
+      "kind": "workflow_transition_audit",
+      "title": "every transition and every refused attempt is in the audit ledger, with actor, timestamp, decision and comment",
+      "note": "R-IX-105/106/107. The transition ledger and the audit ledger were unconnected: workflow code contained no reference to audit at all. R-IX-107's refused attempts are the half SmartPRS 2 has nothing of — a 403 that writes nothing cannot say who tried.",
+      "at": "2026-08-15 10:00:00",
+      "upstream_refusals": [
+        {
+          "reason": "self-approval: the requester is the assignee",
+          "actor": "100"
+        }
+      ],
+      "expect": {
+        "actions": {
+          "workflow.task_decided": 1,
+          "workflow.task_decision_refused": 2,
+          "workflow.transitioned": 1
+        }
+      }
+    },
+    {
+      "id": "WC-10.a",
+      "class": "WC-10",
+      "kind": "workflow_amount_route",
+      "title": "at, below and above each threshold: ₹49,999.99 to the manager, ₹50,000.00 to the director, and the amendment re-routes",
+      "note": "R-IX-077: integer minor units, `from` inclusive and `to` exclusive. ₹50,000.00 belongs to exactly one band, and which one is the difference between a manager and a director approving it. SmartPRS 2 compares loan instalments as floats and its SchemeController carries explicit 0.005 epsilons — the code acknowledging its own comparisons are unreliable.",
+      "bands": [
+        {
+          "from": null,
+          "to": 5000000,
+          "participants": [
+            "manager"
+          ]
+        },
+        {
+          "from": 5000000,
+          "to": 50000000,
+          "participants": [
+            "director"
+          ]
+        },
+        {
+          "from": 50000000,
+          "to": null,
+          "participants": [
+            "board"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "minor": 0,
+          "expect": 0
+        },
+        {
+          "minor": -100,
+          "expect": 0,
+          "note": "a credit note is a real amount, and the unbounded lower band admits it rather than stranding the instance"
+        },
+        {
+          "minor": 4999999,
+          "expect": 0
+        },
+        {
+          "minor": 5000000,
+          "expect": 1,
+          "note": "the threshold itself: `from` is inclusive"
+        },
+        {
+          "minor": 5000001,
+          "expect": 1
+        },
+        {
+          "minor": 49999999,
+          "expect": 1
+        },
+        {
+          "minor": 50000000,
+          "expect": 2
+        },
+        {
+          "minor": 100000000,
+          "expect": 2
+        }
+      ],
+      "amendment": {
+        "at_creation": 4000000,
+        "at_activation": 40000000,
+        "expect_reroute": true
+      }
+    },
+    {
+      "id": "WC-10.b",
+      "class": "WC-10",
+      "kind": "workflow_amount_route",
+      "title": "a gap in the bands is a refusal naming the unroutable amount, not a silent fall-through to the last band",
+      "note": "W08 makes this impossible at publish, so reaching it is a platform bug. It is asserted anyway, because the alternative to refusing is an instance that strands at the node holding the money.",
+      "bands": [
+        {
+          "from": 0,
+          "to": 5000000
+        },
+        {
+          "from": 10000000,
+          "to": null
+        }
+      ],
+      "probes": [
+        {
+          "minor": 0,
+          "expect": 0
+        },
+        {
+          "minor": 7500000,
+          "expect": "refused",
+          "message_contains": "No band admits"
+        },
+        {
+          "minor": -1,
+          "expect": "refused",
+          "message_contains": "No band admits"
+        }
+      ]
+    },
+    {
+      "id": "WC-10.c",
+      "class": "WC-10",
+      "kind": "workflow_amount_route",
+      "title": "a float boundary is refused outright rather than compared",
+      "note": "R-IX-077. Not 'floats are discouraged': a band boundary that is not an integer never reaches a comparison.",
+      "bands": [
+        {
+          "from": 0,
+          "to": 50000.5
+        }
+      ],
+      "probes": [
+        {
+          "minor": 100,
+          "expect": "refused",
+          "message_contains": "minor units"
+        }
+      ]
+    },
+    {
+      "id": "WC-09.a",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "an ACTIVE delegation moves the task to the delegate, and the trace names the window it is in force for",
+      "as_of": "2026-08-26",
+      "holders": [
+        "u-a"
+      ],
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b",
+          "effective_from": "2026-08-20",
+          "effective_to": "2026-08-31"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-b"
+        ],
+        "render_contains": [
+          "u-a → u-b",
+          "20 Aug – 31 Aug 2026"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.b",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "the same delegation one day after it ends does nothing — the approver keeps their own work",
+      "note": "This state could not be expressed at all until delegations carried dates. A delegation raised for a fortnight's leave routed approvals for ever, which is how a queue ends up with somebody who left in March.",
+      "as_of": "2026-09-01",
+      "holders": [
+        "u-a"
+      ],
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b",
+          "effective_from": "2026-08-20",
+          "effective_to": "2026-08-31"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-a"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.c",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "and on its last day it still applies — `effective_to` is inclusive, because the last day of leave is a day of leave",
+      "as_of": "2026-08-31",
+      "holders": [
+        "u-a"
+      ],
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b",
+          "effective_from": "2026-08-20",
+          "effective_to": "2026-08-31"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-b"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.d",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "a chain: A delegates to B, who is out of office with C as backup, so the work lands on C",
+      "note": "Following one hop and stopping assigns the task to somebody the system already knows is away.",
+      "as_of": "2026-08-26",
+      "holders": [
+        "u-a"
+      ],
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b"
+        },
+        {
+          "from": "u-b",
+          "to": "u-c",
+          "kind": "out-of-office backup"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-c"
+        ],
+        "render_contains": [
+          "out-of-office backup"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.e",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "a CIRCULAR delegation is refused, naming the loop, and that candidate is excluded rather than resolved arbitrarily",
+      "note": "A → B → A has no terminal delegate. Taking the first hop hands the task to the person the delegation existed to route around — on half the runs.",
+      "as_of": "2026-08-26",
+      "holders": [
+        "u-a"
+      ],
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b"
+        },
+        {
+          "from": "u-b",
+          "to": "u-a"
+        }
+      ],
+      "expect": {
+        "resolved": [],
+        "render_contains": [
+          "Circular delegation",
+          "u-a → u-b → u-a"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.f",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "but only that candidate: a node with another eligible approver still routes",
+      "as_of": "2026-08-26",
+      "holders": [
+        "u-a",
+        "u-d"
+      ],
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b"
+        },
+        {
+          "from": "u-b",
+          "to": "u-a"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-d"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.g",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "a node that forbids delegation keeps the original approver",
+      "note": "`delegation_allowed` has been written by the publisher since the workflow payload landed and nothing read it, so a node declaring that its approval may not be delegated was delegating it anyway.",
+      "as_of": "2026-08-26",
+      "holders": [
+        "u-a"
+      ],
+      "delegation_allowed": false,
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-a"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.h",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "R-IX-036 identity 3: whoever holds the work under a delegation from the requester cannot approve it — but only while that delegation is in force",
+      "as_of": "2026-08-26",
+      "holders": [
+        "u-b"
+      ],
+      "requester": "u-a",
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b",
+          "effective_to": "2026-08-31"
+        }
+      ],
+      "expect": {
+        "resolved": [],
+        "render_contains": [
+          "holds a delegation from u-a"
+        ]
+      }
+    },
+    {
+      "id": "WC-09.i",
+      "class": "WC-09",
+      "kind": "workflow_delegation",
+      "title": "and once it has expired the former delegate is an approver again — an expired delegation is not a permanent taint",
+      "as_of": "2026-09-01",
+      "holders": [
+        "u-b"
+      ],
+      "requester": "u-a",
+      "delegations": [
+        {
+          "from": "u-a",
+          "to": "u-b",
+          "effective_to": "2026-08-31"
+        }
+      ],
+      "expect": {
+        "resolved": [
+          "u-b"
+        ]
+      }
+    },
+    {
+      "id": "WC-11.a",
+      "class": "WC-11",
+      "kind": "workflow_return_for_edit",
+      "title": "a returned task keeps its decision, its actor and its reason, and the resubmission is a new row pointing at it",
+      "note": "SmartPRS 2 returns a request by writing over the same row — the status goes back to pending and the remark is replaced, so the fact that a manager once returned it, and why, is gone. The reason somebody was asked to fix their claim is exactly what the next approver needs to see.",
+      "at": "2026-08-15 10:00:00",
+      "return_reason": "the dates overlap an approved leave"
+    },
+    {
+      "id": "WC-04.a",
+      "class": "WC-04",
+      "kind": "workflow_version_pinning",
+      "title": "an instance mid-flight on v1 completes on v1 while a new instance starts on v2 — and the pin is what the definition is READ through",
+      "note": "`workflow_instances.config_version_id` existed since the workflow migration and nothing read it, so this was a property of a column rather than of the platform. SmartPRS 2 reads its approval steps from the current configuration on every request, so editing a chain silently rewrites every request already in flight.",
+      "v1_published": "2026-08-01 09:00:00",
+      "instance_started": "2026-08-10 09:00:00",
+      "v2_published": "2026-08-20 09:00:00",
+      "second_instance": "2026-08-25 09:00:00"
+    },
+    {
+      "id": "WC-07.a",
+      "class": "WC-07",
+      "kind": "workflow_shapes",
+      "title": "five maker-checker shapes through ONE engine, and zero approval code outside the workflow namespace",
+      "note": "SmartPRS 2 has an approval implementation per module, which is why a fix to the leave one never reaches the loan one. The structural half states how many files it actually read, because '0 offenders out of 0 files' is the vacuous version of this check. Note that parallel_all completes as 'joined' and parallel_any as 'first_completed' rather than 'approved': the node's outcome is what the NODE did, and collapsing both into 'approved' is how a join and a race stop being distinguishable in the history.",
+      "shapes": [
+        {
+          "label": "single approver, approved",
+          "node_type": "approval",
+          "tasks": [
+            {
+              "decision": "approved"
+            }
+          ],
+          "expect": "approved"
+        },
+        {
+          "label": "single approver, rejected",
+          "node_type": "approval",
+          "tasks": [
+            {
+              "decision": "rejected"
+            }
+          ],
+          "expect": "rejected"
+        },
+        {
+          "label": "single approver, still waiting",
+          "node_type": "approval",
+          "tasks": [
+            {
+              "decision": null
+            }
+          ],
+          "expect": "pending"
+        },
+        {
+          "label": "parallel-all: one outstanding is still pending",
+          "node_type": "parallel_all",
+          "tasks": [
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": null
+            }
+          ],
+          "expect": "pending"
+        },
+        {
+          "label": "parallel-all: every approver in",
+          "node_type": "parallel_all",
+          "tasks": [
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": "approved"
+            }
+          ],
+          "expect": "joined"
+        },
+        {
+          "label": "parallel-all: one rejection decides it",
+          "node_type": "parallel_all",
+          "tasks": [
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": "rejected"
+            },
+            {
+              "decision": null
+            }
+          ],
+          "expect": "rejected"
+        },
+        {
+          "label": "parallel-any: the first approval decides it",
+          "node_type": "parallel_any",
+          "tasks": [
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": null
+            },
+            {
+              "decision": null
+            }
+          ],
+          "expect": "first_completed"
+        },
+        {
+          "label": "quorum 2 of 3 at n−1",
+          "node_type": "quorum",
+          "params": {
+            "n": 2,
+            "m": 3,
+            "tie_policy": "reject"
+          },
+          "tasks": [
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": null
+            },
+            {
+              "decision": null
+            }
+          ],
+          "expect": "pending"
+        },
+        {
+          "label": "quorum 2 of 3 at n",
+          "node_type": "quorum",
+          "params": {
+            "n": 2,
+            "m": 3,
+            "tie_policy": "reject"
+          },
+          "tasks": [
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": "approved"
+            },
+            {
+              "decision": null
+            }
+          ],
+          "expect": "approved"
+        },
+        {
+          "label": "return-for-edit is an outcome of the same engine",
+          "node_type": "approval",
+          "tasks": [
+            {
+              "decision": "returned"
+            }
+          ],
+          "expect": "returned"
+        }
+      ],
+      "scan": [
+        "src/Platform/*/*.php",
+        "src/Platform/*/*/*.php"
+      ],
+      "forbidden_outside_workflow": [
+        "TaskState::Approved",
+        "->outcomeOf(",
+        "WorkflowEngine("
+      ],
+      "expect_min_files_scanned": 100
+    }
+  ]
+}

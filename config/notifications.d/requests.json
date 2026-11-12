@@ -1,0 +1,14 @@
+{
+  "note": "A REQUEST RAISED BY ANY EMPLOYEE (owner, 8 Oct) is told to everybody above them in the reporting line, the Branch Admins of their branch (including branches a Branch Admin looks after), and every role whose reach is the whole company (HR Admin, Company Admin, administrator — Roles & Permissions decides). In the bell and on Notifications. `request.raised` words every kind below it unless a kind is declared on its own.",
+  "events": {
+    "request.raised": {
+      "channels": ["in_app"],
+      "title": "{what}: {code} · {name}",
+      "body": "{name} ({code}) raised a {what}. {details}",
+      "audience": "the requester's reporting line, their branch's Branch Admins, company-wide roles",
+      "audience_note": "Never the requester. One message per recipient, so nobody is skipped because a colleague was told first."
+    }
+  },
+  "request_modules": ["advances", "loans", "expenses", "exits", "helpdesk", "leaves", "attendance-corrections", "commissions", "bonus"],
+  "request_modules_note": "The registers (config/modules.json keys) whose NEW rows are requests somebody approves. Add a key here to have its new rows told; nothing in code lists them."
+}

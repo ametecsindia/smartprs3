@@ -1,0 +1,159 @@
+{
+  "note": "A WORKFLOW IS A DECLARATION. SmartPRS 2 answers its request screens from a 108 KB controller where every approval chain is written out in PHP, so a customer who wants one more approver above ₹50,000 needs a release. Here that is a threshold in this file. Each workflow names its subject, its steps, who decides each one, and the amount thresholds that route it. WHAT RUNS THEM, HONESTLY: Surface\\\\Requests, which is 384 lines of linear chain with amount routing. This note used to claim the generic Platform\\\\Workflow engine ran them and that no workflow-specific code existed anywhere, and that was simply false — the engine exists, is tested, and has parallel nodes, quorum, SLA timers, delegation and escalation, and nothing on any screen calls it. A configuration file that misdescribes its own engine is worse than one with no note: it is read by the person deciding whether a customer's requirement is a config change or a release, and it would have told them the wrong answer.",
+  "workflows": [
+    {
+      "key": "leave-request",
+      "label": "Leave request",
+      "subject": "leaves",
+      "raise_permission": "leave.request.submit",
+      "description": "An employee asks for leave; their manager decides. Above ten days it also goes to HR, because a long absence is a staffing decision and not only a manager's.",
+      "amount_field": "days",
+      "steps": [
+        {
+          "key": "submit",
+          "type": "submit",
+          "label": "Raised by the employee",
+          "by": "requester"
+        },
+        {
+          "key": "manager",
+          "type": "approval",
+          "label": "Reporting manager",
+          "by": "administrator",
+          "requires_comment": "on_reject",
+          "sla_hours": 48
+        },
+        {
+          "key": "hr",
+          "type": "approval",
+          "label": "HR, because it is a long absence",
+          "by": "administrator",
+          "when_amount_over": 10,
+          "requires_comment": "always",
+          "sla_hours": 72
+        }
+      ]
+    },
+    {
+      "key": "expense-claim",
+      "label": "Expense claim",
+      "subject": "expenses",
+      "raise_permission": "employee.view",
+      "description": "Reimbursement. Under ₹5,000 the manager finishes it; above that finance signs too, and above ₹50,000 so does the director.",
+      "amount_field": "amount",
+      "steps": [
+        {
+          "key": "submit",
+          "type": "submit",
+          "label": "Claimed",
+          "by": "requester"
+        },
+        {
+          "key": "manager",
+          "type": "approval",
+          "label": "Reporting manager",
+          "by": "administrator",
+          "sla_hours": 48
+        },
+        {
+          "key": "finance",
+          "type": "approval",
+          "label": "Finance",
+          "by": "administrator",
+          "when_amount_over": 5000,
+          "requires_comment": "on_reject",
+          "sla_hours": 72
+        },
+        {
+          "key": "director",
+          "type": "approval",
+          "label": "Director",
+          "by": "administrator",
+          "when_amount_over": 50000,
+          "requires_comment": "always",
+          "sla_hours": 120
+        }
+      ]
+    },
+    {
+      "key": "advance-request",
+      "label": "Salary advance",
+      "subject": "advances",
+      "raise_permission": "employee.view",
+      "description": "An advance against salary. The HR Admin / HR Manager decides, alone (owner, 22 Sep): no Finance or Director step, whatever the amount. The step key stays 'finance' so requests already waiting on it are not stranded mid-chain; the label is what anybody sees.",
+      "amount_field": "amount",
+      "steps": [
+        {
+          "key": "submit",
+          "type": "submit",
+          "label": "Requested",
+          "by": "requester"
+        },
+        {
+          "key": "finance",
+          "type": "approval",
+          "label": "HR Admin / HR Manager",
+          "by": "administrator",
+          "requires_comment": "on_reject",
+          "sla_hours": 72
+        }
+      ]
+    },
+    {
+      "key": "attendance-regularisation",
+      "label": "Attendance regularisation",
+      "subject": "attendance_corrections",
+      "raise_permission": "attendance.punch.create.manual",
+      "description": "A missing or wrong punch. The manager decides; nothing is written to attendance until they do.",
+      "steps": [
+        {
+          "key": "submit",
+          "type": "submit",
+          "label": "Raised",
+          "by": "requester"
+        },
+        {
+          "key": "manager",
+          "type": "approval",
+          "label": "Reporting manager",
+          "by": "administrator",
+          "requires_comment": "always",
+          "sla_hours": 24
+        }
+      ]
+    },
+    {
+      "key": "increment",
+      "label": "Salary increment",
+      "subject": "increments",
+      "raise_permission": "employee.update",
+      "description": "A pay change. HR proposes, finance confirms the cost, the director signs — three people, because nobody should be able to change their own pay or anybody else's alone.",
+      "amount_field": "new_ctc",
+      "steps": [
+        {
+          "key": "submit",
+          "type": "submit",
+          "label": "Proposed by HR",
+          "by": "requester"
+        },
+        {
+          "key": "finance",
+          "type": "approval",
+          "label": "Finance confirms the cost",
+          "by": "administrator",
+          "requires_comment": "on_reject",
+          "sla_hours": 72
+        },
+        {
+          "key": "director",
+          "type": "approval",
+          "label": "Director signs",
+          "by": "administrator",
+          "requires_comment": "always",
+          "sla_hours": 120
+        }
+      ]
+    }
+  ],
+  "sla_note": "`sla_hours` IS READ AND NOBODY IS TOLD. Surface\\\\Sla turns each open request's current step into the Node and Timer values Platform\\\\Workflow\\\\Sla\\\\Sweep decides about, so a step past its due-within is reported as breached, dated from the deadline rather than from when the sweep ran, and coalesced into one digest per approver. What does NOT happen: no notification, no reminder, no escalation, no reassignment, no automatic decision. There is no notification channel in this build, so at hour 49 of a 48-hour SLA the request appears on an overdue report and the approver hears nothing. `php tools/workflow-sweep.php --tenant=<id>` runs it and exits non-zero on a breach. A step that declares no sla_hours is reported as its own state and never counted as within SLA — nobody set it a deadline, which is not the same as keeping one."
+}

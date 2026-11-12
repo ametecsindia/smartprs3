@@ -1,0 +1,18 @@
+{
+ "note": "Learning & Knowledge → Code of Conduct. The versions an employee can acknowledge, newest first by `effective_from`. A revision is a NEW entry (law 3): an acknowledgement records the version it was given against, so an old acknowledgement never counts for a new text. The `current` version is the newest whose `effective_from` is not in the future.",
+ "versions": [
+  {
+   "version": "1.0",
+   "effective_from": "2026-01-01",
+   "title": "Code of Conduct",
+   "sections": [
+    {"heading": "Integrity", "text": "Act honestly in every dealing with borrowers, colleagues, clients and regulators. Never misrepresent an amount, a date or an authority."},
+    {"heading": "Fair practice", "text": "Follow the fair practices code in every contact: identify yourself, contact only at permitted hours, no harassment, no intimidation, no visits to a workplace without consent."},
+    {"heading": "Confidentiality", "text": "Borrower and company data is used only for the work assigned and never copied, shared or retained beyond it."},
+    {"heading": "Conflicts of interest", "text": "Declare any relationship with a borrower, vendor or client before acting on the account."},
+    {"heading": "Reporting", "text": "Report a breach, a suspected breach or pressure to breach to HR or the compliance officer. Retaliation against a reporter is itself a breach."}
+   ]
+  }
+ ],
+ "statement": "I have read and understood the Code of Conduct above and agree to abide by it."
+}

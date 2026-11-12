@@ -1,0 +1,7 @@
+{
+ "at": "2026-11-12",
+ "doing": "Nothing in progress.",
+ "next": "Owner: try Send on a letter page and an offer to a new candidate; build APK v1.2; see Project docs claude/changes_2026-11-12_*.md.",
+ "checks": "All five letter pages open without PHP warnings; draft + Send button live for increment / warning / relieving / NDA; new-candidate offer previewed in full (nothing sent). tests/mobile_activation_test.php 19/19. composer check not run (no shell on the PC).",
+ "stopped_at": "All committed and cmp-verified."
+}

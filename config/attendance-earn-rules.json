@@ -1,0 +1,59 @@
+{
+  "note": "WHAT A DAY EARNS BEYOND ITS PAY. `Platform\\Attendance\\DaySettlement` has computed `overtimeMinutes` for every settled day since Phase 4, and NOTHING has ever read it. The attendance screen printed it in a column and no comp-off was ever credited, no overtime was ever paid, and no rule could have said otherwise because this decision point had no rules published against it. A figure computed on every page load and consumed by nobody is not a feature; it is a number that makes a screen look complete. These rules are evaluated at `attendance.day.earn`, whose conflict policy is ALL_MATCH — a single day can earn overtime AND a comp-off, and a decision point that returns only the winner would hand somebody one of the two.",
+  "decision_point": "attendance.day.earn",
+  "why_a_separate_file": "One file per decision point, as with leave-rules.json. attendance.day.classify answers 'what kind of day was this' and takes the highest-priority answer; this one answers 'what did it earn' and takes every answer. Sharing a file would put two different conflict policies under one heading and invite somebody to move a rule between them.",
+  "comp_off": {
+    "leave_type": "CO",
+    "note": "The leave type a comp-off is credited to. Named here rather than in code, and the credit is REFUSED if config/leave-policy.json does not declare it — crediting days to a type nobody has declared writes a balance no screen shows and no payroll spends."
+  },
+  "rules": [
+    {
+      "code": "ATT-COMP-OFF-WEEKLY-OFF",
+      "module": "attendance",
+      "name": "A full day worked on a weekly off earns a comp-off",
+      "description": "Somebody who works a full shift on their weekly off has given up a day and is owed one. Credited as a day in the leave ledger rather than paid, because that is what the great majority of Indian employers do and because a ledger entry can be argued with, reversed and encashed — where an extra line on one month's payslip cannot.",
+      "priority": 100,
+      "when": "day.is_weekly_off AND attendance.worked_minutes >= shift.full_day_minutes",
+      "then": [
+        {
+          "action": "CREATE_COMP_OFF",
+          "units": { "expr": "1d" },
+          "expiry_ref": "COMP-OFF-DEFAULT",
+          "reason": "Full shift worked on a weekly off"
+        }
+      ]
+    },
+    {
+      "code": "ATT-COMP-OFF-HOLIDAY",
+      "module": "attendance",
+      "name": "A full day worked on a declared holiday earns a comp-off",
+      "description": "The same for a holiday. Separate from the weekly-off rule rather than merged with an OR, because they are two policies that customers routinely set differently — plenty of employers pay for a holiday and give time back for a weekly off — and one rule doing both cannot be changed independently.",
+      "priority": 90,
+      "when": "day.is_holiday AND attendance.worked_minutes >= shift.full_day_minutes",
+      "then": [
+        {
+          "action": "CREATE_COMP_OFF",
+          "units": { "expr": "1d" },
+          "expiry_ref": "COMP-OFF-DEFAULT",
+          "reason": "Full shift worked on a declared holiday"
+        }
+      ]
+    },
+    {
+      "code": "ATT-OT-BEYOND-SHIFT",
+      "module": "attendance",
+      "name": "Overtime beyond the shift, on a working day",
+      "description": "Minutes worked past the shift on an ordinary working day are recorded as overtime. RECORDED, not paid: nothing in this build computes an overtime rate, and a rule that emitted an amount would be inventing one. The entry is what a payroll administrator sees and decides about, and the day a multiplier is declared it is this same rule that feeds it.",
+      "priority": 50,
+      "when": "attendance.ot_minutes > 0m AND NOT day.is_weekly_off AND NOT day.is_holiday",
+      "then": [
+        {
+          "action": "CREATE_OT",
+          "minutes": { "expr": "attendance.ot_minutes" },
+          "multiplier_ref": "OT-NOT-DECLARED",
+          "approval": "PENDING"
+        }
+      ]
+    }
+  ]
+}

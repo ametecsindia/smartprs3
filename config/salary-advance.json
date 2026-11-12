@@ -1,0 +1,61 @@
+{
+ "note": "Compensation & Claims → Salary Advance. The three approval levels, who may sign each (employees whose designation contains one of the words), the decision vocabulary, the tenure choices and how the EMI is derived. The EMI is never typed: sanctioned ÷ tenure, rounded UP to the rupee, the last instalment being the remainder (Recoveries already takes the balance, never more). Edit here, never the PHP. A level's exclude_words keep a title out of it (an HR Manager signs at the HR level, not the Manager level).",
+ "levels": [
+  {
+   "key": "manager",
+   "label": "Manager",
+   "designation_words": [
+    "manager"
+   ],
+   "exclude_words": [
+    "hr manager"
+   ]
+  },
+  {
+   "key": "director",
+   "label": "Director",
+   "designation_words": [
+    "director"
+   ]
+  },
+  {
+   "key": "hr",
+   "label": "HR Admin / HR Manager",
+   "designation_words": [
+    "hr admin",
+    "hr manager",
+    "branch admin",
+    "company admin",
+    "hr executive"
+   ]
+  }
+ ],
+ "deciding_level": "hr",
+ "deciding_note": "Owner, 22 Sep: only the HR Admin / HR Manager decision decides the status (Approved → approved, Rejected → rejected, On Hold → on hold, none yet → pending). Manager and Director may record a decision, which is shown, but it neither blocks nor approves. Remove deciding_level to go back to all levels having to approve.",
+ "decisions": [
+  "Approved",
+  "Rejected",
+  "On Hold"
+ ],
+ "tenure_months": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  9,
+  12,
+  18,
+  24
+ ],
+ "statuses": {
+  "pending": "pending",
+  "approved": "approved",
+  "rejected": "rejected",
+  "on_hold": "on hold",
+  "disbursed": "disbursed",
+  "recovered": "recovered"
+ },
+ "line_prefix": "ADV-"
+}

@@ -1,0 +1,43 @@
+{
+  "note": "EXPLORE DEMO (owner, 12 Nov 2026) — what every visitor's own demo company is built with, by surface/DemoSeed.php. One company, two branches. In each branch: a Branch Admin at the top, an Operations Manager under them, team_leads Team Leads under the manager, and members_per_team agents under each Team Lead. Attendance (QR punches) and leaves run from the first day of the month `months` months back until yesterday; payroll is generated for those `months` complete months (the older one approved, the latest waiting for approval). Every person gets a login with the password below and the role of their designation. Demo days and the Google Play reviewer company are here too.",
+  "days": 7,
+  "max_days": 30,
+  "months": 2,
+  "password": "SmartPRS@Demo1",
+  "email_domain": "smartprs.demo",
+  "code_prefix": "DM",
+  "timezone": "Asia/Kolkata",
+  "state": "Telangana",
+  "pt_state": "Telangana",
+  "branches": [
+    {"name": "Kondapur", "code": "KDP", "city": "Hyderabad", "state": "Telangana", "lat": "17.4600", "lng": "78.3570", "team_leads": 3, "members_per_team": [5, 8]},
+    {"name": "Mindspace", "code": "MSP", "city": "Hyderabad", "state": "Telangana", "lat": "17.4416", "lng": "78.3800", "team_leads": 2, "members_per_team": [6, 10]}
+  ],
+  "departments": {"OPS": "Operations", "ADMIN": "Administration"},
+  "designations": {
+    "admin": {"name": "Branch Admin", "role": "Branch Admin", "dept": "ADMIN"},
+    "manager": {"name": "Operations Manager", "role": "Manager", "dept": "OPS"},
+    "leader": {"name": "Team Lead", "role": "Team Lead", "dept": "OPS"},
+    "member": {"name": "Agent", "role": "Employee/Agent", "dept": "OPS"}
+  },
+  "ctc_lpa": {"admin": ["9", "12"], "manager": ["6", "8"], "leader": ["3.6", "5"], "member": ["1.8", "3.2"]},
+  "basic_percent_of_ctc": "50",
+  "attendance_rates_percent": {"late_past_grace": 7, "early_exit_half_day": 2, "absent_unplanned": 1},
+  "leave": {
+    "spells_per_employee": [0, 2],
+    "spell_days": {"CL": [1, 2], "SL": [1, 2]},
+    "mix_percent": {"CL": 60, "SL": 40},
+    "reasons": {
+      "CL": ["Personal work", "Family function", "Out of station", "Bank and documentation work"],
+      "SL": ["Fever", "Not well", "Doctor's appointment"]
+    }
+  },
+  "names": {
+    "male": ["Ramesh", "Suresh", "Naveen", "Kiran", "Srinivas", "Venkatesh", "Mahesh", "Rajesh", "Anil", "Praveen", "Vijay", "Karthik", "Harsha", "Pavan", "Bharath", "Ganesh", "Imran", "Arif", "Sameer", "Rohit", "Nikhil", "Manoj"],
+    "female": ["Swathi", "Divya", "Sravani", "Lakshmi", "Anusha", "Mounika", "Keerthi", "Bhavani", "Sunitha", "Rekha", "Sushma", "Madhavi", "Ayesha", "Fathima", "Priyanka", "Pallavi", "Neha"],
+    "last": ["Reddy", "Naidu", "Goud", "Yadav", "Rao", "Chowdary", "Varma", "Prasad", "Murthy", "Khan", "Shaik", "Sharma", "Gupta", "Patel"]
+  },
+  "areas": ["Kondapur", "Gachibowli", "Miyapur", "Kukatpally", "Madhapur", "Chandanagar", "Manikonda", "Ameerpet"],
+  "banks": [["HDFC Bank", "HDFC0001234"], ["ICICI Bank", "ICIC0002345"], ["State Bank of India", "SBIN0003456"], ["Axis Bank", "UTIB0004567"]],
+  "reviewer": {"subdomain": "playreview", "company": "SmartPRS Demo (Play review)", "reset_hour": 2}
+}

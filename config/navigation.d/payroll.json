@@ -1,0 +1,13 @@
+{
+ "section": "payroll",
+ "items": [
+  {
+   "key": "salary-breakup",
+   "route": "salary-breakup",
+   "label": "Salary Breakup",
+   "icon": "fa-table-list",
+   "permission": "payroll.view",
+   "order": 999
+  }
+ ]
+}

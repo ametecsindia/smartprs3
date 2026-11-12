@@ -1,0 +1,25 @@
+{
+  "events": {
+    "attendance.regularization.requested": {
+      "channels": ["email", "in_app"],
+      "title": "Regularization request: {code} · {what}",
+      "body": "{code} ({name}) asked for {what} to be regularized. Reason: {reason}. Approve or reject it from Attendance Regularization.",
+      "audience": "reporting manager and team lead",
+      "audience_note": "The employee's own Reporting Manager and Team Lead only — never the whole tenant. Company Admin / HR Admin see every pending request in their queue by role reach, not because of this notification."
+    },
+    "attendance.regularization.approved": {
+      "channels": ["email", "in_app"],
+      "title": "Your regularization for {what} was approved",
+      "body": "Your regularization request for {what} was approved by {decided_by}{note_suffix}. A new punch has been added — attendance, the muster and payroll now reflect it.",
+      "audience": "employee",
+      "audience_note": "The person who raised the request."
+    },
+    "attendance.regularization.rejected": {
+      "channels": ["email", "in_app"],
+      "title": "Your regularization for {what} was rejected",
+      "body": "Your regularization request for {what} was rejected by {decided_by}{note_suffix}. The day is still unresolved.",
+      "audience": "employee",
+      "audience_note": "The person who raised the request."
+    }
+  }
+}

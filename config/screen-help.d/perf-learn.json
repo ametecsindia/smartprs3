@@ -1,0 +1,27 @@
+{
+  "routes": {
+    "performance": "performance", "increments": "increments", "awards": "awards", "points-scores": "points-scores",
+    "points": "points-ledger", "point-rules": "points-rules", "tests": "tests", "test-questions": "tests",
+    "test-attempts": "test-results", "test-reports": "test-reports", "attrition": "attrition",
+    "kb": "kb", "faqs": "faqs", "training-programs": "training-programs", "training-records": "training-records",
+    "training-content": "training-content", "code-of-conduct": "code-of-conduct", "policies": "policies", "helpdesk": "helpdesk"
+  },
+  "screens": {
+    "test-results": {
+      "m": "Performance & Rewards", "t": "Test Results", "g": "Attempts & scores",
+      "w": "Every attempt an employee made: marks scored of total, the whole-percent score and pass / fail against the test's pass mark. Written by the test-taking flow; scored on the server from the question bank.",
+      "f": [["fa-square-poll-vertical", "Score per attempt with marks and percent"], ["fa-lock", "Scored server-side, never by the browser"]],
+      "s": ["Employees take tests from Performance → Tests.", "Open a row to correct a record; the answers are kept on it."],
+      "tip": "Test Reports adds the pass rate per test and per department.",
+      "r": ["Admin & HR", "Managers"], "rel": "test-reports"
+    },
+    "policies": {
+      "m": "Learning & Knowledge", "t": "Policy Repository", "g": "Board-approved policies, versioned",
+      "w": "Recovery / collection policies, the code of conduct, SOPs, data-privacy and grievance policies — each with its version, owner, effective date, board approval and review-due date, and whether agents must acknowledge it.",
+      "f": [["fa-file-shield", "Version, owner, effective and review dates"], ["fa-clock-rotate-left", "A revision is a new row; the old one is marked superseded"]],
+      "s": ["Add the policy with its version and dates.", "When it is revised, add the new version and mark the old one superseded."],
+      "tip": "The Code of Conduct text employees acknowledge lives in config/code-of-conduct.json; list the document here for the audit trail.",
+      "r": ["Admin & HR", "Compliance"], "rel": "code-of-conduct"
+    }
+  }
+}

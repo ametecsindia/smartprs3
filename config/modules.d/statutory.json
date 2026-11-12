@@ -1,0 +1,523 @@
+{
+  "note": "STATUTORY & COMPLIANCE register screens at SmartPRS 2 parity. A key here SUPERSEDES the entry of the same key in modules.json. Tables beyond the ported ones come from database/migrations/2026_03_02_000300_statutory_registers.php. No rate or ceiling lives here: rates are in the signed packs, gratuity/bonus rules in config/gratuity.json and config/statutory-bonus.json.",
+  "modules": [
+    {
+      "key": "tds-remittances",
+      "group": "Statutory",
+      "label": "TDS Remittances",
+      "description": "TDS on salary deposited to the government: one line per employee per wage month with its challan (ITNS 281) \u2014 BSR code, deposit date, challan serial. The deductee lines the quarterly return (Form 138, old 24Q) needs.",
+      "table": "tds_remittances",
+      "order": "month",
+      "filters": {
+        "date": "month",
+        "employee": "employee_id"
+      },
+      "columns": [
+        "employee_id",
+        "month",
+        "pan",
+        "amount_paid",
+        "tds_deducted",
+        "tds_deposited",
+        "bsr_code",
+        "challan_date",
+        "challan_serial"
+      ],
+      "search": [
+        "pan",
+        "bsr_code",
+        "challan_serial",
+        "cin",
+        "remarks"
+      ],
+      "permissions": {
+        "view": "payroll.view",
+        "edit": "payroll.run"
+      },
+      "display": {
+        "money": [
+          "amount_paid",
+          "tds_deducted",
+          "tds_deposited"
+        ]
+      },
+      "fields": {
+        "employee_id": {
+          "label": "Employee",
+          "required": true,
+          "empty": "\u2014 pick \u2014",
+          "lookup": {
+            "table": "employees",
+            "value": "id",
+            "show": [
+              "emp_code",
+              "name"
+            ]
+          }
+        },
+        "month": {
+          "label": "Wage month",
+          "required": true
+        },
+        "pan": {
+          "label": "Deductee PAN",
+          "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$",
+          "pattern_hint": "a PAN like ABCDE1234F"
+        },
+        "amount_paid": {
+          "label": "Salary paid / credited (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "tds_deducted": {
+          "label": "TDS deducted (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "tds_deposited": {
+          "label": "TDS deposited (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "section": {
+          "label": "TDS section",
+          "options": [
+            "392",
+            "192"
+          ],
+          "help": "392 under the Income-tax Act, 2025 (192 before April 2026)"
+        },
+        "bsr_code": {
+          "label": "BSR code of the bank",
+          "pattern": "^[0-9]{7}$",
+          "pattern_hint": "the bank's 7-digit BSR code"
+        },
+        "challan_date": {
+          "label": "Challan deposit date",
+          "type": "date"
+        },
+        "challan_serial": {
+          "label": "Challan serial no.",
+          "pattern": "^[0-9]{1,5}$",
+          "pattern_hint": "up to 5 digits"
+        },
+        "cin": {
+          "label": "CIN (if shown)"
+        },
+        "remarks": {
+          "label": "Remarks"
+        }
+      }
+    },
+    {
+      "key": "pf-esi-remittances",
+      "group": "Statutory",
+      "label": "PF & ESI Remittances",
+      "description": "What was submitted each month to EPFO (the ECR member line and its TRRN) and to ESIC (the contribution line and its challan), one row per employee per wage month, kept for the record. Bulk-upload the month from the sample, then filter by period and organisation.",
+      "table": "pf_esi_remittances",
+      "order": "month",
+      "filters": {
+        "date": "month",
+        "employee": "employee_id"
+      },
+      "columns": [
+        "employee_id",
+        "month",
+        "uan",
+        "epf_wages",
+        "epf_ee_share",
+        "eps_er_share",
+        "epf_er_share",
+        "pf_trrn",
+        "pf_paid_on",
+        "esi_ip_number",
+        "esi_wages",
+        "esi_ee_share",
+        "esi_er_share",
+        "esi_challan_no",
+        "esi_paid_on"
+      ],
+      "search": [
+        "uan",
+        "esi_ip_number",
+        "pf_trrn",
+        "esi_challan_no",
+        "remarks"
+      ],
+      "permissions": {
+        "view": "payroll.view",
+        "edit": "payroll.run"
+      },
+      "display": {
+        "money": [
+          "gross_wages",
+          "epf_wages",
+          "eps_wages",
+          "edli_wages",
+          "epf_ee_share",
+          "eps_er_share",
+          "epf_er_share",
+          "refund_of_advances",
+          "esi_wages",
+          "esi_ee_share",
+          "esi_er_share"
+        ]
+      },
+      "fields": {
+        "employee_id": {
+          "label": "Employee",
+          "required": true,
+          "empty": "\u2014 pick \u2014",
+          "lookup": {
+            "table": "employees",
+            "value": "id",
+            "show": [
+              "emp_code",
+              "name"
+            ]
+          }
+        },
+        "month": {
+          "label": "Wage month",
+          "required": true
+        },
+        "uan": {
+          "label": "UAN",
+          "help": "12-digit Universal Account Number, as on the ECR"
+        },
+        "gross_wages": {
+          "label": "Gross wages (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "epf_wages": {
+          "label": "EPF wages (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "eps_wages": {
+          "label": "EPS wages (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "edli_wages": {
+          "label": "EDLI wages (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "epf_ee_share": {
+          "label": "EPF \u2013 employee share (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "eps_er_share": {
+          "label": "EPS \u2013 employer share (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "epf_er_share": {
+          "label": "EPF \u2013 employer share, EPF\u2013EPS difference (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "ncp_days": {
+          "label": "NCP days",
+          "type": "number",
+          "min": 0,
+          "help": "Non-contributory period days in the month"
+        },
+        "refund_of_advances": {
+          "label": "Refund of advances (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "pf_trrn": {
+          "label": "PF TRRN / challan no."
+        },
+        "pf_paid_on": {
+          "label": "PF paid on",
+          "type": "date"
+        },
+        "esi_ip_number": {
+          "label": "ESI IP number"
+        },
+        "esi_days": {
+          "label": "ESI \u2013 days wages paid",
+          "type": "number",
+          "min": 0
+        },
+        "esi_wages": {
+          "label": "ESI \u2013 total monthly wages (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "esi_ee_share": {
+          "label": "ESI \u2013 employee share (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "esi_er_share": {
+          "label": "ESI \u2013 employer share (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "esi_reason_code": {
+          "label": "ESI reason for zero days",
+          "help": "Only when days are 0",
+          "options": [
+            "0 - Without reason",
+            "1 - On leave",
+            "2 - Left service",
+            "3 - Retired",
+            "4 - Out of coverage",
+            "5 - Expired",
+            "6 - Non-implemented area",
+            "7 - Compliance by immediate employer",
+            "8 - Suspension of work",
+            "9 - Strike / lockout",
+            "10 - Retrenchment",
+            "11 - No work",
+            "12 - Does not belong to this employer",
+            "13 - Duplicate IP"
+          ]
+        },
+        "esi_last_working_day": {
+          "label": "ESI last working day",
+          "type": "date",
+          "help": "Only when the employee left in the month"
+        },
+        "esi_challan_no": {
+          "label": "ESI challan no."
+        },
+        "esi_paid_on": {
+          "label": "ESI paid on",
+          "type": "date"
+        },
+        "remarks": {
+          "label": "Remarks"
+        }
+      }
+    },
+    {
+      "key": "pf-esi-register",
+      "group": "Statutory",
+      "label": "PF & ESI Registrations",
+      "description": "Per employee: whether PF and ESI apply, the UAN / PF number and ESI number, and from when. Applicability is recorded here; the contribution itself is computed by the signed statutory pack on every closed payroll.",
+      "table": "pf_esi_registrations",
+      "columns": ["employee_id", "pf_applicable", "uan", "esi_applicable", "esi_number", "status"],
+      "search": ["uan", "pf_number", "esi_number", "remarks"],
+      "permissions": {"view": "employee.view", "edit": "employee.update"},
+      "fields": {
+        "employee_id": {"label": "Employee", "required": true, "empty": "— pick —", "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+        "pf_applicable": {"label": "PF applies", "options": ["Yes", "No", "Exempt"], "help": "'exempt' = an employee above the wage ceiling who opted out at joining; keep the declaration on file"},
+        "uan": {"label": "UAN"},
+        "pf_number": {"label": "PF member ID"},
+        "pf_from": {"label": "PF from", "type": "date"},
+        "esi_applicable": {"label": "ESI applies", "options": ["Yes", "No"], "help": "ESI applies below the wage ceiling the signed pack declares; once covered, coverage runs to the end of the contribution period"},
+        "esi_number": {"label": "ESI IP number"},
+        "esi_from": {"label": "ESI from", "type": "date"},
+        "dispensary": {"label": "ESI dispensary"},
+        "status": {"label": "Status", "options": ["Active", "Inactive"]},
+        "remarks": {"label": "Remarks"}
+      }
+    },
+    {
+      "key": "tds-declarations",
+      "group": "Statutory",
+      "label": "TDS Declarations",
+      "description": "The employee's investment declaration for a financial year: PAN, regime, 80C / 80D, HRA and other exemptions. What the TDS summary shows deducted comes from the closed payroll runs, not from here.",
+      "table": "tds_declarations",
+      "columns": ["employee_id", "financial_year", "pan", "regime", "section_80c", "declared_tds", "status"],
+      "search": ["financial_year", "pan", "remarks"],
+      "permissions": {"view": "payroll.view", "edit": "payroll.run"},
+      "fields": {
+        "employee_id": {"label": "Employee", "required": true, "empty": "— pick —", "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+        "financial_year": {"label": "Financial year", "required": true, "help": "e.g. 2026-27"},
+        "pan": {"label": "PAN", "help": "Blank = the higher no-PAN rate the pack declares applies"},
+        "regime": {"label": "Regime", "options": ["New", "Old"]},
+        "section_80c": {"label": "80C declared (₹)", "type": "number", "min": 0},
+        "section_80d": {"label": "80D declared (₹)", "type": "number", "min": 0},
+        "hra_exempt": {"label": "HRA exemption (₹)", "type": "number", "min": 0},
+        "other_exempt": {"label": "Other exemptions (₹)", "type": "number", "min": 0},
+        "declared_tds": {"label": "Projected TDS for the year (₹)", "type": "number", "min": 0, "help": "What the employee's declaration projects; the summary shows what was actually deducted"},
+        "declared_on": {"label": "Declared on", "type": "date"},
+        "verified_by": {"label": "Verified by", "readonly": true},
+        "status": {"label": "Status", "options": ["Declared", "Proofs pending", "Verified", "Rejected"]},
+        "remarks": {"label": "Remarks"}
+      }
+    },
+    {
+      "key": "tds-returns",
+      "group": "Statutory",
+      "label": "TDS Returns",
+      "description": "Quarterly 24Q filing tracker per company: deductees, tax deducted, deposited, due date, filed date and the acknowledgement number. The Compliance Alerts screen computes the due dates from config/compliance-calendar.json; this is where the filing is recorded.",
+      "table": "tds_returns",
+      "columns": ["employer_company_id", "financial_year", "quarter", "deductees", "tax_deducted", "deposited", "due_date", "filed_on", "status"],
+      "search": ["financial_year", "quarter", "acknowledgement", "remarks"],
+      "permissions": {"view": "payroll.view", "edit": "payroll.run"},
+      "fields": {
+        "employer_company_id": {"label": "Company", "empty": "ALL"},
+        "financial_year": {"label": "Financial year", "help": "e.g. 2026-27"},
+        "quarter": {"label": "Quarter", "required": true, "options": ["Q1", "Q2", "Q3", "Q4"], "help": "Q1 Apr–Jun, Q2 Jul–Sep, Q3 Oct–Dec, Q4 Jan–Mar"},
+        "deductees": {"label": "Deductees", "type": "number", "min": 0},
+        "tax_deducted": {"label": "Tax deducted (₹)", "type": "number", "min": 0},
+        "deposited": {"label": "Deposited (₹)", "type": "number", "min": 0},
+        "due_date": {"label": "Due date", "type": "date"},
+        "filed_on": {"label": "Filed on", "type": "date"},
+        "acknowledgement": {"label": "Acknowledgement no."},
+        "status": {"label": "Status", "options": ["Not filed", "Filed", "Revised", "Defaulted"]},
+        "remarks": {"label": "Remarks"}
+      }
+    },
+    {
+      "key": "bonus-register",
+      "group": "Statutory",
+      "label": "Statutory Bonus Register",
+      "description": "Form C: the bonus declared and paid per employee per financial year. The Statutory Bonus screen computes what the Act requires from the closed runs; this register records what was actually declared and paid.",
+      "table": "statutory_bonus_register",
+      "columns": ["employee_id", "financial_year", "bonus_wage", "bonus_pct", "amount", "paid_on", "status"],
+      "search": ["financial_year", "remarks"],
+      "permissions": {"view": "payroll.view", "edit": "payroll.run"},
+      "fields": {
+        "employee_id": {"label": "Employee", "required": true, "empty": "— pick —", "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+        "financial_year": {"label": "Financial year", "required": true, "help": "e.g. 2026-27"},
+        "bonus_wage": {"label": "Bonus wage for the year (₹)", "type": "number", "min": 0, "help": "The sum of the months' counted wages — the Statutory Bonus screen shows it"},
+        "bonus_pct": {"label": "Percent declared", "type": "number", "min": 0, "help": "Within the band config/statutory-bonus.json declares"},
+        "amount": {"label": "Bonus (₹)", "type": "number", "min": 0},
+        "paid_on": {"label": "Paid on", "type": "date"},
+        "paid_by": {"label": "Paid by", "readonly": true},
+        "status": {"label": "Status", "options": ["Declared", "Approved", "Paid", "Withheld"]},
+        "remarks": {"label": "Remarks"}
+      }
+    },
+    {
+      "key": "posh",
+      "group": "Statutory",
+      "label": "POSH Complaints",
+      "description": "Confidential complaints to the Internal Committee under the POSH Act. Visible only to those who may read employee documents; never exported in bulk by Audit Reports.",
+      "table": "posh_complaints",
+      "columns": ["subject", "employee_id", "respondent", "incident_date", "status"],
+      "search": ["subject", "respondent"],
+      "permissions": {"view": "employee.document.view", "edit": "employee.update"},
+      "fields": {
+        "subject": {"label": "Subject", "required": true},
+        "employee_id": {"label": "Complainant", "empty": "— pick —", "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+        "employer_company_id": {"label": "Company", "empty": "— pick —"},
+        "respondent": {"label": "Complaint against (name / role)"},
+        "incident_date": {"label": "Incident date", "type": "date"},
+        "description": {"label": "Description — what happened, where, any witnesses", "type": "textarea"},
+        "status": {"label": "Status", "options": ["Open", "Inquiry", "Resolved", "Closed"], "help": "The IC has 90 days from receipt to complete the inquiry"},
+        "ic_comment": {"label": "IC comment — shown to the complainant", "type": "textarea"},
+        "closed_on": {"label": "Closed on", "type": "date"},
+        "remarks": {"label": "Internal note"}
+      }
+    },
+    {
+      "key": "min-wages",
+      "group": "Statutory",
+      "label": "Minimum Wages",
+      "description": "Notified minimum wage by state / zone / category with the date it took effect. Audit Reports exports it; a structure whose gross falls below it is the payroll officer's finding to make.",
+      "table": "min_wages",
+      "columns": ["state", "zone", "category", "monthly_min", "effective_from", "status"],
+      "search": ["state", "zone", "category", "notification_ref"],
+      "permissions": {"view": "payroll.structure.view", "edit": "payroll.structure.publish"},
+      "fields": {
+        "state": {"label": "State", "required": true},
+        "zone": {"label": "Zone / area"},
+        "category": {"label": "Category / schedule", "help": "Unskilled, semi-skilled, skilled, highly skilled — as notified"},
+        "monthly_min": {"label": "Monthly minimum (₹)", "type": "number", "min": 0, "required": true},
+        "daily_min": {"label": "Daily minimum (₹)", "type": "number", "min": 0},
+        "effective_from": {"label": "Effective from", "type": "date"},
+        "notification_ref": {"label": "Notification reference"},
+        "status": {"label": "Status", "options": ["Active", "Inactive"]},
+        "remarks": {"label": "Remarks"}
+      }
+    },
+    {
+      "key": "pt-remittances",
+      "group": "Statutory",
+      "label": "PT Remittances",
+      "description": "Professional tax paid to the state: one line per employee per wage month, the state it is paid to and the challan it went in.",
+      "table": "pt_remittances",
+      "order": "month",
+      "filters": {
+        "date": "month",
+        "employee": "employee_id"
+      },
+      "columns": [
+        "employee_id",
+        "month",
+        "state",
+        "gross_wages",
+        "pt_deducted",
+        "pt_paid",
+        "challan_no",
+        "challan_date"
+      ],
+      "search": [
+        "state",
+        "challan_no",
+        "remarks"
+      ],
+      "permissions": {
+        "view": "payroll.view",
+        "edit": "payroll.run"
+      },
+      "display": {
+        "money": [
+          "gross_wages",
+          "pt_deducted",
+          "pt_paid"
+        ]
+      },
+      "fields": {
+        "employee_id": {
+          "label": "Employee",
+          "required": true,
+          "empty": "\u2014 pick \u2014",
+          "lookup": {
+            "table": "employees",
+            "value": "id",
+            "show": [
+              "emp_code",
+              "name"
+            ]
+          }
+        },
+        "month": {
+          "label": "Wage month",
+          "required": true
+        },
+        "state": {
+          "label": "State",
+          "help": "The state the PT is paid to \u2014 the employee's branch state"
+        },
+        "gross_wages": {
+          "label": "Gross wages (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "pt_deducted": {
+          "label": "PT deducted (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "pt_paid": {
+          "label": "PT paid (\u20b9)",
+          "type": "number",
+          "min": 0
+        },
+        "challan_no": {
+          "label": "Challan / receipt no."
+        },
+        "challan_date": {
+          "label": "Paid on",
+          "type": "date"
+        },
+        "remarks": {
+          "label": "Remarks"
+        }
+      }
+    }
+  ]
+}

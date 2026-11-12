@@ -1,0 +1,66 @@
+{
+ "note": "WHAT THE PRODUCT WOULD TELL SOMEBODY, AND WHEN. `Platform\\Notification\\Outbox` is a finished class with a careful contract — queued, sent, delivered, and delivered only on a provider acknowledgement — and NOTHING ever queued a message into it. So a leave request was approved or rejected and the employee found out by opening the screen and looking, which is how SmartPRS 2 behaves and is the reason its customers ask for an app. These templates are what each event says. Editing this file changes the wording, the channels and who is told, with no deployment.",
+ "transport": {
+  "configured": false,
+  "note": "NOTHING IS TRANSMITTED. No SMTP server, no SMS gateway and no push provider is configured in this build, and none is invented here: a `mail()` call against an unconfigured host returns true on plenty of systems, which would mark messages SENT that nobody ever received — the exact failure `Outbox` was written to make impossible. Every message queued stays QUEUED and the screen says so. When a transport is declared, the messages already in the queue are the ones that go, in order, with their dedupe keys intact."
+ },
+ "events": {
+  "leave.approved": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "Your leave request was approved",
+   "body": "{days} day(s) of {type} from {from} to {to} were approved by {decided_by}. Note: {note}",
+   "audience": "requester",
+   "audience_note": "The person whose leave it is. The approver already knows — they just decided it — and copying them turns an inbox into a log."
+  },
+  "leave.rejected": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "Your leave request was not approved",
+   "body": "{days} day(s) of {type} from {from} to {to} were not approved by {decided_by}. Reason: {note}",
+   "audience": "requester",
+   "audience_note": "A rejection ALWAYS carries the note, because Leave::decide() refuses a decision without one. A rejection somebody has to ask about is worse than no notification at all."
+  },
+  "attendance.comp_off_credited": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "A compensatory off was credited",
+   "body": "{days} day(s) of {type} credited for {date}: {reason}",
+   "audience": "employee",
+   "audience_note": "In-app only. A day appearing in a balance is worth telling somebody about and is not worth an email at 2am for each of them."
+  },
+  "attendance.absent": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "No attendance was recorded for {date}",
+   "body": "{code}: no punch was recorded on {date} and no leave covers it, so the day stands as {status}. If you were at work, raise a regularisation for the missing punch; if you were on leave, apply for it — either changes the day before payroll reads it.",
+   "audience": "employee",
+   "audience_note": "The person whose day it is. Sent the morning after, once, per day — the dedupe key is the employee and the date, so re-running the sweep tells nobody twice."
+  },
+  "attendance.absent.manager": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "{code} has no attendance for {date}",
+   "body": "{code} ({name}) was {status} on {date}: no punch, no leave. They have been told; this is for you to follow up if it is not what you expected.",
+   "audience": "reporting manager",
+   "audience_note": "In-app only, and only when the tenant turned it on. A manager with twelve reports does not want twelve emails at eleven o'clock."
+  },
+  "approval.escalated": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "An approval waiting on you is past its due-within: {workflow}",
+   "body": "Request {request_id} ({workflow}, step {step}) has been waiting {over_by} past its {sla_hours}-hour due-within. Escalated by {escalated_by} from the Escalation Desk.",
+   "audience": "approver",
+   "audience_note": "The users holding the step's role who are linked to an employee. A user with no employee has no inbox and is named on the desk as unreachable rather than silently skipped."
+  }
+ }
+}

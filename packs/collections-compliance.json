@@ -1,0 +1,104 @@
+{
+  "pack_key": "ametecs-collections-compliance",
+  "pack_version": "1.0.0",
+  "title": "Collections Compliance — the reference module pack",
+  "note": "THE REFERENCE PACK, AND IT CONTAINS NO PHP. Part XXXII's Phase 7 exit criterion is that this installs into a clean tenant and carries no code. Everything below is a declaration: compliance item types, their applicability as SPX, the states each type treats as valid, evidence requirements, and the gate bindings that stop money moving. SmartPRS 2's equivalent is five of six compliance registries existing as rows in a PHP configuration array, with the item type list a closed set of literals — so a customer wanting a new certificate tracked waits for a release, and the DRA validity rule exists five times over.",
+  "files": [],
+  "content": {
+    "compliance_item_types": [
+      {
+        "code": "DRA-CERT",
+        "name": "Recovery agent certification",
+        "obligation_kind": "credential",
+        "subject_kinds": ["person", "engagement"],
+        "applies_expression": "person.role_group == 'field_agent'",
+        "applies_reason_template": "the subject's role is not in the field-agent set, so this certification is not required of them",
+        "valid_state_codes": ["verified"],
+        "evidence_class": "regulatory",
+        "on_not_assessed": "block",
+        "score_weight": 30,
+        "partial_credit": { "submitted": "0.5" },
+        "evidence_requirement": "a certificate document with an issuing body and a reference number",
+        "note": "Only `verified` counts. The type says so once, and the register, the score, the money gate, the alert ladder and the audit pack all read it from here — against SmartPRS 2, where DRA requires verified and PCC accepts submitted, asymmetrically and undocumented."
+      },
+      {
+        "code": "PCC",
+        "name": "Police clearance certificate",
+        "obligation_kind": "credential",
+        "subject_kinds": ["person"],
+        "applies_expression": "person.role_group IN ['field_agent', 'tele_caller']",
+        "applies_reason_template": "the subject holds neither a field nor a calling role, so no clearance is required",
+        "valid_state_codes": ["verified", "acknowledged"],
+        "evidence_class": "regulatory",
+        "on_not_assessed": "block",
+        "score_weight": 20,
+        "evidence_requirement": "a clearance document naming the issuing commissionerate"
+      },
+      {
+        "code": "COC-ACK",
+        "name": "Code of conduct acknowledgement",
+        "obligation_kind": "acknowledgement",
+        "subject_kinds": ["person"],
+        "applies_expression": "TRUE",
+        "applies_reason_template": "every person acknowledges the code of conduct",
+        "valid_state_codes": ["acknowledged", "verified"],
+        "evidence_class": "operational",
+        "on_not_assessed": "warn",
+        "score_weight": 10
+      },
+      {
+        "code": "AGENT-AUTH",
+        "name": "Client authorisation to act",
+        "obligation_kind": "registration",
+        "subject_kinds": ["engagement"],
+        "applies_expression": "engagement.is_off_roll == TRUE",
+        "applies_reason_template": "the engagement is on-roll, so no separate client authorisation is held",
+        "valid_state_codes": ["verified"],
+        "evidence_class": "regulatory",
+        "on_not_assessed": "block",
+        "score_weight": 25,
+        "note": "Off-roll agents are a subject kind here rather than an afterthought. SmartPRS 2 cannot scan them at all, because they were never modelled."
+      }
+    ],
+    "gate_bindings": [
+      {
+        "action_type": "commission_payment",
+        "requires": ["DRA-CERT", "PCC", "AGENT-AUTH"],
+        "as_of_basis": "collection_date",
+        "severity": "block",
+        "note": "No commission on a collection made while the agent was not certified. The date basis is the COLLECTION's, not today's — resolving on today pays in October against a certificate that had expired in September, and the audit re-run then disagrees with the payment that was made."
+      },
+      {
+        "action_type": "incentive_payment",
+        "requires": ["DRA-CERT", "COC-ACK"],
+        "as_of_basis": "period_end",
+        "severity": "block"
+      },
+      {
+        "action_type": "work_allocation",
+        "requires": ["DRA-CERT", "AGENT-AUTH"],
+        "as_of_basis": "allocation_date",
+        "severity": "block"
+      }
+    ],
+    "vocabularies": [
+      {
+        "code": "collections_role_group",
+        "members": ["field_agent", "tele_caller", "back_office", "supervisor"]
+      },
+      {
+        "code": "collections_evidence_state",
+        "members": ["none", "uploaded", "verified", "rejected", "expired"]
+      }
+    ],
+    "report_definitions": [
+      {
+        "code": "RPT-COLLECTIONS-AUDIT",
+        "title": "Collections compliance audit pack",
+        "regulatory": true,
+        "datasets": ["compliance_register", "compliance_exceptions"],
+        "note": "Marked regulatory, which is what makes the no-literal static-analysis rule apply to it: no assertion in this report may originate from a literal, a default, a hard-coded pass, or a count that no query produced."
+      }
+    ]
+  }
+}

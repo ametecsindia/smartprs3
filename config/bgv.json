@@ -1,0 +1,40 @@
+{
+ "note": "Hiring & Onboarding → Background Verification. Structured BGV per employee: the checks, each check's outcome, the overall status, and the re-verification schedule. SmartPRS 2 has these as a hard-coded field list; here a tenant adds a check (e.g. 'Drug test') by editing this file, and Compliance Alerts read `next_due` from the same rows.",
+ "checks": {
+  "identity": "Identity / KYC",
+  "address": "Address",
+  "education": "Education",
+  "employment": "Previous employment",
+  "criminal": "Criminal / court record",
+  "references": "References"
+ },
+ "outcomes": {
+  "pending": "Pending",
+  "clear": "Clear",
+  "flag": "Flag",
+  "na": "N/A"
+ },
+ "statuses": {
+  "pending": "Pending",
+  "in_progress": "In progress",
+  "clear": "Clear",
+  "discrepancy": "Discrepancy"
+ },
+ "documents_note": "Owner, 21 Oct 2026 flow: the employee document fields (Organization Setup → Employee fields → Documents) shown beside each check on the BGV desk.",
+ "documents": {
+  "identity": ["doc_photo_id", "doc_aadhaar", "doc_pan", "doc_passport", "doc_voter_id"],
+  "address": ["doc_address_proof", "doc_aadhaar", "doc_passport"],
+  "education": ["doc_degree", "doc_intermediate", "doc_ssc"],
+  "employment": ["doc_experience", "doc_relieving", "doc_salary_slip"],
+  "criminal": ["doc_pcc"],
+  "references": []
+ },
+ "default_revalidate_months": 12,
+ "due_soon_days": 30,
+ "agency_mail_note": "Owner, 21 Oct 2026: Background Verification → Send to agency. The employee details (these Employee field codes, in this order) go in the email body and an attached CSV; documents on file are attached up to attach_limit_mb in total.",
+ "agency_mail": {
+  "fields": ["emp_code", "name", "father", "dob", "gender", "mobile", "personal_email", "email", "present_address", "permanent_address", "aadhaar", "pan", "passport_no", "employer_company_id", "branch_id", "department_id", "designation_id", "doj", "highest_qualification", "university", "year_of_passing"],
+  "attach_limit_mb": 20
+ },
+ "due_soon_note": "Re-verifications due within this many days are highlighted amber on the BGV desk; past due is red."
+}

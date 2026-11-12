@@ -1,0 +1,445 @@
+{
+  "note": "THE ATTENDANCE GOLDEN-TEST MATRIX — Part XXX §5, the Phase 4 exit gate. Every case is DATA, not a PHP method, for the same reason the Phase 2 conformance corpus is: it stays runnable against a future re-implementation. Expected values are computed independently of the engine and stated here; a case whose expectation was copied from what the code returned proves only that the code is consistent with itself.",
+  "cases": [
+    {
+      "id": "AT-01",
+      "title": "an ordinary day shift: in at 09:05 against a 09:00 start with 10 minutes' grace",
+      "shift": {
+        "code": "GEN",
+        "date": "2026-09-07",
+        "start": "2026-09-07 09:00",
+        "end": "2026-09-07 18:00",
+        "grace": 10,
+        "break": 60
+      },
+      "punches": [
+        {
+          "at": "2026-09-07 09:05",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-07 18:02",
+          "direction": "out"
+        }
+      ],
+      "expect": {
+        "worked": 477,
+        "late": 0,
+        "early_exit": 0,
+        "overtime": 0,
+        "shortfall": 3,
+        "sessions": 1,
+        "unpaired": 0
+      },
+      "why": "537 minutes between the punches, less a 60-minute declared break, is 477 against a scheduled 480. Five minutes late is inside the ten-minute grace, so late is zero — the grace is subtracted, not the lateness ignored."
+    },
+    {
+      "id": "AT-02",
+      "title": "THE CROSS-MIDNIGHT CASE: a 22:00 shift on the 30th, out at 06:00 on the 1st",
+      "shift": {
+        "code": "NIGHT",
+        "date": "2026-09-30",
+        "start": "2026-09-30 22:00",
+        "end": "2026-10-01 06:00",
+        "grace": 10,
+        "break": 30
+      },
+      "punches": [
+        {
+          "at": "2026-09-30 21:55",
+          "direction": "in"
+        },
+        {
+          "at": "2026-10-01 06:04",
+          "direction": "out"
+        }
+      ],
+      "expect": {
+        "worked": 459,
+        "late": 0,
+        "early_exit": 0,
+        "overtime": 9,
+        "shortfall": 0,
+        "sessions": 1,
+        "unpaired": 0,
+        "crosses_midnight": true,
+        "attendance_date": "2026-09-30"
+      },
+      "why": "One night's work, one attendance day, labelled by the date the shift STARTED. SmartPRS 2 groups by the calendar date of the punch, so these two halves fall in two different payroll months when D is 30 September — a CRITICAL defect its own analysis records."
+    },
+    {
+      "id": "AT-03",
+      "title": "and a night-shift worker CAN be marked late: arriving 00:15 on a 22:00 shift is 135 minutes late",
+      "shift": {
+        "code": "NIGHT",
+        "date": "2026-09-30",
+        "start": "2026-09-30 22:00",
+        "end": "2026-10-01 06:00",
+        "grace": 10,
+        "break": 0
+      },
+      "punches": [
+        {
+          "at": "2026-10-01 00:15",
+          "direction": "in"
+        },
+        {
+          "at": "2026-10-01 06:00",
+          "direction": "out"
+        }
+      ],
+      "expect": {
+        "worked": 345,
+        "late": 125,
+        "early_exit": 0,
+        "overtime": 0,
+        "shortfall": 135,
+        "sessions": 1,
+        "unpaired": 0
+      },
+      "why": "135 minutes after the shift start, less 10 minutes' grace, is 125. SmartPRS 2 computes max(0, 15 - 1320) = 0 on minutes-since-midnight, so every post-midnight arrival on a night shift is 'on time' — while the same punctual 22:00 arrival is simultaneously charged eight hours of early exit."
+    },
+    {
+      "id": "AT-04",
+      "title": "an unpaired IN is named, not guessed: the day is settled around it and flagged",
+      "shift": {
+        "code": "GEN",
+        "date": "2026-09-08",
+        "start": "2026-09-08 09:00",
+        "end": "2026-09-08 18:00",
+        "grace": 10,
+        "break": 0
+      },
+      "punches": [
+        {
+          "at": "2026-09-08 09:00",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-08 13:00",
+          "direction": "out"
+        },
+        {
+          "at": "2026-09-08 14:00",
+          "direction": "in"
+        }
+      ],
+      "expect": {
+        "worked": 240,
+        "late": 0,
+        "early_exit": 300,
+        "overtime": 0,
+        "shortfall": 300,
+        "sessions": 1,
+        "unpaired": 1,
+        "needs_regularisation": true
+      },
+      "why": "SmartPRS 2 infers direction from position in a list, so one missed swipe inverts every pair after it and the day reads as hours that were never worked. Here the afternoon IN has no OUT, the morning session stands, and the day says it is incomplete."
+    },
+    {
+      "id": "AT-05",
+      "title": "two INs with no OUT between them: the FIRST is the unpaired one",
+      "shift": {
+        "code": "GEN",
+        "date": "2026-09-09",
+        "start": "2026-09-09 09:00",
+        "end": "2026-09-09 18:00",
+        "grace": 0,
+        "break": 0
+      },
+      "punches": [
+        {
+          "at": "2026-09-09 09:00",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-09 09:02",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-09 18:00",
+          "direction": "out"
+        }
+      ],
+      "expect": {
+        "worked": 538,
+        "late": 0,
+        "early_exit": 0,
+        "overtime": 0,
+        "shortfall": 2,
+        "sessions": 1,
+        "unpaired": 1
+      },
+      "why": "A double swipe at the gate. The SECOND IN pairs with the OUT and the first is reported unpaired, which is a decision recorded rather than a coin toss — a regularisation has to know which punch to fix. 09:02 to 18:00 is 538 minutes against a scheduled 540, so the two minutes lost to the second swipe show up as shortfall rather than vanishing."
+    },
+    {
+      "id": "AT-06",
+      "title": "a punch outside the window is returned, never dropped",
+      "shift": {
+        "code": "GEN",
+        "date": "2026-09-10",
+        "start": "2026-09-10 09:00",
+        "end": "2026-09-10 18:00",
+        "grace": 0,
+        "break": 0,
+        "open_before": 60,
+        "close_after": 60
+      },
+      "punches": [
+        {
+          "at": "2026-09-10 09:00",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-10 18:00",
+          "direction": "out"
+        },
+        {
+          "at": "2026-09-10 21:30",
+          "direction": "in"
+        }
+      ],
+      "expect": {
+        "worked": 540,
+        "late": 0,
+        "early_exit": 0,
+        "overtime": 0,
+        "shortfall": 0,
+        "sessions": 1,
+        "unpaired": 0,
+        "outside_window": 1
+      },
+      "why": "The 21:30 swipe is three and a half hours past the window's close. It belongs to a different attendance day or to nothing, and either way it comes back to the caller — silently discarding a swipe is how somebody's overtime disappears."
+    },
+    {
+      "id": "AT-07",
+      "title": "early arrival inside the open tolerance counts, and is not late",
+      "shift": {
+        "code": "GEN",
+        "date": "2026-09-11",
+        "start": "2026-09-11 09:00",
+        "end": "2026-09-11 18:00",
+        "grace": 0,
+        "break": 0,
+        "open_before": 120
+      },
+      "punches": [
+        {
+          "at": "2026-09-11 08:10",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-11 18:00",
+          "direction": "out"
+        }
+      ],
+      "expect": {
+        "worked": 590,
+        "late": 0,
+        "early_exit": 0,
+        "overtime": 50,
+        "shortfall": 0,
+        "sessions": 1,
+        "unpaired": 0
+      },
+      "why": "Fifty minutes early is -50 relative to the shift start, and lateness beyond grace is max(0, ...) — an early arrival is not negative lateness, it is no lateness and fifty minutes of extra time."
+    },
+    {
+      "id": "AT-08",
+      "title": "a split shift with two sessions sums both",
+      "shift": {
+        "code": "SPLIT",
+        "date": "2026-09-12",
+        "start": "2026-09-12 09:00",
+        "end": "2026-09-12 20:00",
+        "grace": 0,
+        "break": 0
+      },
+      "punches": [
+        {
+          "at": "2026-09-12 09:00",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-12 13:00",
+          "direction": "out"
+        },
+        {
+          "at": "2026-09-12 16:00",
+          "direction": "in"
+        },
+        {
+          "at": "2026-09-12 20:00",
+          "direction": "out"
+        }
+      ],
+      "expect": {
+        "worked": 480,
+        "late": 0,
+        "early_exit": 0,
+        "overtime": 0,
+        "shortfall": 180,
+        "sessions": 2,
+        "unpaired": 0
+      },
+      "why": "Four hours plus four hours against an eleven-hour span. The gap between them is not worked time and is not a break to be added back — a split shift's unpaid middle is exactly the difference between the span and the sessions."
+    }
+  ],
+  "weekly_off": [
+    {
+      "id": "WO-01",
+      "title": "2nd and 4th Saturday plus every Sunday — the Indian six-day week SmartPRS 2 half-implements",
+      "pattern": {
+        "code": "SIX-DAY",
+        "kind": "nth",
+        "nth_rules": [
+          {
+            "weekday": 6,
+            "nth": [
+              2,
+              4
+            ]
+          },
+          {
+            "weekday": 7,
+            "nth": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      "probes": [
+        {
+          "date": "2026-09-05",
+          "off": false,
+          "why": "the FIRST Saturday of September"
+        },
+        {
+          "date": "2026-09-12",
+          "off": true,
+          "why": "the second"
+        },
+        {
+          "date": "2026-09-19",
+          "off": false,
+          "why": "the third"
+        },
+        {
+          "date": "2026-09-26",
+          "off": true,
+          "why": "the fourth"
+        },
+        {
+          "date": "2026-09-06",
+          "off": true,
+          "why": "and every Sunday"
+        }
+      ]
+    },
+    {
+      "id": "WO-02",
+      "title": "the nth occurrence counts within ITS OWN month, not by dividing the day number by seven",
+      "pattern": {
+        "code": "SECOND-SAT",
+        "kind": "nth",
+        "nth_rules": [
+          {
+            "weekday": 6,
+            "nth": [
+              2
+            ]
+          }
+        ]
+      },
+      "probes": [
+        {
+          "date": "2026-08-08",
+          "off": true,
+          "why": "8 August 2026 is the second Saturday"
+        },
+        {
+          "date": "2026-08-01",
+          "off": false,
+          "why": "the 1st is the first Saturday, not the second"
+        },
+        {
+          "date": "2026-05-09",
+          "off": true,
+          "why": "and in a month starting on a Friday, the second Saturday is the 9th"
+        }
+      ]
+    },
+    {
+      "id": "WO-03",
+      "title": "a rotation is total in both directions — a date BEFORE the anchor resolves on the same cycle, which a naive modulo gets wrong",
+      "pattern": {
+        "code": "ROT-6",
+        "kind": "rotation",
+        "cycle_length": 6,
+        "cycle": [
+          5
+        ],
+        "cycle_anchor": "2026-09-01"
+      },
+      "probes": [
+        {
+          "date": "2026-09-06",
+          "off": true,
+          "why": "five days after the anchor is offset 5, the off day"
+        },
+        {
+          "date": "2026-09-12",
+          "off": true,
+          "why": "and every six days after that"
+        },
+        {
+          "date": "2026-09-07",
+          "off": false,
+          "why": "the day after is offset 0, back to work"
+        },
+        {
+          "date": "2026-08-31",
+          "off": true,
+          "why": "ONE DAY BEFORE the anchor is -1, and (-1 mod 6 + 6) mod 6 is 5 — the same off day, running backwards. PHP's % keeps the sign of the dividend, so a naive rotation returns -1 here and matches nothing before its own anchor"
+        },
+        {
+          "date": "2026-08-25",
+          "off": true,
+          "why": "and seven days before, for the same reason"
+        },
+        {
+          "date": "2026-08-30",
+          "off": false,
+          "why": "while two days before is offset 4, which is a working day"
+        }
+      ]
+    },
+    {
+      "id": "WO-04",
+      "title": "a fixed Sunday-only pattern, which is the only one SmartPRS 2's points controller believes in",
+      "pattern": {
+        "code": "SUN",
+        "kind": "fixed",
+        "weekdays": [
+          7
+        ]
+      },
+      "probes": [
+        {
+          "date": "2026-09-06",
+          "off": true,
+          "why": "Sunday"
+        },
+        {
+          "date": "2026-09-12",
+          "off": false,
+          "why": "and a Saturday is not, which is where the four definitions diverge"
+        }
+      ]
+    }
+  ]
+}

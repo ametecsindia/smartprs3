@@ -1,0 +1,11 @@
+{"items": {
+  "banks": "The accounts payouts leave from: holder, number, IFSC, purpose — one row per account, per company.",
+  "roles": "What each role may do, derived from surface/Authorisation.php and read-only here; a change is a reviewed code edit (Law 5).",
+  "branding": "Each company's logo, colour and logo text previewed on the sidebar and a document heading; the fields are the companies row.",
+  "smtp-settings": "One mail server per company — host, port, encryption, credentials, From. Stored, never sent from here.",
+  "my-subscription": "Plan, seats in use against seats bought, period end and days left — read from the subscription row, changed commercially.",
+  "general-settings": "Every config/*.json rule file with whether this organisation customised it, by whom, when; edits happen on the owning screen.",
+  "sys-updates": "Installed version from config/version.json, licence edition, AMC validity and licence events; updates are the operator's act.",
+  "probation-settings": "Default months and reminder milestones over config/probation.json, saved as a new version each time.",
+  "mobile-devices": "Phones registered for the attendance app: approve, reject with a reason, revoke a lost one — moves declared in config/mobile-devices.json."
+}}

@@ -1,0 +1,18 @@
+{
+  "note": "People → Import Employees. Column matching: a heading matches a field by its column, code or label, compared with everything but letters and digits stripped (so 'Emp. Code', 'EMP CODE' and 'emp_code' are one heading), and the aliases below map the headings other systems and job portals use onto the register's codes. All-or-nothing: a file with any refused row is not imported at all — fix the rows the report names and check again.",
+  "aliases": {
+    "employeecode": "emp_code", "empid": "emp_code", "employeeid": "emp_code", "code": "emp_code", "staffid": "emp_code", "ecode": "emp_code",
+    "employeename": "name", "fullname": "name", "staffname": "name",
+    "dateofjoining": "doj", "joiningdate": "doj", "joindate": "doj", "dateofjoin": "doj", "joined": "doj",
+    "dateofbirth": "dob", "birthdate": "dob", "birthday": "dob",
+    "mobileno": "mobile", "mobilenumber": "mobile", "phone": "mobile", "phoneno": "mobile", "contact": "mobile", "contactno": "mobile",
+    "emailid": "email", "emailaddress": "email", "mail": "email",
+    "annualctc": "ctc", "ctcpa": "ctc", "salary": "ctc", "annualsalary": "ctc", "package": "ctc",
+    "dept": "department", "designationtitle": "designation", "title": "designation", "location": "branch", "office": "branch",
+    "sex": "gender", "pancard": "pan", "panno": "pan", "pannumber": "pan", "aadhar": "aadhaar", "aadhaarno": "aadhaar", "aadharno": "aadhaar", "uanno": "uan",
+    "bankaccount": "bank_acc", "accountno": "bank_acc", "accountnumber": "bank_acc", "bankaccountno": "bank_acc", "ifsccode": "ifsc", "bank": "bank_name",
+    "manager": "reporting_manager", "reportsto": "reporting_manager", "reportingto": "reporting_manager",
+    "stage": "employment_stage", "probation": "employment_stage", "type": "employment_type"
+  },
+  "all_or_nothing": true
+}

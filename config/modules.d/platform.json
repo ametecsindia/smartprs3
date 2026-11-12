@@ -1,0 +1,43 @@
+{"modules": [
+  {
+    "key": "payment-gateways", "group": "SaaS Platform", "label": "Payment Gateways",
+    "description": "The gateway keys platform revenue flows through — one row per gateway, test or live. Secrets are entered blind and never listed.",
+    "table": "payment_gateways",
+    "columns": ["gateway", "mode", "status", "webhook_url"],
+    "search": ["gateway"],
+    "permissions": {"view": "tenant.settings.update", "edit": "tenant.settings.update"},
+    "fields": {
+      "gateway": {"label": "Gateway", "required": true, "help": "razorpay, payu, stripe …"},
+      "mode": {"label": "Mode", "options": ["Test", "Live"], "required": true},
+      "key_id": {"label": "Key id", "type": "password", "permission": "tenant.settings.update"},
+      "secret": {"label": "Secret", "type": "password", "permission": "tenant.settings.update"},
+      "webhook_url": {"label": "Webhook URL", "help": "Point the gateway's webhook here so a payment made from a closed browser still lands."},
+      "status": {"label": "Status", "options": ["Configured", "Live", "Disabled"], "required": true}
+    }
+  },
+  {
+    "key": "coupons", "group": "SaaS Platform", "label": "Discount Coupons",
+    "description": "Campaign codes: a percent or a flat ₹ amount off, inside a window, up to a number of uses. used_count is written by redemption, never here.",
+    "table": "coupons",
+    "columns": ["code", "type", "value", "valid_from", "valid_till", "max_uses", "used_count", "applies_to", "status"],
+    "search": ["code", "notes"],
+    "unique": ["code"],
+    "permissions": {"view": "tenant.settings.update", "edit": "tenant.settings.update"},
+    "fields": {
+      "code": {"label": "Code", "required": true, "help": "Typed by the prospect — keep it short, UPPERCASE."},
+      "type": {"label": "Type", "options": ["Percent", "Flat"], "required": true},
+      "value": {"label": "Value", "type": "number", "required": true, "help": "Percent off, or ₹ off for a flat coupon."},
+      "valid_from": {"label": "Valid from", "type": "date"},
+      "valid_till": {"label": "Valid till", "type": "date"},
+      "max_uses": {"label": "Max uses", "type": "number", "help": "0 = unlimited"},
+      "used_count": {"label": "Used", "type": "number", "readonly": true},
+      "applies_to": {"label": "Applies to", "options": ["Signup", "Renewal", "Both"]},
+      "plan_ids": {"label": "Plan ids", "help": "Comma-separated plan ids, blank = every plan."},
+      "min_cycle": {"label": "Minimum cycle", "options": ["", "Monthly", "Quarterly", "Halfyear", "Annual"]},
+      "once_per_customer": {"label": "Once per customer", "type": "checkbox"},
+      "exclusive_email": {"label": "Exclusive to email", "help": "Blank = anybody."},
+      "status": {"label": "Status", "options": ["Active", "Disabled"], "required": true},
+      "notes": {"label": "Campaign note", "help": "e.g. June LinkedIn ads"}
+    }
+  }
+]}

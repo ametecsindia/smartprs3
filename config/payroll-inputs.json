@@ -1,0 +1,77 @@
+{
+  "note": "WHAT ELSE A PAYROLL CLOSE READS, besides attendance, leave, the salary structure, statutory heads and loan / advance recoveries (owner, 7 Oct: incentives and every other earning or deduction must reach the payslip). Each source is a register a person already fills in; an entry is paid in the payroll month its own month says, once its status is one of `statuses` (case-insensitive). Closing the same month again reads the same entries again — nothing is marked, so a regenerated month is identical. `code` is the payslip line; `tds_code` is the TDS already worked out on a commission entry.",
+  "sources": [
+    {
+      "table": "commissions",
+      "label": "Incentive / commission",
+      "kind": "earning",
+      "code": "INCENTIVE",
+      "amount": "gross_amount",
+      "amount_fallback": "amount",
+      "tds": "tds_amount",
+      "tds_code": "TDS_INCENTIVE",
+      "code_by_scheme_kind": {"Commission": "COMMISSION", "Incentive": "INCENTIVE"},
+      "tds_code_by_scheme_kind": {"Commission": "TDS_COMMISSION", "Incentive": "TDS_INCENTIVE"},
+      "label_by_scheme_kind": {"Commission": "Commission", "Incentive": "Incentive"},
+      "month": "month",
+      "statuses": ["approved", "confirmed", "paid"],
+      "only_when": {"field": "payout_method", "starts_with": "With salary", "blank_counts": true}
+    },
+    {
+      "table": "bonus_encashment",
+      "label": "Bonus / encashment",
+      "kind": "earning",
+      "code": "BONUS",
+      "code_by_type": {"Leave Encashment": "LEAVE_ENCASHMENT"},
+      "code_named_by_type": true,
+      "code_named_by_type_note": "Owner, 5 Nov 2026: each bonus type is its own payslip line, printed only in a month it is paid. A type not in code_by_type pays as BONUS:<type> and prints under the type's own name; a row with no type stays BONUS.",
+      "amount": "amount",
+      "month": "month",
+      "statuses": ["approved"],
+      "all_when_blank": true,
+      "basis": {"field": "basis", "component_field": "basis_component", "value_field": "basis_value", "per_day_divisor": 30},
+      "basis_note": "Basis 'percent' = basis_value % of the component's FULL-MONTH amount; 'days' = basis_value × (component ÷ per_day_divisor). Components are the employee's own salary lines (BASIC, HRA, DA …) plus GROSS (monthly gross) and CTC (annual). 'fixed' or blank = the Amount typed. Employee left blank = everyone in the run."
+    },
+    {
+      "table": "overtime",
+      "label": "Overtime",
+      "kind": "earning",
+      "code": "OT",
+      "amount": "amount",
+      "amount_from_hours": {"hours": "hours", "rate": "rate", "multiplier": "multiplier"},
+      "date": "ot_date",
+      "statuses": ["approved"]
+    },
+    {
+      "table": "expenses",
+      "label": "Expense reimbursement",
+      "kind": "earning",
+      "code": "REIMBURSEMENT",
+      "amount": "amount",
+      "date": "date",
+      "statuses": ["approved"]
+    },
+    {
+      "table": "clawbacks",
+      "label": "Clawback / reversal",
+      "kind": "deduction",
+      "code": "CLAWBACK",
+      "amount": "amount",
+      "month": "month",
+      "statuses": ["approved", "recovering"],
+      "note": "Owner, 2 Nov 2026: a commission / incentive paid on a case that bounced (Clawbacks / Reversals, or raised automatically when an entry under a scheme with 'Clawback on bounce?' is set to Clawed back) is recovered in the payroll of its month once approved."
+    },
+    {
+      "table": "deductions",
+      "label": "Manual deduction",
+      "kind": "deduction",
+      "code": "OTHER_DEDUCTION",
+      "code_by_type": {"Pcc": "PCC_DEDUCTION", "Escalation": "ESCALATION_DEDUCTION", "Other": "OTHER_DEDUCTION", "Asset Damage Recovery": "ASSET_DAMAGE_RECOVERY"},
+      "amount": "amount",
+      "month": "month",
+      "statuses": ["pending", "applied"],
+      "skip_types": ["Late", "Lop", "Advance_emi"],
+      "skip_types_note": "Late and loss of pay are now computed from attendance, leave and the Late Login Policy, and advance EMIs by the loan / advance recovery — a manual entry of the same kind would be charged twice. They are named as a concern on the row instead."
+    }
+  ]
+}

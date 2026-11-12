@@ -1,0 +1,14 @@
+{
+  "note": "PREVIOUS-DAY ABSENCE NOTIFICATION. SmartPRS 2's AbsenceService (F10) runs each morning, finds every active employee with no punch, no approved leave, no holiday and no weekly off, and notifies them with a link to regularise. These are its defaults, DECLARED: a tenant turns it on and chooses who is told through the screen, and the choice is versioned in module_customisations under the key below. It ships OFF, as SmartPRS 2 does: an absence mail sent before the device import has landed tells forty people they were absent on a day they worked.",
+  "customisation_key": "absence-notify",
+  "defaults": {
+    "enabled": false,
+    "notify_employee": true,
+    "notify_manager": false
+  },
+  "what_absent_means": "A day is ABSENT when the published attendance rules (config/attendance-rules.json) say so for a day with no punches — the same verdict the muster shows and payroll pays from. This file does not decide it; it only decides who is told.",
+  "events": {
+    "employee": "attendance.absent",
+    "manager": "attendance.absent.manager"
+  }
+}

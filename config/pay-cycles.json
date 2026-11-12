@@ -1,0 +1,22 @@
+{
+ "note": "Organization Setup → Salary Schedule / Pay Cycle (also Payroll → Pay Cycle & Lots). A row says WHEN a group is paid and what attendance window a payroll period covers, scoped to a company, branch, department, designation, team or employee (blank = any; the most specific row wins). Saved rows live in the tenant's customisation under `customisation_key`; these are the vocabularies the form offers. Payroll's arithmetic is unchanged by a cycle — it chooses each employee's window and pay day, not the sums. A cycle can close in one month and pay in a later one (e.g. the window 22 Aug – 21 Sep, which is September's salary, paid 1 Oct) — `pay_day` is still a day of the month, and `pay_month_offset` says how many months after the period that day falls.",
+ "customisation_key": "pay-cycles",
+ "cycles": [
+  "monthly",
+  "fortnightly",
+  "weekly",
+  "custom"
+ ],
+ "attendance_periods": {
+  "calendar": "Calendar month (1st to month end)",
+  "20": "21st to 20th",
+  "25": "26th to 25th",
+  "custom": "Custom (From day – To day)"
+ },
+ "pay_month_offsets": {
+  "0": "Same month as the period",
+  "1": "Following month",
+  "2": "Two months after"
+ },
+ "lots_max": 4
+}

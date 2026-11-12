@@ -1,0 +1,43 @@
+{
+  "routes": {
+    "letters-offer": "letters-offer",
+    "letters-increment": "letters-increment",
+    "letters-warning": "letters-warning",
+    "letters-relieving": "letters-relieving",
+    "letters-nda": "letters-nda",
+    "letters-templates": "letters-templates",
+    "send-message": "send-message",
+    "notice-board": "notice-board",
+    "notices": "notice-board",
+    "messages-log": "messages",
+    "greetings": "greetings",
+    "wa-templates": "wa-templates",
+    "wa-settings": "wa-settings",
+    "sms-templates": "sms-templates",
+    "sms-settings": "sms-settings"
+  },
+  "screens": {
+    "letters-nda": {
+      "m": "HR Letters",
+      "t": "NDA / Confidentiality",
+      "g": "The undertaking every person signs before touching client data",
+      "w": "A confidentiality and non-disclosure undertaking rendered from the employee record, kept as the text that went out. In a collections business the borrower data an agent sees is the whole liability; the signed undertaking is what the client audit asks for.",
+      "f": [["fa-user-shield", "Rendered from the employee record"], ["fa-print", "Print or save as PDF"], ["fa-book", "Issued copies kept as issued"]],
+      "s": ["Pick the employee and draft it — a blank placeholder refuses the letter.", "Issue; print or save as PDF for signature.", "File the signed copy under Document Tracker."],
+      "tip": "Change the wording once under Letter Templates; every later NDA uses it, and the ones already issued do not change.",
+      "r": ["Admin & HR"],
+      "rel": "Also see: Letter Templates, Document Tracker"
+    },
+    "sms-settings": {
+      "m": "Communication",
+      "t": "SMS Settings",
+      "g": "Connect your SMS gateway",
+      "w": "The SMS provider (MSG91, Twilio or similar): API URL, key, sender id and DLT entity id. No transport is wired in this build — messages queue in the Messages Log until a provider is connected.",
+      "f": [["fa-key", "Provider, key & sender id"], ["fa-id-card", "DLT entity id"], ["fa-toggle-on", "Active/inactive"]],
+      "s": ["Register the sender id and templates on the DLT portal.", "Add a row with the provider's API details and status active.", "Add the approved templates under SMS Templates."],
+      "tip": "An SMS whose content differs from the DLT-registered template is dropped by the operator without a bounce — keep the templates exact.",
+      "r": ["Admin"],
+      "rel": "Also see: SMS Templates, Send Message"
+    }
+  }
+}

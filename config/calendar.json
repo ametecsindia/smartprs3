@@ -1,0 +1,72 @@
+{
+ "note": "The working calendar is DATA. Which days are off, which days are holidays, when the shift runs, and what payroll prorates over are all business decisions — none of them appears in a PHP file.",
+ "weekly_off": [
+  "Sat",
+  "Sun"
+ ],
+ "grace_minutes": 5,
+ "grace_minutes_note": "Minutes after the shift start before an arrival is LATE. It lived in Surface\\Attendance as `graceMinutes: 5` in an argument list, where it read as a harmless default and was the policy. A late mark is the first step towards a day of loss of pay in most Indian attendance policies, so this is a number a customer sets.",
+ "shift": {
+  "code": "GEN",
+  "starts": "09:00",
+  "ends": "18:00",
+  "grace_minutes": 5
+ },
+ "proration_basis": "calendar_days",
+ "proration_note": "calendar_days or working_days. It is DECLARED rather than defaulted because the two give different payslips for the same month, and a platform that picks one silently has made a business decision on the customer's behalf and not told them.",
+ "holidays_note": "A `recurring: true` holiday repeats every year on the month and day of `on` — the year typed there is thrown away at lookup time, so New Year's Day only ever needs to be declared once. Holi and Diwali move with the lunar calendar, so they stay dated, one row per year, exactly as before. None of these carry a `scope`, so — same as every holiday saved before per-holiday scoping existed — they reach every company, branch, role and designation until somebody narrows one from the Holiday / W.OFF Schedule screen.",
+ "holidays": [
+  {
+   "on": "2026-01-01",
+   "name": "New Year's Day",
+   "type": "General",
+   "recurring": true
+  },
+  {
+   "on": "2026-01-26",
+   "name": "Republic Day",
+   "type": "Government",
+   "recurring": true
+  },
+  {
+   "on": "2026-03-04",
+   "name": "Holi",
+   "type": "Festival"
+  },
+  {
+   "on": "2026-08-15",
+   "name": "Independence Day",
+   "type": "Government",
+   "recurring": true
+  },
+  {
+   "on": "2026-10-02",
+   "name": "Gandhi Jayanti",
+   "type": "Government",
+   "recurring": true
+  },
+  {
+   "on": "2026-11-08",
+   "name": "Diwali",
+   "type": "Festival"
+  },
+  {
+   "on": "2026-12-25",
+   "name": "Christmas",
+   "type": "Festival",
+   "recurring": true
+  }
+ ],
+ "holiday_types": [
+  "Government",
+  "Festival",
+  "General",
+  "Company Anniversary",
+  "Regional",
+  "Restricted",
+  "Optional",
+  "Bank Holiday",
+  "Other"
+ ],
+ "holiday_types_note": "What kind of holiday a date is — shown on the muster and chosen under Organization Setup → Holiday Calendar. Add to this list to offer another kind; nothing in code knows the names."
+}

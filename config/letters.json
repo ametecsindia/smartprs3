@@ -1,0 +1,121 @@
+{
+  "note": "A LETTER IS A TEMPLATE HERE, NOT A CONTROLLER AND NOT A WORD FILE ON SOMEBODY'S DESKTOP. Each template names the subject it is written about, the placeholders it needs, and its body. {{field}} pulls from the employee; {{field|money}} formats it as rupees, {{field|money_words}} as rupees in words, {{field|date}} as a date an Indian reader expects, {{field|upper}} in capitals. {{effective_date}} is the effective date HR picks when drafting (today if none). A placeholder that resolves to NOTHING is a refusal, not a blank — an appointment letter issued with an empty salary line is worse than one that failed to issue, because it is signed. Required placeholders are listed so the refusal can name what is missing before anybody reads the draft.",
+  "letters": [
+    {
+      "key": "offer",
+      "label": "Offer letter",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "designation",
+        "doj",
+        "ctc"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\n{{address}}\n\nDear {{name}},\n\nSUB: OFFER OF EMPLOYMENT\n\nWe are pleased to offer you the position of {{designation}} with {{company}}, based at {{branch}}.\n\nYour date of joining will be {{doj|date}}. Your annual cost to company will be {{ctc|money}} ({{ctc|money_words}}), payable monthly as set out in the salary structure attached to this letter. {{training_terms}}\n\nThis offer is subject to verification of the documents and references you have provided, and to your producing evidence of relieving from your previous employer.\n\nPlease confirm your acceptance by signing and returning a copy of this letter.\n\nYours sincerely,\n\nFor {{company}}\nAuthorised Signatory\n\n\n{{salary_structure}}\n"
+    },
+    {
+      "key": "appointment",
+      "label": "Appointment letter",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation",
+        "doj",
+        "ctc"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\nEmployee code {{emp_code}}\n\nDear {{name}},\n\nSUB: LETTER OF APPOINTMENT\n\nFurther to your acceptance of our offer, we confirm your appointment as {{designation}} in the {{department}} department at {{branch}}, with effect from {{doj|date}}.\n\nYour annual cost to company is {{ctc|money}} ({{ctc|money_words}}). Statutory deductions, including provident fund and professional tax where applicable, will be made in accordance with the law.\n\nYou will report to {{reporting_manager}}. Your employee is governed by the company's standing policies, including the code of conduct, which form part of these terms.\n\nYours sincerely,\n\nFor {{company}}\nAuthorised Signatory"
+    },
+    {
+      "key": "confirmation",
+      "label": "Confirmation of probation",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\nEmployee code {{emp_code}}\n\nDear {{name}},\n\nSUB: CONFIRMATION OF SERVICE\n\nWe are pleased to inform you that, following a review of your performance, your services as {{designation}} are confirmed with effect from {{effective_date|date}}.\n\nAll other terms of your appointment dated {{doj|date}} remain unchanged.\n\nYours sincerely,\n\nFor {{company}}\nAuthorised Signatory"
+    },
+    {
+      "key": "experience",
+      "label": "Experience certificate",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "designation",
+        "doj"
+      ],
+      "body": "{{today|date}}\n\nTO WHOMSOEVER IT MAY CONCERN\n\nThis is to certify that {{name|upper}}, employee code {{emp_code}}, was employed with {{company}} as {{designation}} in the {{department}} department from {{doj|date}}.\n\nDuring the period of service we found {{name}} to be sincere and diligent in the discharge of the duties assigned.\n\nWe wish {{name}} success in future endeavours.\n\nFor {{company}}\nAuthorised Signatory"
+    },
+    {
+      "key": "relieving",
+      "label": "Relieving letter",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\nEmployee code {{emp_code}}\n\nDear {{name}},\n\nSUB: RELIEVING LETTER\n\nThis is to confirm that you have been relieved from your duties as {{designation}} with {{company}}, and that you have handed over the charge and company property in your custody.\n\nWe confirm that no dues remain outstanding on either side as on the date of this letter.\n\nWe wish you the very best.\n\nYours sincerely,\n\nFor {{company}}\nAuthorised Signatory"
+    },
+    {
+      "key": "warning",
+      "label": "Warning letter",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\nEmployee code {{emp_code}}\n\nDear {{name}},\n\nSUB: LETTER OF WARNING\n\nIt has been brought to our notice that your conduct as {{designation}} has not been in keeping with the standards expected under the company's code of conduct.\n\nYou are advised to ensure that the conduct in question is not repeated. A recurrence may attract disciplinary action in accordance with the company's policy.\n\nYou may submit a written explanation within seven days of receiving this letter, which will be considered on record.\n\nFor {{company}}\nAuthorised Signatory"
+    },
+    {
+      "key": "address-proof",
+      "label": "Address and employee proof",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation",
+        "doj"
+      ],
+      "body": "{{today|date}}\n\nTO WHOMSOEVER IT MAY CONCERN\n\nThis is to certify that {{name|upper}}, employee code {{emp_code}}, has been employed with {{company}} as {{designation}} since {{doj|date}}, and is presently in our service.\n\nAs per our records the address of the employee is:\n{{address}}\n\nThis certificate is issued on request for the purpose of verification and carries no financial obligation on the part of the company.\n\nFor {{company}}\nAuthorised Signatory"
+    },
+    {
+      "key": "transfer",
+      "label": "Transfer order",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\nEmployee code {{emp_code}}\n\nDear {{name}},\n\nSUB: TRANSFER ORDER\n\nYou are hereby transferred {{transfer_from}} to {{transfer_to}} with effect from {{effective_date|date}}. {{transfer_reason}}\n\nYour employee code, date of joining and all other terms of your appointment remain unchanged. Please report to {{transfer_to}} on the effective date and complete the joining formalities there.\n\nYours sincerely,\n\nFor {{company}}\nAuthorised Signatory",
+      "note": "Rendered from the Transfers screen with the transfer's own values (transfer_from, transfer_to, effective_date, transfer_reason); the Letters screen alone cannot fill those and says so."
+    },
+    {
+      "key": "increment",
+      "label": "Increment letter",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation",
+        "ctc"
+      ],
+      "body": "{{today|date}}\n\nTo\n{{name}}\nEmployee code {{emp_code}}\n\nDear {{name}},\n\nSUB: REVISION OF COMPENSATION\n\nIn recognition of your performance and contribution as {{designation}}, we are pleased to revise your compensation. Your annual cost to company stands revised to {{ctc|money}} ({{ctc|money_words}}) with effect from {{effective_date|date}}, payable monthly as set out in the salary structure attached to this letter.\n\nAll other terms of your appointment dated {{doj|date}} remain unchanged. We look forward to your continued contribution.\n\nYours sincerely,\n\nFor {{company}}\nAuthorised Signatory\n\n\n{{salary_structure}}\n",
+      "note": "Rendered from the employee's CURRENT ctc: record the revision on the employee first, then issue. The letter engine has no separate increment amount to print, and a letter quoting a figure the payroll does not pay is the defect this file refuses."
+    },
+    {
+      "key": "nda",
+      "label": "NDA / Confidentiality undertaking",
+      "subject": "employees",
+      "requires": [
+        "name",
+        "emp_code",
+        "designation"
+      ],
+      "body": "{{today|date}}\n\nCONFIDENTIALITY AND NON-DISCLOSURE UNDERTAKING\n\nI, {{name|upper}}, employee code {{emp_code}}, employed with {{company}} as {{designation}} in the {{department}} department, undertake as follows:\n\n1. I shall hold in strict confidence all information relating to the company, its clients, borrowers, customers, accounts, business methods, systems and data that comes to my knowledge in the course of my employee.\n\n2. I shall not disclose, copy, remove or use any such information for any purpose other than the discharge of my duties, during or after my employee.\n\n3. I shall return every document, device and record belonging to the company on the last day of my service.\n\n4. I understand that a breach of this undertaking may lead to disciplinary action, termination and legal proceedings.\n\nSigned at {{branch}} on {{today|date}}.\n\n\n____________________\n{{name}}\n\nWitnessed for {{company}}\nAuthorised Signatory"
+    }
+  ]
+}

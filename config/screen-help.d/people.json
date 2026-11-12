@@ -1,0 +1,26 @@
+{
+  "note": "Employees-tab audit (10 Sep): the screens that had no guide route, mapped onto SmartPRS 2's ids.",
+  "routes": {
+    "bgv": "bgv",
+    "transfers": "transfers",
+    "probation": "probation",
+    "notifications": "notifications",
+    "offroll-kyc": "offroll-agents",
+    "onboarding-status": "onboarding-board",
+    "recruitment": "recruitment",
+    "roster": "roster"
+  },
+  "screens": {
+    "roster": {
+      "m": "Time & Attendance",
+      "t": "Roster",
+      "g": "Day-wise shift plan",
+      "w": "Who is on which Working Shift, day by day. A roster row puts an employee — or everybody in a company, branch, department or team — on a shift for a date range and overrides their default shift for those days; the most recent row covering a day wins, so a one-day change is a one-day row.",
+      "f": [["fa-calendar-days", "Month grid: employee × day → shift"], ["fa-people-group", "Assign one person or a whole scope"], ["fa-layer-group", "Newest row wins where two overlap"], ["fa-file-excel", "Excel / CSV of the grid"]],
+      "s": ["Pick the month and filter to the people you are rostering.", "Choose who, the Working Shift, From and To; save.", "Cancel a row to fall back to the scoped shift."],
+      "tip": "Attendance reads the roster: the late check and the shift hours for a day come from the rostered shift.",
+      "r": ["Admin & HR"],
+      "rel": "Also see: Working Shifts, Daily Attendance"
+    }
+  }
+}

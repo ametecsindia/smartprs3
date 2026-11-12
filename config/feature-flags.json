@@ -1,0 +1,11 @@
+{
+  "note": "Every platform feature toggle, with its default. A row in feature_flags overrides: tenant_id NULL is the global default, a tenant row wins over global. Add a key here before anyone can switch it.",
+  "flags": {
+    "self_signup": {"label": "Public self-signup", "default": "on", "description": "The signup page creates a tenant without platform staff."},
+    "coupons": {"label": "Coupon codes", "default": "on", "description": "The signup and renewal dialogs accept a coupon code."},
+    "whatsapp_alerts": {"label": "WhatsApp alerts", "default": "off", "description": "Renewal and lead alerts go out over WhatsApp as well as email."},
+    "live_demo": {"label": "Live demo tenant", "default": "on", "description": "The website offers an OTP-gated demo workspace."},
+    "assistant": {"label": "In-app assistant", "default": "on", "description": "The help assistant is shown on every screen."},
+    "beta_screens": {"label": "Beta screens", "default": "off", "description": "Screens still being finished are shown to the tenant."}
+  }
+}

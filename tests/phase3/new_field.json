@@ -1,0 +1,42 @@
+{
+  "note": "THE EXIT-GATE FIELD. Part XXXII: 'adding one new employee field touches ZERO code files and appears correctly on all thirteen surfaces.' This file IS the addition. Nothing under src/ names linkedin_profile, and tools/phase3/exit-gate.php proves that by grepping for it — a claim of zero code files is worth exactly as much as the check behind it.",
+  "field": {
+    "field_key": "linkedin_profile",
+    "label": "LinkedIn profile",
+    "description": "The candidate's public LinkedIn URL, captured at onboarding and shown on the record.",
+    "help_text": "Paste the full https:// address of the profile.",
+    "authoring_type": "url",
+    "storage_kind": "attribute",
+    "group_key": "personal",
+    "display_order": 90,
+    "pii_class": "identifying",
+    "masking_rule": "none",
+    "history_mode": "audit_only",
+    "effective_from": "2026-04-01",
+    "constraints": {
+      "max_length": 200
+    }
+  },
+  "surface_rules": [
+    { "surface": "directory", "role": null, "visibility": "read", "is_list_column": false, "is_filterable": true, "is_sortable": false, "is_quick_search": false },
+    { "surface": "edit", "role": null, "visibility": "write", "required": "never" },
+    { "surface": "self_onboarding", "role": null, "visibility": "write", "required": "never" },
+    { "surface": "import", "role": null, "visibility": "write", "required": "never" },
+    { "surface": "export", "role": null, "visibility": "read" },
+    { "surface": "ess", "role": null, "visibility": "write", "required": "never" },
+    { "surface": "mss", "role": null, "visibility": "read" },
+    { "surface": "mobile", "role": null, "visibility": "read" },
+    { "surface": "api", "role": null, "visibility": "write", "required": "never" },
+    { "surface": "recruitment_conversion", "role": null, "visibility": "write", "required": "never" },
+    { "surface": "template", "role": null, "visibility": "read" },
+    { "surface": "report", "role": null, "visibility": "read" },
+    { "surface": "payslip", "role": null, "visibility": "hidden" }
+  ],
+  "expect": {
+    "visible_on": 12,
+    "hidden_on": 1,
+    "writable_on": 6,
+    "hidden_note": "A LinkedIn URL has no business on a payslip, and declaring it hidden there is the point: every one of the thirteen surfaces has an ANSWER for this field, and one of the answers is no.",
+    "round_trip_cell": "https://in.linkedin.com/in/ejaz"
+  }
+}

@@ -1,0 +1,4 @@
+deptrac:
+  layers:
+    - name: Kernel
+      collectors: [{ type: classLike, value: '^SmartPRS\\Platform\\Spx\\.*' }]

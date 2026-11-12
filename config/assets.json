@@ -1,0 +1,130 @@
+{
+  "note": "Assets register — run like a library. Every physical item is ONE row with its own tag (asset_id); quantities are never typed, they are COUNTED from the rows (Asset Stock), so issued + available + under repair always adds up. A new item starts in `initial_status`; only the moves below change a status (Asset Issue & Returns issues and takes back; Asset Stock repairs, restocks and retires). A return in a condition named in `by_condition` goes there instead of back on the shelf: damaged → under repair, lost → lost. `retired` is hidden by the register like every retired row. `recovery_statuses` is what happened to an amount charged on a damaged/lost return. Edit the words here, never the PHP.",
+  "table": "assets",
+  "statuses": {
+    "in stock": {
+      "label": "Available",
+      "badge": "gray"
+    },
+    "assigned": {
+      "label": "Issued",
+      "badge": "green"
+    },
+    "under repair": {
+      "label": "Under repair",
+      "badge": "amber"
+    },
+    "lost": {
+      "label": "Lost",
+      "badge": "red"
+    },
+    "retired": {
+      "label": "Retired",
+      "badge": "red"
+    }
+  },
+  "conditions": [
+    "new",
+    "good",
+    "fair",
+    "damaged",
+    "lost"
+  ],
+  "damage_resolutions": [
+    "Waived off",
+    "Cost recovered",
+    "Replaced",
+    "Written off"
+  ],
+  "recovery_statuses": [
+    "Pending",
+    "Pending - Deduct in Next Pay Cycle",
+    "Paid",
+    "Waived off",
+    "On hold"
+  ],
+  "recovery_payroll": {
+    "status": "Pending - Deduct in Next Pay Cycle",
+    "deduction_type": "Asset Damage Recovery",
+    "note": "Owner, 22 Oct 2026: a Damaged/Lost return with this recovery status puts the recovery amount into the Deductions Ledger (type Asset Damage Recovery, status Pending) for the employee's next pay cycle — the first month from the return date that has no payroll run yet. Payroll reads it as an Other Deduction titled Asset Damage Recovery (config/payroll-inputs.json). Changing the recovery status later (Paid / Waived off / On hold) waives that pending deduction; changing the amount updates it."
+  },
+  "transitions": {
+    "issue": {
+      "from": [
+        "in stock"
+      ],
+      "to": "assigned",
+      "label": "Issue",
+      "needs_employee": true
+    },
+    "return": {
+      "from": [
+        "assigned"
+      ],
+      "to": "in stock",
+      "label": "Return",
+      "by_condition": {
+        "damaged": "under repair",
+        "lost": "lost"
+      }
+    },
+    "repair": {
+      "from": [
+        "in stock"
+      ],
+      "to": "under repair",
+      "label": "Send for repair"
+    },
+    "restock": {
+      "from": [
+        "under repair"
+      ],
+      "to": "in stock",
+      "label": "Back in stock"
+    },
+    "retire": {
+      "from": [
+        "in stock",
+        "under repair",
+        "lost"
+      ],
+      "to": "retired",
+      "label": "Retire"
+    }
+  },
+  "held_statuses": [
+    "assigned"
+  ],
+  "initial_status": "in stock",
+  "reissue_confirm_categories": [
+    "Laptop",
+    "CPU",
+    "Desktop"
+  ],
+  "reissue_note": "Issuing one of these categories to an employee who already holds one asks for confirmation first (Asset Issue & Returns), and is refused without it.",
+  "recovery_settled": {
+    "resolutions": [
+      "Waived off",
+      "Cost recovered",
+      "Replaced",
+      "Written off"
+    ],
+    "statuses": [
+      "Paid",
+      "Waived off"
+    ],
+    "note": "A Damaged or Lost return is SETTLED when its final status is one of `resolutions` and, if a recovery amount was charged, its recovery status is one of `statuses`. Until then it holds the employee's Exit clearance and FnF (owner, 29 Sep)."
+  },
+  "issue_within": [
+    "employer_company_id",
+    "branch_id"
+  ],
+  "issue_within_note": "A unit can only be issued to an employee of the same company and branch: every column listed in `issue_within` must match between the asset and the employee. Asset Issue & Returns lists only that employee's stock; the server refuses the rest. Remove a column to relax the rule.",
+  "transfer": {
+    "from": [
+      "in stock",
+      "under repair"
+    ],
+    "note": "Asset Stock → Transfer moves units in these statuses to another company / branch. An issued unit is returned first; lost and retired units stay where they are."
+  }
+}

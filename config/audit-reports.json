@@ -1,0 +1,16 @@
+{
+  "note": "The statutory registers the Audit Reports screen lists and exports as CSV. A register is a table and the columns an inspector asks for; a computed register names the screen that derives it. The POSH register is deliberately NOT exportable in bulk — it is confidential to the Internal Committee — and is listed as a count only.",
+  "permission": "payroll.view",
+  "registers": [
+    {"key": "pf-esi-register", "label": "PF & ESI registrations", "table": "pf_esi_registrations", "columns": ["employee_id", "pf_applicable", "uan", "pf_number", "pf_from", "esi_applicable", "esi_number", "esi_from", "status"]},
+    {"key": "tds-declarations", "label": "TDS declarations", "table": "tds_declarations", "columns": ["employee_id", "financial_year", "pan", "regime", "section_80c", "section_80d", "hra_exempt", "other_exempt", "declared_tds", "status"]},
+    {"key": "tds-returns", "label": "TDS returns (24Q)", "table": "tds_returns", "columns": ["financial_year", "quarter", "deductees", "tax_deducted", "deposited", "due_date", "filed_on", "acknowledgement", "status"]},
+    {"key": "pt-slabs", "label": "Professional tax slabs", "table": "pt_slabs", "columns": ["state", "wage_from", "wage_to", "amount"]},
+    {"key": "bonus-register", "label": "Statutory bonus register", "table": "statutory_bonus_register", "columns": ["employee_id", "financial_year", "bonus_wage", "bonus_pct", "amount", "paid_on", "status"]},
+    {"key": "min-wages", "label": "Minimum wages notified", "table": "min_wages", "columns": ["state", "zone", "category", "monthly_min", "daily_min", "effective_from", "status"]},
+    {"key": "compliance-filings", "label": "Compliance filings", "table": "compliance_filings", "columns": ["obligation", "period", "filed_on", "reference", "amount", "filed_by"]},
+    {"key": "gratuity", "label": "Gratuity liability (computed)", "computed": "gratuity"},
+    {"key": "statutory-bonus", "label": "Statutory bonus (computed)", "computed": "statutory-bonus"},
+    {"key": "posh", "label": "POSH complaints", "table": "posh_complaints", "confidential": true}
+  ]
+}

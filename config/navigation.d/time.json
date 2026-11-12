@@ -1,0 +1,29 @@
+{
+ "section": "time",
+ "items": [
+  {
+   "key": "overtime",
+   "module": "overtime",
+   "label": "Overtime Register",
+   "icon": "fa-business-time",
+   "permission": "attendance.day.view",
+   "hidden": true
+  },
+  {
+   "key": "integrations",
+   "route": "integrations",
+   "label": "API Keys & Integrations",
+   "icon": "fa-plug",
+   "permission": "tenant.settings.update"
+  },
+  {
+   "key": "biometric-mapping",
+   "route": "biometric-mapping",
+   "label": "Biometric Mapping & Sync",
+   "icon": "fa-fingerprint",
+   "permission": "tenant.settings.update",
+   "hidden": true
+  }
+ ],
+ "note": "Biometric Mapping & Sync is hidden (owner, 12 Nov 2026: biometric menus removed from the sidebar; the route still answers). Bulk Attendance Upload is not a separate menu item (owner, 12 Oct): the bulk sheet is part of Manual Entry (route attendance-bulk still answers)."
+}

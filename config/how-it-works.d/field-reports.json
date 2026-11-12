@@ -1,0 +1,19 @@
+{
+  "items": {
+    "escalations": "Bank and client escalations with severity, owner and deadline, tracked to closure.",
+    "offroll-agents": "Vendor / off-roll field agents by company and branch with payout basis, DRA and PCC status \u2014 outside payroll.",
+    "agent-auth": "The bank's authorisation letter / ID per employee, bank and portfolio with validity; expiring within the configured window first.",
+    "dra-certs": "Each employee's DRA certificate status and expiry from the employee record: due within the window, expired, valid \u2014 with a link to record the renewal.",
+    "complaints": "Borrower complaints against agents with source, channel, severity and status to closure.",
+    "reports": "Aggregate reports declared in config/reports.json: counts and totals by department, branch, status and more, each behind the permission of the table it reads.",
+    "report-headcount": "Live headcount by company, branch or department, scoped by Organization Setup, with a CSV.",
+    "report-attendance-summary": "Per employee for a month: days by attendance status and exact hours.",
+    "report-leave-summary": "Per employee for a month: approved leave days by type, exact to the fraction.",
+    "report-salary-register": "Per employee: gross, deductions and net from the closed run of the month, summed from the run's own lines in paise.",
+    "report-pf-esi-summary": "Who is inside PF and ESI with UAN and ESI numbers, and how many.",
+    "report-birthdays": "Whose birthday falls in the month, by day, with the age they turn.",
+    "attrition": "Joiners against leavers over time.",
+    "activity-logs": "The hash-chained audit trail: who changed what, when, and whether the chain still verifies.",
+    "report-datasets": "Preview any dataset (employees, payslips, leave, punches, regularisations, loans, advances) with the same filters and period as every summary, and export it to Excel or CSV."
+  }
+}

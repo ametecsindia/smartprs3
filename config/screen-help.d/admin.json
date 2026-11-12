@@ -1,0 +1,11 @@
+{"routes": {
+  "banks": "banks",
+  "roles": "roles",
+  "branding": "branding",
+  "smtp-settings": "company-emails",
+  "my-subscription": "my-subscription",
+  "general-settings": "settings",
+  "sys-updates": "sys-updates",
+  "probation-settings": "probation-config",
+  "mobile-devices": "mobile-devices"
+}}

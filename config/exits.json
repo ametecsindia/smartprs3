@@ -1,0 +1,67 @@
+{
+ "note": "People → Exit & FnF. The clearance items an exit goes through and the reasons offered. SmartPRS 2 has them as a hard-coded field list; here a company adds an item (e.g. 'Laptop returned') by editing this file. The full-and-final settlement itself is computed on the settlement screen, from the last working day recorded here.",
+ "reasons": [
+  "Resignation",
+  "Termination",
+  "Retirement",
+  "End of contract",
+  "Absconding",
+  "Death",
+  "Disablement",
+  "Other"
+ ],
+ "clearance": {
+  "id_surrendered": {
+   "label": "ID card surrendered",
+   "options": [
+    "Yes",
+    "No",
+    "N/A"
+   ]
+  },
+  "access_revoked": {
+   "label": "System / portal access revoked",
+   "options": [
+    "Yes",
+    "No",
+    "N/A"
+   ]
+  },
+  "dra_id_returned": {
+   "label": "DRA / authorisation ID returned",
+   "options": [
+    "Yes",
+    "No",
+    "N/A"
+   ]
+  },
+  "data_handed_over": {
+   "label": "Borrower data / files handed over",
+   "options": [
+    "Yes",
+    "No",
+    "N/A"
+   ]
+  },
+  "knowledge_transfer": {
+   "label": "Knowledge transfer done",
+   "options": [
+    "Yes",
+    "No",
+    "Pending"
+   ]
+  }
+ },
+ "statuses": [
+  "pending",
+  "cleared",
+  "withheld"
+ ],
+ "resignation_note": "Owner, 22 Oct 2026: Submit / Revoke Resignation on the employee profile. A resignation is the exit record (reason Resignation) with status 'notice' while serving notice and 'revoked' if withdrawn; on its last_day (notice end) it becomes 'pending' and is listed in Exit & FnF. Notice = the employee's Notice Period (Days) field, else default_notice_days. notice_edit_roles may change the notice end date (administrator always).",
+ "default_notice_days": 30,
+ "notice_edit_roles": [
+  "HR Manager",
+  "HR Admin",
+  "Company Admin"
+ ]
+}

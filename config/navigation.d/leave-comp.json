@@ -1,0 +1,120 @@
+[
+ {
+  "section": "leave",
+  "items": [
+   {
+    "key": "leave-apply",
+    "route": "leave",
+    "label": "Leave",
+    "icon": "fa-calendar-day",
+    "permission": "leave.request.view"
+   },
+   {
+    "key": "leave-approvals",
+    "route": "leave-approvals",
+    "label": "Leave Approvals",
+    "icon": "fa-clipboard-check",
+    "permission": "leave.approvals.view",
+    "show_if": "leave_approver",
+    "badge": "leave_approvals"
+   },
+   {
+    "key": "leave-balance-report",
+    "route": "leave-balance-report",
+    "label": "Leave Balance Report",
+    "icon": "fa-table-list",
+    "permission": "leave.balance.view_others"
+   }
+  ]
+ },
+ {
+  "section": "compensation",
+  "items": [
+   {
+    "key": "commissions",
+    "module": "commissions",
+    "label": "Commission Entries",
+    "icon": "fa-percent",
+    "permission": "payroll.view"
+   },
+   {
+    "key": "expenses",
+    "module": "expenses",
+    "label": "Expense Claims",
+    "icon": "fa-receipt",
+    "permission": "payroll.view"
+   },
+   {
+    "key": "advance",
+    "label": "Salary Advance",
+    "icon": "fa-hand-holding-dollar",
+    "permission": "payroll.view",
+    "route": "salary-advance"
+   },
+   {
+    "key": "claims",
+    "route": "claims",
+    "label": "Claim Approvals",
+    "icon": "fa-check-double",
+    "permission": "payroll.run"
+   },
+   {
+    "key": "overtime",
+    "module": "overtime",
+    "label": "Overtime Register",
+    "icon": "fa-business-time",
+    "permission": "attendance.day.view",
+    "hidden": true
+   },
+   {
+    "key": "loans",
+    "label": "Loans",
+    "icon": "fa-building-columns",
+    "permission": "payroll.view",
+    "route": "loans"
+   },
+   {
+    "key": "loan-recovery",
+    "route": "loan-recovery",
+    "label": "Loans / Salary Advance Recovery",
+    "icon": "fa-hand-holding-dollar",
+    "permission": "payroll.view"
+   },
+   {
+    "key": "clawbacks",
+    "module": "clawbacks",
+    "label": "Clawbacks / Reversals",
+    "icon": "fa-rotate-left",
+    "permission": "payroll.view"
+   },
+   {
+    "key": "bonus-enc",
+    "module": "bonus",
+    "label": "Bonus & Encashment",
+    "icon": "fa-coins",
+    "permission": "payroll.view"
+   },
+   {
+    "key": "increments",
+    "module": "increments",
+    "label": "Increment / Appraisal",
+    "icon": "fa-arrow-trend-up",
+    "permission": "employee.view"
+   },
+   {
+    "key": "exits",
+    "route": "exits",
+    "label": "Exit & Full-and-Final",
+    "icon": "fa-door-open",
+    "permission": "payroll.run"
+   },
+   {
+    "key": "bank-pack",
+    "route": "bank-pack",
+    "label": "Bank Payout Pack",
+    "icon": "fa-file-csv",
+    "permission": "payroll.view"
+   }
+  ]
+ }
+]

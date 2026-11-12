@@ -1,0 +1,6 @@
+{
+ "note": "Organization Setup → Financial Year. When the company's year starts and which year is ACTIVE for statutory and reporting screens. The label form 'YYYY-YY' follows Indian practice. Saved under `customisation_key`; nothing here is a business literal in code — the default start month is the Indian statutory year and is changed here, not in PHP.",
+ "customisation_key": "financial-year",
+ "defaults": {"start_month": 4},
+ "label_format": "YYYY-YY"
+}

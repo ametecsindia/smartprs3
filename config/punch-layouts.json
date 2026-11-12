@@ -1,0 +1,37 @@
+{
+  "note": "HOW A DEVICE'S EXPORT IS READ. Every biometric device in this market exports a delimited log file, and every vendor orders the columns differently — so the layout is DATA here, not a `case 'zkteco'` in PHP. A new device model is an edit to this file, which is what SmartPRS 2 needs a release for. Reading a ZKTeco file with an eSSL layout produces rows that parse cleanly and mean something else, so the layout is named on every import and never guessed. `identifies` says which employee column the device's own id maps to: `device_user_id` for an enrolment number, `emp_code` for exports that already carry the employee code. Every field below is required — a punch with no declared direction would have to be given one, and a payable day computed from an invented direction is one nobody can audit.",
+  "zkteco_dat": {
+    "label": "ZKTeco .dat / .txt export — tab separated, no header",
+    "delimiter": "\t",
+    "header": false,
+    "identifies": "device_user_id",
+    "columns": {
+      "device_user_id": 0,
+      "punch_at": 1,
+      "direction": 2,
+      "verify_mode": 3,
+      "device_sn": 4
+    },
+    "timestamp_format": "Y-m-d H:i:s",
+    "directions": {
+      "0": "in",
+      "1": "out"
+    }
+  },
+  "essl_csv": {
+    "label": "eSSL CSV export — comma separated, header row, day-first instants",
+    "delimiter": ",",
+    "header": true,
+    "identifies": "device_user_id",
+    "columns": {
+      "device_user_id": 0,
+      "punch_at": 1,
+      "direction": 2
+    },
+    "timestamp_format": "d/m/Y H:i:s",
+    "directions": {
+      "IN": "in",
+      "OUT": "out"
+    }
+  }
+}

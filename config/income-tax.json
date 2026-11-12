@@ -1,0 +1,124 @@
+{
+  "note": "INCOME TAX ON SALARY — the rules TDS Declaration, Investment Proofs and the payroll's monthly TDS read. EVERY FIGURE HERE IS LAW, NOT CODE: a Budget changes this file, never PHP. One block per financial year (April–March), keyed 'YYYY-YY'. Amounts are rupees as decimal strings. Section names show the Income-tax Act, 2025 number (in force from 1 April 2026) with the 1961 Act number employees still know. VERIFY AGAINST THE FINANCE ACT / CBDT NOTIFICATIONS BEFORE GO-LIVE — compiled 14 Oct 2026 from public sources (cleartax.in, incometaxindia-based summaries); a named compliance owner should sign it off.",
+  "years": {
+    "2026-27": {
+      "label": "Tax Year 2026-27 (Income-tax Act, 2025)",
+      "default_regime": "new",
+      "regime_note": "The new regime is the default (Section 202). An employee opts for the old regime by declaring it to the employer (Form 122 / Form 124) — salaried employees may switch every year.",
+      "cess_pct": "4",
+      "round_taxable_to": 10,
+      "regimes": {
+        "new": {
+          "label": "New regime (default)",
+          "standard_deduction": "75000",
+          "professional_tax_deductible": false,
+          "chapter_via_allowed": ["80CCD2"],
+          "exemptions_allowed": [],
+          "slabs": [
+            {"upto": "400000", "pct": "0"},
+            {"upto": "800000", "pct": "5"},
+            {"upto": "1200000", "pct": "10"},
+            {"upto": "1600000", "pct": "15"},
+            {"upto": "2000000", "pct": "20"},
+            {"upto": "2400000", "pct": "25"},
+            {"upto": null, "pct": "30"}
+          ],
+          "rebate": {"income_upto": "1200000", "max": "60000", "marginal_relief": true},
+          "surcharge": [
+            {"above": "5000000", "pct": "10"},
+            {"above": "10000000", "pct": "15"},
+            {"above": "20000000", "pct": "25"}
+          ]
+        },
+        "old": {
+          "label": "Old regime (with deductions and exemptions)",
+          "standard_deduction": "50000",
+          "professional_tax_deductible": true,
+          "chapter_via_allowed": "all",
+          "exemptions_allowed": ["HRA", "LTA"],
+          "slabs_by_age": {
+            "below_60": [{"upto": "250000", "pct": "0"}, {"upto": "500000", "pct": "5"}, {"upto": "1000000", "pct": "20"}, {"upto": null, "pct": "30"}],
+            "60_to_79": [{"upto": "300000", "pct": "0"}, {"upto": "500000", "pct": "5"}, {"upto": "1000000", "pct": "20"}, {"upto": null, "pct": "30"}],
+            "80_plus": [{"upto": "500000", "pct": "0"}, {"upto": "1000000", "pct": "20"}, {"upto": null, "pct": "30"}]
+          },
+          "rebate": {"income_upto": "500000", "max": "12500", "marginal_relief": false},
+          "surcharge": [
+            {"above": "5000000", "pct": "10"},
+            {"above": "10000000", "pct": "15"},
+            {"above": "20000000", "pct": "25"},
+            {"above": "50000000", "pct": "37"}
+          ]
+        }
+      },
+      "hra": {
+        "metro_pct": "50",
+        "other_pct": "40",
+        "rent_less_pct_of_salary": "10",
+        "metro_cities": ["Mumbai", "Delhi", "New Delhi", "Kolkata", "Chennai", "Bengaluru", "Bangalore", "Hyderabad", "Pune", "Ahmedabad"],
+        "salary_components": ["BASIC", "DA"],
+        "hra_component": "HRA",
+        "landlord_pan_above_annual_rent": "100000",
+        "note": "Old regime only. Exempt HRA = the least of (a) HRA received, (b) rent paid − 10% of salary, (c) 50% of salary in a metro city / 40% elsewhere. Salary = Basic + DA. Income Tax Rules 2026 add Bengaluru, Hyderabad, Pune and Ahmedabad to the 50% cities. Landlord PAN is required when annual rent exceeds ₹1,00,000."
+      },
+      "salary_codes": {
+        "employee_pf": ["PF_EMPLOYEE", "PF", "EPF", "D-PF"],
+        "professional_tax": ["PT", "D-PT"],
+        "lta": ["LTA"],
+        "tds": ["TDS", "TDS_INCENTIVE", "TDS_COMMISSION", "D-TDS"],
+        "employer_nps": ["NPS_EMPLOYER"],
+        "basic_da": ["BASIC", "DA"],
+        "hra": ["HRA"],
+        "lta_component": ["LTA"]
+      },
+      "groups": [
+        {"key": "80C", "label": "Section 123 (old 80C) — investments & payments", "cap": "150000", "note": "One combined limit of ₹1,50,000 for everything in this group, including your PF from salary, 80CCC pension and your own NPS 80CCD(1)."},
+        {"key": "80CCD1B", "label": "Section 124 (old 80CCD(1B)) — additional NPS", "cap": "50000"},
+        {"key": "80CCD2", "label": "Section 124 (old 80CCD(2)) — employer's NPS contribution", "cap_pct_of_salary": {"new": "14", "old": "14"}, "note": "Both regimes. Limited to 14% of Basic + DA."},
+        {"key": "80D", "label": "Section 126 (old 80D) — health insurance", "note": "Self/spouse/children ₹25,000 (₹50,000 if you are 60+); parents a further ₹25,000 (₹50,000 if a parent is 60+). Preventive check-up up to ₹5,000 is within these limits."},
+        {"key": "OTHER_VIA", "label": "Other deductions (Chapter VIII, old Chapter VI-A)"},
+        {"key": "HOUSE", "label": "Income from house property (Section 22, old 24(b))", "cap": "200000", "note": "Interest on a loan for the house you live in: up to ₹2,00,000. Old regime only."},
+        {"key": "EXEMPT", "label": "Salary exemptions (old Section 10)"},
+        {"key": "INCOME", "label": "Other income and previous employer"}
+      ],
+      "items": [
+        {"code": "EPF", "group": "80C", "label": "Employee PF (from your salary)", "auto": "employee_pf", "proof": "Taken from payroll — no proof needed"},
+        {"code": "VPF", "group": "80C", "label": "Voluntary PF (VPF)", "proof": "Taken from payroll if deducted there; otherwise statement"},
+        {"code": "PPF", "group": "80C", "label": "Public Provident Fund (PPF)", "proof": "PPF passbook pages / deposit receipt for the year"},
+        {"code": "ELSS", "group": "80C", "label": "ELSS mutual funds (tax-saver)", "proof": "Statement of account showing purchase in the year"},
+        {"code": "LIC", "group": "80C", "label": "Life insurance premium (self, spouse, children)", "proof": "Premium paid receipt for the year"},
+        {"code": "NSC", "group": "80C", "label": "National Savings Certificate (NSC)", "proof": "NSC certificate copy"},
+        {"code": "TUITION", "group": "80C", "label": "Children's tuition fees (max 2 children)", "proof": "Fee receipt showing tuition fee component"},
+        {"code": "HL_PRINCIPAL", "group": "80C", "label": "Home loan principal repayment", "proof": "Provisional / final interest certificate from the lender"},
+        {"code": "SSY", "group": "80C", "label": "Sukanya Samriddhi Yojana", "proof": "Passbook / deposit receipt"},
+        {"code": "TAX_FD", "group": "80C", "label": "5-year tax-saver fixed deposit", "proof": "FD receipt"},
+        {"code": "STAMP_DUTY", "group": "80C", "label": "Stamp duty & registration of a house", "proof": "Registration receipt"},
+        {"code": "PENSION_80CCC", "group": "80C", "label": "Pension fund (old 80CCC)", "proof": "Premium receipt"},
+        {"code": "NPS_OWN", "group": "80C", "label": "Your NPS contribution — 80CCD(1)", "proof": "NPS transaction statement"},
+        {"code": "NPS_1B", "group": "80CCD1B", "label": "Additional NPS contribution — 80CCD(1B)", "proof": "NPS transaction statement"},
+        {"code": "NPS_EMPLOYER", "group": "80CCD2", "label": "Employer's NPS contribution — 80CCD(2)", "proof": "Taken from payroll — no proof needed", "regimes": ["new", "old"]},
+        {"code": "MED_SELF", "group": "80D", "label": "Health insurance — self, spouse, children", "cap": "25000", "cap_if_senior_self": "50000", "proof": "Premium receipt (non-cash payment)"},
+        {"code": "MED_PARENTS", "group": "80D", "label": "Health insurance — parents", "cap": "25000", "cap_if_senior_parents": "50000", "proof": "Premium receipt (non-cash payment)"},
+        {"code": "80DD", "group": "OTHER_VIA", "label": "Disabled dependant — old 80DD (₹75,000; ₹1,25,000 severe)", "cap": "125000", "proof": "Disability certificate (Form 10-IA)"},
+        {"code": "80DDB", "group": "OTHER_VIA", "label": "Treatment of specified diseases — old 80DDB", "cap": "40000", "cap_if_senior_self": "100000", "proof": "Prescription from specialist + bills"},
+        {"code": "80E", "group": "OTHER_VIA", "label": "Interest on education loan — old 80E (no limit)", "proof": "Interest certificate from the lender"},
+        {"code": "80G", "group": "OTHER_VIA", "label": "Donations — old 80G (qualifying amount)", "proof": "Donation receipt with the institution's PAN and 80G number"},
+        {"code": "80GG", "group": "OTHER_VIA", "label": "Rent paid, no HRA in salary — old 80GG", "cap": "60000", "proof": "Rent receipts + Form 10BA"},
+        {"code": "80TTA", "group": "OTHER_VIA", "label": "Savings bank interest — old 80TTA", "cap": "10000", "senior_code": "80TTB", "cap_if_senior_self": "50000", "proof": "Bank interest certificate"},
+        {"code": "80U", "group": "OTHER_VIA", "label": "Self disability — old 80U (₹75,000; ₹1,25,000 severe)", "cap": "125000", "proof": "Disability certificate"},
+        {"code": "HL_INTEREST", "group": "HOUSE", "label": "Home loan interest — self-occupied house", "proof": "Provisional / final interest certificate from the lender"},
+        {"code": "LTA", "group": "EXEMPT", "label": "Leave Travel Allowance claimed (travel within India)", "limit_to_salary": "lta", "proof": "Travel tickets and boarding passes for the journey"},
+        {"code": "OTHER_INCOME", "group": "INCOME", "label": "Other income to be taxed with salary (interest etc.)", "income": true, "proof": "No proof needed"},
+        {"code": "PREV_INCOME", "group": "INCOME", "label": "Previous employer this year — taxable salary", "income": true, "proof": "Form 130 / Form 16 or final pay slip from the previous employer"},
+        {"code": "PREV_TDS", "group": "INCOME", "label": "Previous employer this year — TDS deducted", "tds_paid": true, "proof": "Form 130 / Form 16 from the previous employer"},
+        {"code": "PREV_PF", "group": "80C", "label": "Previous employer this year — your PF", "proof": "Previous employer's pay slips"},
+        {"code": "EARLIER_SALARY", "group": "INCOME", "label": "Salary paid this year by this employer, before SmartPRS 3 (HR fills)", "no_proof": true, "proof": "No proof needed — HR enters the gross salary paid from the earlier payroll; it replaces the estimate for those months"},
+        {"code": "EARLIER_TDS", "group": "INCOME", "label": "TDS already deducted this year by this employer, before SmartPRS 3 (HR fills)", "tds_paid": true, "no_proof": true, "proof": "No proof needed — HR enters it from the earlier payroll"},
+        {"code": "PREV_PT", "group": "INCOME", "label": "Previous employer this year — professional tax", "pt_paid": true, "proof": "Previous employer's pay slips"}
+      ],
+      "proofs": {
+        "HRA": "Rent receipts for each month (revenue stamp for cash rent over ₹5,000), rental agreement, landlord PAN when annual rent exceeds ₹1,00,000",
+        "default": "Receipt or statement showing the payment in this financial year"
+      }
+    }
+  }
+}

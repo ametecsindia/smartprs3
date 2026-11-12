@@ -1,0 +1,39 @@
+{
+  "routes": {
+    "roster": "roster",
+    "assets": "assets",
+    "asset-issue": "assets",
+    "calc-logic": "calc-logic",
+    "zkteco-devices": "biometric-devices"
+  },
+  "screens": {
+    "roster": {
+      "m": "Time & Attendance",
+      "t": "Roster",
+      "g": "Who works which shift, day by day",
+      "w": "A day-wise shift plan. A roster row puts an employee — or everyone in a company, branch, department, designation or team — on a Working Shift for a date range, overriding the shift Organization Setup assigns them. The month grid shows employee × day; the most recent row covering a day wins, so a one-day override is a one-day row saved after the range.",
+      "f": [["fa-route", "Assign a shift to one person or a whole scope"], ["fa-calendar-days", "Month grid: employee × day → shift code"], ["fa-pen", "One-day overrides without rewriting anything"], ["fa-ban", "Cancel a row; the scoped shift applies again"]],
+      "s": ["Filter the grid to the company / branch / department / team you are rostering.", "Pick who (one person, or everyone in the filter), the Working Shift, the dates, and press Roster.", "For a single day, set From and To to the same date — it wins over the older range for that day.", "Read the grid: bold is a roster row, faint is the scoped Working Shift."],
+      "tip": "Late marks and payable hours for a day are measured against the shift the roster gives that day. Roster night shifts before the month starts so the first night is not measured as a day shift.",
+      "r": ["HR / Admin — assign and cancel", "Managers — view"],
+      "rel": "Also see: Working Shifts, Late Policy, Daily Attendance",
+      "why": "A team on rotating shifts with no roster is a team whose late marks are wrong every second week. The roster is what makes attendance measure the day the person was actually asked to work.",
+      "uc": "Picture this: the collections floor moves to a 12–9 shift for the last week of the month. One row for the department, seven days, and every punch that week is judged against 12:00, not 09:30.",
+      "adv": ["Late marks measured against the real shift", "Whole scopes rostered in one row", "Nothing rewritten — every change is a dated row with a name on it"]
+    },
+    "assets": {
+      "m": "Administration",
+      "t": "Assets",
+      "g": "What is issued to whom",
+      "w": "The asset register — code, category, make/model, serial, purchase date and cost, condition and status — and the Issue & Return screen that moves an asset between in stock, assigned, under repair and retired, stamping who did it and when. Exit & FnF clearance reads the per-employee held list from here.",
+      "f": [["fa-box-archive", "Register with unique asset codes"], ["fa-right-left", "Issue and return with a who/when stamp"], ["fa-screwdriver-wrench", "Repair and retire"], ["fa-user-check", "Assets held by one person, for clearance"]],
+      "s": ["Add the asset on the register: code, category, make/model, serial, cost.", "On Issue & Return, pick the person and the date and press Issue.", "When it comes back, press Return and record the condition.", "Before an exit, open Issue & Return filtered to the person: it must be empty."],
+      "tip": "Edit facts (serial, cost) on the register; move status on Issue & Return. Moving status by editing the register row leaves no stamp of who issued it.",
+      "r": ["Admin / HR — register and move", "Everyone with employee view — read"],
+      "rel": "Also see: Exit & FnF, Employees",
+      "why": "Laptops and SIMs walk out of a company one resignation at a time. A register with a name and a date on every issue is the difference between a recovery and a write-off.",
+      "uc": "Picture this: an agent resigns. Clearance opens the held list — a phone and a SIM, issued in March. Both come back, the return is stamped, the settlement proceeds.",
+      "adv": ["Every asset has a holder or is in stock — never nowhere", "Clearance checks a list, not memory", "Cost in exact rupees for the write-off register"]
+    }
+  }
+}

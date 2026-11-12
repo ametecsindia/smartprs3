@@ -1,0 +1,7 @@
+{
+  "note": "HOW FAR EACH ROLE READS OUTSIDE ITS OWN REPORTING LINE, before anybody chooses on Roles & Permissions. Owner, 28 Sep: \"A person with Employee/Agent role should ... see Only their data\" and \"If an employee has users reporting to him or her, he or she should be able to see ONLY the employees reporting to him or her ... the subordinates and the people reporting to their subordinates\". So every role reads ONLY ITS OWN LINE (itself + everybody below it, every level) unless listed here or chosen on screen. A choice saved on Roles & Permissions always wins over this file.",
+  "default": "line",
+  "company": ["administrator", "Company Admin", "HR Admin", "HR Manager"],
+  "branch": ["Branch Admin"],
+  "values_note": "line = own reporting tree only; branch = own tree + own branch; company = everyone. Role names are matched case-insensitively."
+}

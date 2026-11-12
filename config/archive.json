@@ -1,0 +1,25 @@
+{
+ "note": "Deleting an employee from the Directory. Nothing is removed at once: Delete starts a grace timer; when it lapses the sweep bundles EVERYTHING the employee has (its row, its configured extra fields, punches, leave, timeline, documents and files, the payroll and payslip lines that name it) into one archive file under storage/archive/<tenant>/, moves the employee to Backed up / Old data under the code with the deletion date appended (EMP-001_2026-09-12), and releases the original code for a new employee. The rows that name the employee by code are re-pointed at the archived code so its history stays attached. Change the numbers here, never the PHP.",
+ "grace_hours": 72,
+ "archived_status": "archived",
+ "code_suffix_format": "_Y-m-d",
+ "relink_by_code": {
+  "attendance_logs": "emp_code",
+  "employee_field_values": "employment_code",
+  "leave_entries": "employment_id",
+  "employment_events": "employment_id"
+ },
+ "bundle_by_id": {
+  "leaves": "employee_id",
+  "documents": "employee_id",
+  "payslips": "employee_id",
+  "salary_payments": "employee_id",
+  "loans": "employee_id",
+  "advances": "employee_id",
+  "transfers": "employee_id",
+  "onboarding": "employee_id",
+  "bgv": "employee_id",
+  "exits": "employee_id"
+ },
+ "payroll_runs_table": "payroll_runs"
+}

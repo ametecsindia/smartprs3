@@ -1,0 +1,1287 @@
+{
+  "self_service_excluded": ["emp_code", "ctc", "status", "salary_type", "comm_pct", "employer_company_id", "branch_id", "department_id", "designation_id", "team_id", "role", "reporting_manager_id", "doj", "training_start_date", "training_end_date", "employment_type", "employment_stage", "pf_applicable", "esi_applicable", "pt_applicable", "lwf_applicable", "tds_applicable", "shift", "schedule_id", "device_user_id", "probation_end", "confirmation_date", "notice_period_days", "cost_center", "grade_band", "business_unit", "work_location", "team_leader", "type", "also_works_for", "exit_date", "exit_reason", "rehire_eligible"],
+  "self_service_note": "FIELDS AN EMPLOYEE MAY NOT CHANGE ABOUT THEMSELVES on My Details (owner, 28 Sep). Their company, branch, department, designation, reporting manager, joining date, type, statutory switches, shift and exit details are HR's; an employee who could edit their own branch widened what they could see, and one who could switch their own PF off changed their own payslip.",
+  "note": "WHAT HR MAY HOLD ON AN EMPLOYEE, and which column on `employees` each of those things is. This is the register the Add form, self-onboarding and the bulk import sample are all built from, so a field turned on here appears in three places and a field turned off disappears from three places. It arrived as a JavaScript array inside a design artefact; here it is a file, because 'we also capture the mother's name' must not be a release.",
+  "column_note": "`column` names the REAL column on `employees`. A field whose column is null is one this database has no room for yet: the screen offers it, says so on the row, and refuses to capture it until the column exists — because a field that appears to save and does not is discovered months later by whoever needed it. The check is made against the live table, never against this file, so a column added by migration lights its field up with no edit here.",
+  "sections": [
+    {
+      "id": "personal",
+      "title": "Personal Details",
+      "accent": "#2F4A3E",
+      "desc": "Identity and biographical information held on every employee.",
+      "fields": [
+        {
+          "code": "emp_code",
+          "label": "Employee Code",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": "emp_code",
+          "core": true
+        },
+        {
+          "code": "name",
+          "label": "Full Name",
+          "type": "Text",
+          "control": "text",
+          "column": "name",
+          "core": true
+        },
+        {
+          "code": "first_name",
+          "label": "First Name",
+          "type": "Text",
+          "control": "text",
+          "column": "first_name"
+        },
+        {
+          "code": "middle_name",
+          "label": "Middle Name",
+          "type": "Text",
+          "control": "text",
+          "column": "middle_name"
+        },
+        {
+          "code": "last_name",
+          "label": "Last Name",
+          "type": "Text",
+          "control": "text",
+          "column": "last_name"
+        },
+        {
+          "code": "dob",
+          "label": "Date of Birth",
+          "type": "Date",
+          "control": "date",
+          "column": "dob",
+          "default": true
+        },
+        {
+          "code": "gender",
+          "label": "Gender",
+          "type": "List",
+          "control": "select",
+          "column": "gender",
+          "options": [
+            "Male",
+            "Female",
+            "Other",
+            "Prefer not to say"
+          ],
+          "default": true
+        },
+        {
+          "code": "marital_status",
+          "label": "Marital Status",
+          "type": "List",
+          "control": "select",
+          "column": "marital_status",
+          "options": [
+            "Single",
+            "Married",
+            "Divorced",
+            "Widowed"
+          ]
+        },
+        {
+          "code": "father",
+          "label": "Father's Name",
+          "type": "Text",
+          "control": "text",
+          "column": "father",
+          "default": true
+        },
+        {
+          "code": "mother_name",
+          "label": "Mother's Name",
+          "type": "Text",
+          "control": "text",
+          "column": null
+        },
+        {
+          "code": "spouse_name",
+          "label": "Spouse Name",
+          "type": "Text",
+          "control": "text",
+          "column": null
+        },
+        {
+          "code": "blood_group",
+          "label": "Blood Group",
+          "type": "List",
+          "control": "select",
+          "column": "blood_group",
+          "options": [
+            "A+",
+            "A-",
+            "B+",
+            "B-",
+            "O+",
+            "O-",
+            "AB+",
+            "AB-"
+          ]
+        },
+        {
+          "code": "nationality",
+          "label": "Nationality",
+          "type": "Text",
+          "control": "text",
+          "column": "nationality"
+        },
+        {
+          "code": "category",
+          "label": "Category",
+          "type": "List",
+          "control": "select",
+          "column": "category",
+          "options": [
+            "General",
+            "OBC",
+            "SC",
+            "ST",
+            "EWS"
+          ]
+        },
+        {
+          "code": "id_marks",
+          "label": "Identification Marks",
+          "type": "Text",
+          "control": "text",
+          "column": "id_marks"
+        },
+        {
+          "code": "physically_challenged",
+          "label": "Physically Challenged",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No",
+            "NA"
+          ]
+        },
+        {
+          "code": "photo_path",
+          "label": "Photograph",
+          "type": "Image/PDF/Doc",
+          "control": "text",
+          "column": "photo_path",
+          "help": "The stored path of the photograph on file."
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact Details",
+      "accent": "#3E5C76",
+      "desc": "How to reach the employee, and who to call in an emergency.",
+      "fields": [
+        {
+          "code": "email",
+          "label": "Official Email",
+          "type": "Email",
+          "control": "text",
+          "column": "email",
+          "default": true
+        },
+        {
+          "code": "personal_email",
+          "label": "Personal Email",
+          "type": "Email",
+          "control": "text",
+          "column": null
+        },
+        {
+          "code": "mobile",
+          "label": "Mobile Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": "mobile",
+          "default": true,
+          "pattern": "^[6-9][0-9]{9}$",
+          "pattern_hint": "a 10-digit Indian mobile number starting 6–9"
+        },
+        {
+          "code": "whatsapp",
+          "label": "WhatsApp Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": "whatsapp",
+          "pattern": "^[6-9][0-9]{9}$",
+          "pattern_hint": "a 10-digit Indian mobile number starting 6–9"
+        },
+        {
+          "code": "alternate_number",
+          "label": "Alternate Contact Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": null,
+          "pattern": "^[0-9]{10}$",
+          "pattern_hint": "a 10-digit phone number"
+        },
+        {
+          "code": "address",
+          "label": "Present Address (single line, previous format)",
+          "type": "Text",
+          "control": "text",
+          "column": "address",
+          "default": false
+        },
+        {
+          "code": "present_house_no",
+          "label": "Present Address — House/Flat Number",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true,
+          "replaces": ["address"]
+        },
+        {
+          "code": "present_apartment",
+          "label": "Present Address — Apartment/Building Name (if a flat)",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "present_road_street",
+          "label": "Present Address — Road Number & Street Name",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "present_area",
+          "label": "Present Address — Area",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "present_city",
+          "label": "Present Address — City",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "present_pincode",
+          "label": "Present Address — Pin/Zip Code",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": null,
+          "default": true,
+          "pattern": "^[0-9]{6}$",
+          "pattern_hint": "a 6-digit PIN code"
+        },
+        {
+          "code": "present_state",
+          "label": "Present Address — State",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "permanent_address",
+          "label": "Permanent Address (single line, previous format)",
+          "type": "Text",
+          "control": "text",
+          "column": "permanent_address",
+          "default": false
+        },
+        {
+          "code": "permanent_house_no",
+          "label": "Permanent Address — House/Flat Number",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true,
+          "replaces": ["permanent_address"]
+        },
+        {
+          "code": "permanent_apartment",
+          "label": "Permanent Address — Apartment/Building Name (if a flat)",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "permanent_road_street",
+          "label": "Permanent Address — Road Number & Street Name",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "permanent_area",
+          "label": "Permanent Address — Area",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "permanent_city",
+          "label": "Permanent Address — City",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "permanent_pincode",
+          "label": "Permanent Address — Pin/Zip Code",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": null,
+          "default": true,
+          "pattern": "^[0-9]{6}$",
+          "pattern_hint": "a 6-digit PIN code"
+        },
+        {
+          "code": "permanent_state",
+          "label": "Permanent Address — State",
+          "type": "Text",
+          "control": "text",
+          "column": null,
+          "default": true
+        },
+        {
+          "code": "emergency_name",
+          "label": "Emergency Contact Name",
+          "type": "Text",
+          "control": "text",
+          "column": "emergency_name",
+          "default": true
+        },
+        {
+          "code": "emergency_phone",
+          "label": "Emergency Contact Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": "emergency_phone",
+          "default": true,
+          "pattern": "^[0-9]{10}$",
+          "pattern_hint": "a 10-digit phone number"
+        },
+        {
+          "code": "emergency_relation",
+          "label": "Emergency Contact Relation",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Father",
+            "Mother",
+            "Spouse",
+            "Sibling",
+            "Friend",
+            "Other"
+          ]
+        },
+        {
+          "code": "home_lat",
+          "label": "Home Latitude",
+          "type": "Numeric",
+          "control": "text",
+          "column": "home_lat",
+          "decimals": 6,
+          "help": "Used by field attendance to judge whether a punch was made from home."
+        },
+        {
+          "code": "home_lng",
+          "label": "Home Longitude",
+          "type": "Numeric",
+          "control": "text",
+          "column": "home_lng",
+          "decimals": 6
+        },
+        {
+          "code": "geo_radius_km",
+          "label": "Allowed Radius (km)",
+          "type": "Numeric",
+          "control": "number",
+          "column": "geo_radius_km"
+        }
+      ]
+    },
+    {
+      "id": "employment",
+      "title": "Employee Details",
+      "accent": "#A5691E",
+      "desc": "Role, reporting line, and status within the organisation. THESE ARE THE FIELDS A SALARY COMPONENT RULE IS SCOPED BY — company, branch, department, team and designation decide which rule applies to this person, so a field left uncaptured here is a scope nobody can be matched on.",
+      "fields": [
+        {
+          "code": "employer_company_id",
+          "label": "Company",
+          "type": "List",
+          "control": "lookup",
+          "column": "employer_company_id",
+          "lookup": "companies",
+          "scope": "company"
+        },
+        {
+          "code": "branch_id",
+          "label": "Branch",
+          "type": "List",
+          "control": "lookup",
+          "column": "branch_id",
+          "lookup": "branches",
+          "scope": "branch",
+          "default": true,
+          "required": true
+        },
+        {
+          "code": "department_id",
+          "label": "Department",
+          "type": "List",
+          "control": "lookup",
+          "column": "department_id",
+          "lookup": "departments",
+          "scope": "team",
+          "default": true
+        },
+        {
+          "code": "team_id",
+          "label": "Team",
+          "type": "List",
+          "control": "lookup",
+          "column": "team_id",
+          "lookup": "teams"
+        },
+        {
+          "code": "designation_id",
+          "label": "Designation",
+          "type": "List",
+          "control": "lookup",
+          "column": "designation_id",
+          "lookup": "designations",
+          "scope": "designation",
+          "default": true
+        },
+        {
+          "code": "role",
+          "label": "Role",
+          "type": "Text",
+          "control": "derived",
+          "column": "role",
+          "help": "Set automatically from the employee's Designation, via Organization Configuration → Role / Designation Setup. Not editable here — change the Designation's Role there if it needs to be different."
+        },
+        {
+          "code": "doj",
+          "label": "Date of Joining",
+          "type": "Date",
+          "control": "date",
+          "column": "doj",
+          "default": true
+        },
+        {
+          "code": "training_start_date",
+          "label": "Training Start Date",
+          "type": "Date",
+          "control": "date",
+          "column": "training_start_date",
+          "default": true,
+          "help": "Induction training. Whether training days are paid is the company's setting (Organization Configuration → Companies → Paid during training)."
+        },
+        {
+          "code": "training_end_date",
+          "label": "Training End Date",
+          "type": "Date",
+          "control": "date",
+          "column": "training_end_date",
+          "default": true,
+          "help": "The date of production is the first working day after this. Unpaid training: salary starts on the date of production."
+        },
+        {
+          "code": "employment_type",
+          "label": "Employee Type",
+          "type": "List",
+          "control": "select",
+          "column": "employment_type",
+          "options": [
+            "Permanent",
+            "Fixed Term",
+            "Contract",
+            "Intern",
+            "Consultant",
+            "Probationary"
+          ],
+          "default": true,
+          "required_on_form": true,
+          "help": "Chosen for every employee — deliberately blank until somebody picks, so nobody is filed as Permanent because the box happened to start there (owner, 28 Sep). Probationary puts the employee on the Probation board; confirming them there changes this to Permanent."
+        },
+        {
+          "code": "type",
+          "label": "Staff Type",
+          "type": "List",
+          "control": "select",
+          "column": "type",
+          "options": [
+            "Office",
+            "Field"
+          ],
+          "help": "Office or field — this is what decides whether attendance expects a geo-tagged punch.",
+          "default": true,
+          "default_value": "office"
+        },
+        {
+          "code": "grade_band",
+          "label": "Grade / Band",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "grades",
+          "lookup_note": "Owner, 12 Oct: the grades set on Organization Configuration → Designations, never typed.",
+          "column": null
+        },
+        {
+          "code": "reporting_manager_id",
+          "label": "Reporting Manager",
+          "type": "List",
+          "control": "lookup",
+          "column": "reporting_manager_id",
+          "lookup": "employees", "none_option": {"value": "NONE", "label": "No one \u2014 top of the organisation"},
+          "default": true,
+          "required": true
+        },
+        {
+          "code": "team_leader",
+          "label": "Team Leader",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "employees",
+          "column": "team_leader",
+          "help": "Picked from the directory (28 Sep) — never typed."
+        },
+        {
+          "code": "work_location",
+          "label": "Work Location",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "branches",
+          "column": null,
+          "help": "One of the branches in Organization Setup (28 Sep) — never typed."
+        },
+        {
+          "code": "business_unit",
+          "label": "Business Unit",
+          "type": "Text",
+          "control": "text",
+          "column": null
+        },
+        {
+          "code": "cost_center",
+          "label": "Cost Code",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "branch-codes",
+          "column": null,
+          "help": "Branch Code-Branch Name (e.g. HYD1-KONDAPUR), from Organization Setup → Branches. That whole string is what is stored."
+        },
+        {
+          "code": "shift",
+          "label": "Shift",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "shifts",
+          "column": "shift",
+          "help": "From Organization Setup → Shifts. This names the shift on the record; which shift actually applies on a given day is still worked out by scope (company/branch/department/designation/team/employee) the way Organization Setup → Shifts describes."
+        },
+        {
+          "code": "schedule_id",
+          "label": "Work Schedule",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "shifts",
+          "help": "One of the shifts in Organization Configuration \u2192 Shifts (13 Oct) \u2014 never typed.",
+          "column": "schedule_id"
+        },
+        {
+          "code": "device_user_id",
+          "label": "Biometric Device User ID",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": "device_user_id",
+          "help": "What the punch machine calls this person. Without it an imported punch belongs to nobody.",
+          "default": true,
+          "pattern": "^[A-Za-z0-9_-]{1,32}$",
+          "pattern_hint": "letters, digits, - or _ only"
+        },
+        {
+          "code": "probation_end",
+          "label": "Probation End Date",
+          "type": "Date",
+          "control": "date",
+          "column": null
+        },
+        {
+          "code": "confirmation_date",
+          "label": "Confirmation Date",
+          "type": "Date",
+          "control": "date",
+          "column": null
+        },
+        {
+          "code": "notice_period_days",
+          "label": "Notice Period (Days)",
+          "type": "Numeric",
+          "control": "number",
+          "column": null
+        },
+        {
+          "code": "status",
+          "label": "Employee Status",
+          "type": "List",
+          "control": "select",
+          "column": "status",
+          "options": [
+            "Active",
+            "Inactive",
+            "Terminated",
+            "Resigned",
+            "Absconding"
+          ],
+          "default": true,
+          "default_value": "active"
+        },
+        {
+          "code": "employment_stage",
+          "label": "Employee Stage",
+          "type": "Text",
+          "control": "text",
+          "column": "employment_stage"
+        },
+        {
+          "code": "also_works_for",
+          "label": "Also Works For",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "companies",
+          "column": "also_works_for"
+        },
+        {
+          "code": "exit_date",
+          "label": "Date of Exit",
+          "type": "Date",
+          "control": "date",
+          "column": null,
+          "help": "Leaving is recorded as a dated event on the employee timeline; this column is the summary."
+        },
+        {
+          "code": "exit_reason",
+          "label": "Reason for Exit",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "N/A - Active",
+            "Resignation",
+            "Termination",
+            "Retirement",
+            "End of Contract",
+            "Death",
+            "Disablement",
+            "Other"
+          ],
+          "default_value": "N/A - Active",
+          "help": "N/A - Active for a serving employee."
+        },
+        {
+          "code": "rehire_eligible",
+          "label": "Rehire Eligible",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "NA",
+            "Yes",
+            "No"
+          ],
+          "default_value": "NA",
+          "help": "NA for a serving employee."
+        }
+      ]
+    },
+    {
+      "id": "statutory",
+      "title": "Statutory & Compliance",
+      "accent": "#9C4A3A",
+      "desc": "Government IDs, verification certificates and their deadlines. A component rule with the calculation 'Basis Employee status' reads PCC Status, DRA Status, PAN or National ID — so those four are what a status-driven deduction is decided by.",
+      "fields": [
+        {
+          "code": "pan",
+          "label": "PAN Number",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": "pan",
+          "default": true,
+          "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$",
+          "pattern_hint": "a PAN like ABCDE1234F (5 letters, 4 digits, 1 letter)",
+          "uppercase": true
+        },
+        {
+          "code": "aadhaar",
+          "label": "Aadhaar Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": "aadhaar",
+          "default": true,
+          "pattern": "^[2-9][0-9]{11}$",
+          "pattern_hint": "a 12-digit Aadhaar number (never starts with 0 or 1)"
+        },
+        {
+          "code": "national_id",
+          "label": "National ID",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": "national_id"
+        },
+        {
+          "code": "passport_no",
+          "label": "Passport Number",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": null,
+          "pattern": "^[A-Z][0-9]{7}$",
+          "pattern_hint": "a passport number like A1234567",
+          "uppercase": true
+        },
+        {
+          "code": "passport_expiry",
+          "label": "Passport Expiry Date",
+          "type": "Date",
+          "control": "date",
+          "column": null
+        },
+        {
+          "code": "pf_applicable",
+          "label": "PF Applicable",
+          "type": "List",
+          "control": "select",
+          "column": "pf_applicable",
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "code": "uan",
+          "label": "UAN Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": "uan",
+          "pattern": "^[0-9]{12}$",
+          "pattern_hint": "a 12-digit UAN"
+        },
+        {
+          "code": "residential_status",
+          "label": "Residential Status (Income Tax)",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "default": true,
+          "options": ["Resident", "Non-resident"],
+          "help": "For TDS. A non-resident gets no Section 156 (old 87A) rebate and no higher basic exemption for age. Blank is treated as Resident."
+        },
+        {
+          "code": "nps_pran",
+          "label": "NPS PRAN",
+          "type": "Numeric",
+          "control": "text",
+          "column": null,
+          "pattern": "^[0-9]{12}$",
+          "default": true,
+          "pattern_hint": "a 12-digit Permanent Retirement Account Number",
+          "help": "Only when the employee is in NPS — the employer's NPS contribution (old 80CCD(2)) is deposited to this account."
+        },
+        {
+          "code": "pf_no",
+          "label": "PF Number",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": null,
+          "pattern": "^[A-Za-z0-9/-]{6,30}$",
+          "pattern_hint": "a PF number"
+        },
+        {
+          "code": "esi_applicable",
+          "label": "ESIC Applicable",
+          "type": "List",
+          "control": "select",
+          "column": "esi_applicable",
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "code": "esic_no",
+          "label": "ESIC Number",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": "esic_no",
+          "pattern": "^[0-9]{10,17}$",
+          "pattern_hint": "a 10 to 17-digit ESIC number"
+        },
+        {
+          "code": "pt_applicable",
+          "label": "PT Applicable",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "help": "No takes Professional Tax off this employee's payroll. Blank leaves it computed as the Salary Structure says. Set on confirmation from the Probation board, or here."
+        },
+        {
+          "code": "lwf_applicable",
+          "label": "LWF Applicable",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "help": "No takes Labour Welfare Fund off this employee's payroll. Blank leaves it computed as the Salary Structure says."
+        },
+        {
+          "code": "tds_applicable",
+          "label": "TDS Applicable",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "help": "No takes Income Tax (TDS) off this employee's payroll. Blank leaves it computed as the Salary Structure says."
+        },
+        {
+          "code": "pt_state",
+          "label": "Professional Tax State",
+          "type": "List",
+          "control": "lookup",
+          "lookup": "pt-states",
+          "column": "pt_state",
+          "help": "Professional tax is a state levy: which state's schedule applies is a fact about the person, not the company."
+        },
+        {
+          "code": "bgv_status",
+          "label": "Background Verification Status",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Not Started",
+            "In Progress",
+            "Cleared",
+            "Discrepancy Found"
+          ]
+        },
+        {
+          "code": "pcc_declared",
+          "label": "PCC Certificate Available",
+          "type": "List",
+          "control": "select",
+          "column": "pcc_declared",
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "code": "pcc_status",
+          "label": "PCC Status",
+          "type": "List",
+          "control": "select",
+          "column": "pcc_status",
+          "options": [
+            "Submitted",
+            "Verified",
+            "Pending"
+          ]
+        },
+        {
+          "code": "pcc_expiry",
+          "label": "PCC Certificate Expiry Date",
+          "type": "Date",
+          "control": "date",
+          "column": "pcc_expiry"
+        },
+        {
+          "code": "pcc_deadline",
+          "label": "PCC Deadline",
+          "type": "Date",
+          "control": "date",
+          "column": "pcc_deadline"
+        },
+        {
+          "code": "dra_declared",
+          "label": "DRA Certificate Available",
+          "type": "List",
+          "control": "select",
+          "column": "dra_declared",
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "code": "dra_status",
+          "label": "DRA Status",
+          "type": "List",
+          "control": "select",
+          "column": "dra_status",
+          "options": [
+            "Submitted",
+            "Verified",
+            "Pending"
+          ]
+        },
+        {
+          "code": "dra_expiry",
+          "label": "DRA Certificate Expiry Date",
+          "type": "Date",
+          "control": "date",
+          "column": "dra_expiry"
+        },
+        {
+          "code": "docs_status",
+          "label": "Documents Status",
+          "type": "Text",
+          "control": "text",
+          "column": "docs_status"
+        },
+        {
+          "code": "docs_stored",
+          "label": "Documents On File",
+          "type": "List",
+          "control": "select",
+          "column": "docs_stored",
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "code": "medical_fitness",
+          "label": "Medical Fitness Certificate",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No",
+            "NA"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compensation",
+      "title": "Compensation & Benefits",
+      "accent": "#6B4C6B",
+      "desc": "What the employee is contracted at, and where the money is sent. The SPLIT of that figure into Basic, HRA and the rest is not held here: it is computed from the component rules on the Salary structure screen, so one person's Basic cannot disagree with the rule that produced it.",
+      "fields": [
+        {
+          "code": "ctc",
+          "label": "CTC",
+          "type": "Numeric",
+          "control": "number",
+          "column": "ctc",
+          "help": "The contracted cost. Whether this figure is annual or monthly is declared on the salary structure, not guessed at here.",
+          "default": true
+        },
+        {
+          "code": "salary_type",
+          "label": "Salary Type",
+          "type": "List",
+          "control": "select",
+          "column": "salary_type",
+          "options": ["Salary", "Salary + Commission", "Commission"]
+        },
+        {
+          "code": "comm_pct",
+          "label": "Commission %",
+          "type": "Numeric",
+          "control": "text",
+          "column": "comm_pct"
+        },
+        {
+          "code": "bank_name",
+          "label": "Bank Name",
+          "type": "Text",
+          "control": "text",
+          "column": "bank_name",
+          "default": true
+        },
+        {
+          "code": "bank_branch",
+          "label": "Bank Branch",
+          "type": "Text",
+          "control": "text",
+          "column": "bank_branch"
+        },
+        {
+          "code": "account_holder",
+          "label": "Account Holder Name",
+          "type": "Text",
+          "control": "text",
+          "column": "account_holder"
+        },
+        {
+          "code": "bank_acc",
+          "label": "Bank Account Number",
+          "type": "Numeric",
+          "control": "text",
+          "column": "bank_acc",
+          "default": true,
+          "pattern": "^[0-9]{9,18}$",
+          "pattern_hint": "a 9 to 18-digit bank account number"
+        },
+        {
+          "code": "ifsc",
+          "label": "IFSC Code",
+          "type": "Alpha Numeric",
+          "control": "text",
+          "column": "ifsc",
+          "default": true,
+          "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+          "pattern_hint": "an IFSC like HDFC0001234 (4 letters, 0, 6 characters)",
+          "uppercase": true
+        },
+        {
+          "code": "payment_mode",
+          "label": "Payment Mode",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Bank Transfer",
+            "Cheque",
+            "Cash"
+          ]
+        },
+        {
+          "code": "insurance_applicable",
+          "label": "Insurance Applicable",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "code": "gratuity_applicable",
+          "label": "Gratuity Applicable",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "Yes",
+            "No"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "title": "Education & Qualification",
+      "accent": "#296B69",
+      "desc": "Academic background supporting the employee's profile.",
+      "fields": [
+        {
+          "code": "highest_qualification",
+          "label": "Highest Qualification",
+          "type": "List",
+          "control": "select",
+          "column": null,
+          "options": [
+            "SSC",
+            "HSC",
+            "Diploma",
+            "Graduate",
+            "Post Graduate",
+            "Doctorate"
+          ]
+        },
+        {
+          "code": "university",
+          "label": "University / Board",
+          "type": "Text",
+          "control": "text",
+          "column": null
+        },
+        {
+          "code": "year_of_passing",
+          "label": "Year of Passing",
+          "type": "Numeric",
+          "control": "number",
+          "column": null,
+          "pattern": "^(19|20)[0-9]{2}$",
+          "pattern_hint": "a four-digit year"
+        },
+        {
+          "code": "specialization",
+          "label": "Specialization",
+          "type": "Text",
+          "control": "text",
+          "column": null
+        },
+        {
+          "code": "certifications",
+          "label": "Additional Certifications",
+          "type": "Text",
+          "control": "text",
+          "column": null
+        }
+      ]
+    },
+    {
+      "id": "documents",
+      "title": "Documents",
+      "accent": "#54606C",
+      "desc": "The attachments an employee file is expected to hold. Ticking one here makes it an expected document on the record — the file itself lives on the Documents screen, which is where an expiry is chased.",
+      "documents": true,
+      "fields": [
+        {
+          "code": "doc_photo_id",
+          "label": "Photo Identity",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_address_proof",
+          "label": "Address Proof",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_pan",
+          "label": "PAN Card",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_voter_id",
+          "label": "Voter ID",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_aadhaar",
+          "label": "Aadhaar",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_degree",
+          "label": "Degree Certificate",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_intermediate",
+          "label": "Intermediate / 12th Certificate",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_ssc",
+          "label": "SSC / 10th Certificate",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_experience",
+          "label": "Last Organisation Experience Certificate",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_offer_letter",
+          "label": "Offer Letter",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_relieving",
+          "label": "Relieving Letter",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_salary_slip",
+          "label": "Last Salary Slip",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_bank_passbook",
+          "label": "Bank Passbook Copy",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_passport",
+          "label": "Passport Copy",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_pcc",
+          "label": "PCC Certificate",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        },
+        {
+          "code": "doc_dra",
+          "label": "DRA Certificate",
+          "type": "Text",
+          "control": "document",
+          "column": null
+        }
+      ]
+    }
+  ],
+  "data_types": [
+    "Text",
+    "Numeric",
+    "Alpha Numeric",
+    "Date",
+    "Boolean (Yes/No/NA)",
+    "List",
+    "Email",
+    "Image/PDF/Doc"
+  ],
+  "core_note": "A field marked `core` cannot be turned off. An employee with no code and no name is a row nothing else in the product can point at — attendance, leave, payroll and every letter are keyed by the code.",
+  "type_note": "The data type is the CUSTOMER'S choice, not the catalogue's. What is written here is the sensible starting point — a dropdown of blood groups is a List, a date of birth is a Date — and the register saves whatever they change it to. The type decides the control the Add form and self-onboarding render, and the type column in the upload sample. Email renders an email box and is checked as one. Image/PDF/Doc renders a file picker: the file is kept under public/uploads/<tenant>/employees/ and the field holds its path — the Photograph and any scanned document use it."
+}

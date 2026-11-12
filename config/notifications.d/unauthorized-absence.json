@@ -1,0 +1,25 @@
+{
+  "events": {
+    "attendance.unauthorized_absence.employee": {
+      "channels": ["email", "in_app"],
+      "title": "{stage_label}: unexplained absence, day {run_days}",
+      "body": "You have had no attendance and no approved leave since {run_start}, now {run_days} day(s) running as at {date}. This is your {stage_label}. If you were at work, raise a regularisation for the missing punch; if you were on leave, apply for it — either changes this before it escalates further.",
+      "audience": "employee",
+      "audience_note": "The person whose absence it is, told at every stage they cross — not only the first."
+    },
+    "attendance.unauthorized_absence.hierarchy": {
+      "channels": ["email", "in_app"],
+      "title": "{stage_label}: {code} has {run_days} unexplained day(s)",
+      "body": "{code} ({name}) has had no attendance and no approved leave since {run_start}, now {run_days} day(s) running as at {date}. This is their {stage_label}. They have been told directly; this is for you to follow up as their reporting chain.",
+      "audience": "reporting chain",
+      "audience_note": "Every member of this employee's OWN reporting chain — their manager, their manager's manager, and so on — unconditionally, never the whole tenant's holders of any designation."
+    },
+    "attendance.unauthorized_absence.cc": {
+      "channels": ["email", "in_app"],
+      "title": "{stage_label}: {code} has {run_days} unexplained day(s)",
+      "body": "{code} ({name}) has had no attendance and no approved leave since {run_start}, now {run_days} day(s) running as at {date}. This is their {stage_label}. Copied to you as a standing recipient for the tenant's Unauthorized Absence escalation.",
+      "audience": "always-cc",
+      "audience_note": "The tenant's default recipients (Company Admin / Branch Admin / HR Admin / HR Manager, or whatever the tenant changed the list to) — company-preferred, tenant-wide only as a fallback."
+    }
+  }
+}

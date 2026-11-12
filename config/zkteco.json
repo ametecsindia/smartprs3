@@ -1,0 +1,37 @@
+{
+  "note": "ZKTeco Devices (SmartPRS 2 → Attendance → ZKTeco Devices). Which rows of the `devices` register this screen lists, where a device pushes its punches, and the steps to configure one. SmartPRS 3 has ONE programmatic surface, /api/v3; a device or its middleware pushes punches there as JSON with a Bearer credential minted on the API Keys screen. Native ADMS (iclock/cdata) is not spoken by the server, so a ZKTeco device reaches it through its push middleware (ZKBioTime / ADMS bridge) or the offline export on Punch Import. Edit the words here, never the PHP.",
+  "brand": "ZKTeco",
+  "brand_column": "brand",
+  "serial_column": "unique_id",
+  "ingest_path": "/api.php/api/v3/attendance-punches",
+  "ingest_method": "POST",
+  "ingest_content_type": "application/json",
+  "ingest_headers": ["Authorization: Bearer <api key>", "Idempotency-Key: <unique per upload>", "Content-Type: application/json"],
+  "ingest_body_example": {"punches": [{"device_user_id": "1042", "punch_at": "2026-09-09 09:31:07", "direction": "in", "device_sn": "<serial>", "verify_mode": "fingerprint"}]},
+  "offline_route": "punch-import",
+  "api_keys_route": "api-keys",
+  "pending_punches_module": "pending-punches",
+  "devices_module": "devices",
+  "logs_serial_column": "device_sn",
+  "protocol": {
+    "label": "ADMS / push (HTTP)",
+    "lan_port": 4370,
+    "adms_port": 80,
+    "adms_https_port": 443,
+    "note": "Port 4370 is the device's own LAN service (pull mode). ADMS / cloud push goes out from the device on 80 or 443 to the server address below."
+  },
+  "connect_modes_listed": ["cloud_push", "lan_pull", "usb_offline"],
+  "steps": [
+    "On the device: Menu → Comm. → Ethernet — give it a fixed IP, mask and gateway on your LAN (DHCP off).",
+    "Menu → Comm. → Cloud Server Setting (ADMS): Enable Domain Name = ON, Server Address = the push URL host shown above, Server Port = 80 (443 with HTTPS on), Proxy = OFF. Save and restart the device.",
+    "Menu → System → Date/Time: set the business timezone. Punches are stored as wall-clock instants; a device an hour off is an hour of late marks.",
+    "Enrol each employee with the SAME number as the employee record's Device User ID (Employees → edit → device_user_id). A punch whose number matches nobody waits on Pending Punches.",
+    "Mint a credential on API Keys (scope attendance.write) and give it to the push middleware together with the push URL. The key is shown once.",
+    "Send one test punch and watch this screen: the device's serial appears with its last punch received. Then check Attendance → Daily for the day."
+  ],
+  "troubleshooting": [
+    "No punch received: the serial on the device (Menu → System Info → Device Info) must equal the Serial / Device ID on its register row.",
+    "Punches on Pending Punches but not on attendance: the employee's device_user_id is blank or different from the enrolment number.",
+    "Duplicate uploads are harmless: every upload carries its own Idempotency-Key and a repeat is answered, not re-written."
+  ]
+}

@@ -1,0 +1,151 @@
+[
+ {
+  "section": "field",
+  "items": [
+   {
+    "key": "offroll-agents",
+    "route": "offroll-agents",
+    "label": "Off-roll Agents",
+    "icon": "fa-user-shield",
+    "permission": "employee.view"
+   },
+   {
+    "key": "offroll-vendors",
+    "module": "offroll-vendors",
+    "label": "Off-roll Vendors",
+    "icon": "fa-building-user",
+    "permission": "employee.view"
+   },
+   {
+    "key": "offroll-pay-plans",
+    "route": "offroll-pay-plans",
+    "label": "Agent Pay Structure",
+    "icon": "fa-money-bill-trend-up",
+    "permission": "employee.view"
+   },
+   {
+    "key": "offroll-activity",
+    "route": "offroll-activity",
+    "label": "Agent Attendance & Activity",
+    "icon": "fa-person-walking-arrow-right",
+    "permission": "employee.view"
+   },
+   {
+    "key": "offroll-payouts",
+    "route": "offroll-payouts",
+    "label": "Agent Payouts",
+    "icon": "fa-hand-holding-dollar",
+    "permission": "employee.view"
+   },
+   {
+    "key": "offroll-reports",
+    "route": "offroll-reports",
+    "label": "Agent Pay Reports",
+    "icon": "fa-file-invoice-dollar",
+    "permission": "employee.view"
+   },
+   {
+    "key": "agent-auth",
+    "route": "agent-auth",
+    "label": "Agent Authorisations",
+    "icon": "fa-id-badge",
+    "permission": "employee.view"
+   },
+   {
+    "key": "dra-certs",
+    "route": "dra-certs",
+    "label": "DRA Certificates",
+    "icon": "fa-certificate",
+    "permission": "employee.view"
+   }
+  ]
+ },
+ {
+  "section": "reports",
+  "items": [
+   {
+    "key": "reports",
+    "route": "reports",
+    "label": "Reports",
+    "icon": "fa-chart-pie",
+    "permission": "employee.view"
+   },
+   {
+    "key": "report-datasets",
+    "route": "report-datasets",
+    "label": "Datasets",
+    "icon": "fa-database",
+    "permission": "employee.view"
+   },
+   {
+    "key": "report-headcount",
+    "route": "report-headcount",
+    "label": "Headcount",
+    "icon": "fa-users",
+    "permission": "employee.view"
+   },
+   {
+    "key": "report-attendance-summary",
+    "route": "report-attendance-summary",
+    "label": "Attendance Summary",
+    "icon": "fa-calendar-check",
+    "permission": "attendance.report.view"
+   },
+   {
+    "key": "report-leave-summary",
+    "route": "report-leave-summary",
+    "label": "Leave Summary",
+    "icon": "fa-umbrella-beach",
+    "permission": "leave.request.view"
+   },
+   {
+    "key": "report-salary-register",
+    "route": "report-salary-register",
+    "label": "Salary Register",
+    "icon": "fa-money-check",
+    "permission": "payroll.view"
+   },
+   {
+    "key": "report-pf-esi-summary",
+    "route": "report-pf-esi-summary",
+    "label": "PF / ESI Summary",
+    "icon": "fa-shield-halved",
+    "permission": "employee.view"
+   },
+   {
+    "key": "report-birthdays",
+    "route": "report-birthdays",
+    "label": "Birthdays",
+    "icon": "fa-cake-candles",
+    "permission": "employee.view"
+   },
+   {
+    "key": "attrition",
+    "route": "attrition",
+    "label": "Attrition",
+    "icon": "fa-user-minus",
+    "permission": "employee.view"
+   },
+   {
+    "key": "activity-logs",
+    "route": "trail",
+    "label": "Activity Logs",
+    "icon": "fa-clock-rotate-left",
+    "permission": "audit.tenant.read",
+    "hidden": true
+   }
+  ]
+ },
+ {
+  "section": "setup",
+  "items": [
+   {
+    "key": "offroll-settings",
+    "route": "offroll-settings",
+    "label": "Off-roll Agent Payouts",
+    "icon": "fa-sliders",
+    "permission": "payroll.view"
+   }
+  ]
+ }
+]

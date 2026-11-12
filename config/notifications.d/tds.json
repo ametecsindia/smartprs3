@@ -1,0 +1,33 @@
+{
+ "events": {
+  "tds.declaration_reminder": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "TDS declaration for {fy} — open until {to}",
+   "body": "Declare your tax regime and planned investments for {fy} on Statutory & Compliance → TDS Declaration before {to}. {state} Without a declaration, TDS is deducted under the default regime on salary alone.",
+   "audience": "employee",
+   "audience_note": "On the day the window opens (everyone) and on each reminder day before it closes (only those who have not declared). Deduped per person per day."
+  },
+  "tds.proof_reminder": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "Upload your investment proofs for {fy} by {to}",
+   "body": "Proofs still missing: {items}. Upload them on Statutory & Compliance → Investment Proofs before {to}. After the cut-off, items without an approved proof stop reducing your tax and the remaining months' TDS goes up.",
+   "audience": "employee",
+   "audience_note": "Only employees with declared items still unproven, on the window's first day and each reminder day."
+  },
+  "tds.proof_reviewed": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "Your investment proof was {decision}",
+   "body": "Proof for {item}: {decision}, amount {amount}. Note: {note}",
+   "audience": "employee",
+   "audience_note": "The employee whose proof it is, once HR decides."
+  }
+ }
+}

@@ -1,0 +1,608 @@
+{
+ "note": "THE MENU IS A DECLARATION, NOT A TEMPLATE. SmartPRS 2's sidebar is written out in layouts/app.blade.php: fifteen anchors, each with its icon and route hard-coded, so a customer who wants Leave above Attendance, or their own word for Employees, or the whole Payroll section hidden from managers, needs a release. Here the sidebar is this file. Each section has a label and items; each item names its route, its icon (Font Awesome), its label, and the permission it needs — and an item nobody may open is MARKED rather than removed, because a menu that silently shortens itself teaches people the product is smaller than it is. `badge` names a live count the shell fills in. SECTIONS FOLLOW SMARTPRS 2's SIDEBAR, at the owner's request: Main, Hiring & Onboarding, People, Time & Attendance, Leave, Payroll, Compensation & Claims, Statutory & Compliance, Performance & Rewards, Learning & Knowledge, HR Letters, Field Force, Communication, Reports & Analytics, Administration, Organization Setup / Configuration. An item with `module` opens that module screen (?r=m&k=…) and is marked with the module's own declared view permission; an item with `route` opens a dedicated screen. A section is kept even when every item in it is locked, so the shape of the product is the same for everybody.",
+ "sections": [
+  {
+   "key": "main",
+   "label": "Main",
+   "icon": "fa-house",
+   "items": [
+    {
+     "key": "dashboard",
+     "route": "dashboard",
+     "permission": "home.dashboard.view",
+     "label": "Dashboard",
+     "icon": "fa-gauge-high"
+    },
+    {
+     "key": "live-salary",
+     "route": "live-salary",
+     "permission": "salary.live.view",
+     "label": "Live Salary",
+     "icon": "fa-indian-rupee-sign"
+    },
+    {
+     "key": "escalation-desk",
+     "route": "escalation-desk",
+     "label": "Escalation Desk",
+     "icon": "fa-triangle-exclamation",
+     "permission": "request.view"
+    },
+    {
+     "key": "inbox",
+     "route": "inbox",
+     "permission": "request.inbox.view",
+     "label": "Approvals Inbox",
+     "icon": "fa-circle-check",
+     "badge": "inbox"
+    },
+    {
+     "key": "notifications",
+     "route": "notifications",
+     "permission": "notification.inbox.view",
+     "label": "Notifications",
+     "icon": "fa-bell"
+    },
+    {
+     "key": "ai-assistant",
+     "route": "ai-assistant",
+     "permission": "assistant.view",
+     "label": "AI Assistant",
+     "icon": "fa-robot"
+    },
+    {
+     "key": "how-it-works",
+     "route": "how-it-works",
+     "permission": "help.howitworks.view",
+     "label": "How It Works",
+     "icon": "fa-circle-question"
+    }
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "hiring",
+   "label": "Hiring & Onboarding",
+   "icon": "fa-user-plus",
+   "items": [
+    {
+     "key": "recruitment",
+     "route": "recruitment",
+     "label": "Recruitment",
+     "icon": "fa-briefcase",
+     "permission": "recruitment.pipeline.view"
+    },
+    {
+     "key": "onboarding-status",
+     "label": "Onboarding Status",
+     "icon": "fa-list-check",
+     "permission": "employee.view",
+     "route": "onboarding-status"
+    },
+    {
+     "key": "self-onboarding",
+     "route": "self-onboarding",
+     "permission": "onboarding.self.view",
+     "label": "Self-Onboarding",
+     "icon": "fa-id-card"
+    },
+    {
+     "key": "bgv",
+     "module": "bgv",
+     "label": "Background Verification",
+     "icon": "fa-user-shield",
+     "permission": "employee.view"
+    },
+    {
+     "key": "resignations",
+     "route": "resignations",
+     "label": "Resignations",
+     "icon": "fa-door-open",
+     "permission": "employee.view"
+    }
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "people",
+   "label": "People",
+   "icon": "fa-users",
+   "items": [
+    {
+     "key": "employees",
+     "route": "employees",
+     "label": "Directory",
+     "icon": "fa-address-book",
+     "permission": "employee.directory.view"
+    },
+    {
+     "key": "hierarchy",
+     "route": "hierarchy",
+     "label": "Hierarchy",
+     "icon": "fa-sitemap",
+     "permission": "employee.directory.view"
+    },
+    {
+     "key": "probation",
+     "label": "Probation",
+     "icon": "fa-hourglass-half",
+     "permission": "employee.probation.view",
+     "route": "probation"
+    },
+    {
+     "key": "archived",
+     "route": "archived",
+     "label": "Backed up / Old data",
+     "icon": "fa-box-archive",
+     "permission": "employee.list"
+    },
+    {
+     "key": "transfers",
+     "route": "transfers",
+     "label": "Transfers",
+     "icon": "fa-right-left",
+     "permission": "employee.transfer.view"
+    },
+    {
+     "key": "id-cards",
+     "route": "id-cards",
+     "label": "ID Cards",
+     "icon": "fa-id-card-clip",
+     "permission": "employee.idcard.view"
+    },
+    {
+     "key": "documents",
+     "label": "Document Tracker",
+     "icon": "fa-folder-open",
+     "permission": "employee.document.view",
+     "route": "document-tracker"
+    },
+    {
+     "key": "settlement",
+     "route": "exits",
+     "label": "Exit & FnF",
+     "icon": "fa-hand-holding-dollar",
+     "permission": "payroll.run"
+    }
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "time",
+   "label": "Time & Attendance",
+   "icon": "fa-clock",
+   "items": [
+    {
+     "key": "attendance-report",
+     "route": "attendance-report",
+     "label": "Attendance Report",
+     "icon": "fa-calendar-days",
+     "permission": "attendance.report.view"
+    },
+    {
+     "key": "daily-attendance",
+     "route": "daily-attendance",
+     "label": "Attendance Logs",
+     "icon": "fa-clock-rotate-left",
+     "permission": "attendance.report.view"
+    },
+    {
+     "key": "employee-attendance",
+     "route": "attendance",
+     "label": "Employee Attendance",
+     "icon": "fa-user-clock",
+     "permission": "attendance.day.view"
+    },
+    {
+     "key": "my-attendance",
+     "route": "my-attendance",
+     "label": "My Attendance",
+     "icon": "fa-calendar-check",
+     "permission": "ess.attendance.punch"
+    },
+    {
+     "key": "manual-entry",
+     "route": "manual-entry",
+     "label": "Manual Entry",
+     "icon": "fa-fingerprint",
+     "permission": "attendance.punch.create.manual"
+    },
+    {
+     "key": "attendance-corrections",
+     "label": "Attendance Regularization",
+     "icon": "fa-pen-to-square",
+     "permission": "attendance.day.view",
+     "route": "attendance-corrections"
+    },
+    {
+     "key": "devices",
+     "module": "devices",
+     "label": "Biometric Devices",
+     "icon": "fa-mobile-screen",
+     "permission": "employee.view",
+     "hidden": true
+    },
+    {
+     "key": "geofence",
+     "module": "geofence",
+     "label": "Geo-Fence",
+     "icon": "fa-map-location-dot",
+     "permission": "employee.view"
+    },
+    {
+     "key": "qr-attendance",
+     "route": "qr-attendance",
+     "label": "QR Attendance",
+     "icon": "fa-qrcode",
+     "permission": "tenant.settings.update"
+    }
+
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "leave",
+   "label": "Leave",
+   "icon": "fa-umbrella-beach",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "payroll",
+   "label": "Payroll",
+   "icon": "fa-money-check-dollar",
+   "items": [
+    {
+     "key": "generate-payroll",
+     "route": "generate-payroll",
+     "label": "Generate Payroll",
+     "icon": "fa-gears",
+     "permission": "payroll.run"
+    },
+    {
+     "key": "salary-approval",
+     "route": "salary-approval",
+     "label": "Salary Approval",
+     "icon": "fa-check-double",
+     "permission": "payroll.run.approve"
+    },
+    {
+     "key": "payslips",
+     "route": "payslips",
+     "label": "Payslips",
+     "icon": "fa-file-invoice-dollar",
+     "permission": "payroll.view"
+    },
+    {
+     "key": "pay-ledger",
+     "route": "pay-ledger",
+     "label": "Salary & Commission Ledger",
+     "icon": "fa-book",
+     "permission": "payroll.view"
+    },
+    {
+     "key": "deductions-ledger",
+     "label": "Deductions Ledger",
+     "icon": "fa-money-bill-transfer",
+     "permission": "payroll.view",
+     "route": "deductions-ledger"
+    },
+    {
+     "key": "payout-recon",
+     "label": "Payout Reconciliation",
+     "icon": "fa-scale-balanced",
+     "permission": "payroll.view",
+     "route": "payout-reconciliation"
+    },
+    {
+      "key": "payroll-reports",
+      "label": "Reports",
+      "icon": "fa-chart-column",
+      "permission": "payroll.view",
+      "route": "payroll-reports"
+    }
+   ]
+  },
+  {
+   "key": "compensation",
+   "label": "Compensation & Claims",
+   "icon": "fa-hand-holding-dollar",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "statutory",
+   "label": "Statutory & Compliance",
+   "icon": "fa-shield-halved",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "performance",
+   "label": "Performance & Rewards",
+   "icon": "fa-star",
+   "items": [
+    {
+     "key": "kpi-achievements",
+     "route": "kpi-achievements",
+     "label": "KPI Achievements",
+     "icon": "fa-bullseye",
+     "permission": "employee.view"
+    }
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "learning",
+   "label": "Learning & Knowledge",
+   "hidden": true,
+   "icon": "fa-graduation-cap",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "helpdesk-section",
+   "label": "HR Helpdesk",
+   "icon": "fa-headset",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "letters",
+   "label": "HR Letters",
+   "icon": "fa-file-lines",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "field",
+   "label": "Field Force",
+   "icon": "fa-map-location-dot",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "communication",
+   "label": "Communication",
+   "icon": "fa-bullhorn",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "reports",
+   "label": "Reports & Analytics",
+   "icon": "fa-chart-line",
+   "items": [],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "admin",
+   "label": "Administration",
+   "icon": "fa-gear",
+   "items": [
+    {
+     "key": "roles",
+     "route": "roles",
+     "label": "Roles & Permissions",
+     "icon": "fa-user-shield",
+     "permission": "tenant.settings.view"
+    }
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  },
+  {
+   "key": "platform",
+   "label": "SaaS Platform",
+   "icon": "fa-server",
+   "items": [],
+   "keep_when_empty": false,
+   "permission": "tenant.settings.update",
+   "platform_only": true,
+   "note": "The Super Admin console (16 Oct 2026, SmartPRS 2 parity). Drawn ONLY for a platform session (sign in at /super); a tenant account never sees it and its routes are refused for tenants (public/app.php platform guard). A platform session sees nothing else."
+  },
+  {
+   "key": "setup",
+   "label": "Organization Setup / Configuration",
+   "icon": "fa-sliders",
+   "items": [
+    {
+     "key": "setup-companies",
+     "route": "setup-companies",
+     "label": "Companies",
+     "icon": "fa-building",
+     "permission": "employee.view"
+    },
+    {
+     "key": "setup-branches",
+     "route": "setup-branches",
+     "label": "Branches",
+     "icon": "fa-code-branch",
+     "permission": "employee.view"
+    },
+    {
+     "key": "setup-departments",
+     "route": "setup-departments",
+     "label": "Departments",
+     "icon": "fa-sitemap",
+     "permission": "employee.view"
+    },
+    {
+     "key": "setup-designations",
+     "route": "setup-designations",
+     "label": "Role / Designation Setup",
+     "icon": "fa-id-badge",
+     "permission": "employee.view"
+    },
+    {
+     "key": "setup-teams",
+     "route": "setup-teams",
+     "label": "Teams",
+     "icon": "fa-people-group",
+     "permission": "employee.team.view"
+    },
+    {
+     "key": "setup-shifts",
+     "route": "setup-shifts",
+     "label": "Shifts",
+     "icon": "fa-business-time",
+     "permission": "employee.view"
+    },
+    {
+     "key": "setup-holidays",
+     "route": "setup-holidays",
+     "label": "Holiday / W.OFF Schedule",
+     "icon": "fa-calendar-days",
+     "permission": "tenant.settings.update"
+    },
+    {
+     "key": "late-policy",
+     "route": "late-policy",
+     "label": "Late Login Policy",
+     "icon": "fa-stopwatch",
+     "permission": "employee.view"
+    },
+    {
+     "key": "employee-fields",
+     "route": "employee-fields",
+     "label": "Employee fields",
+     "icon": "fa-list-check",
+     "permission": "tenant.settings.view"
+    },
+    {
+     "key": "structure",
+     "route": "structure",
+     "label": "Salary structure",
+     "icon": "fa-sliders",
+     "permission": "payroll.structure.view"
+    },
+    {
+     "key": "setup-pt-slabs",
+     "route": "pt-slabs",
+     "label": "PT Slabs",
+     "icon": "fa-table-list",
+     "permission": "payroll.structure.view",
+     "sub": true,
+     "note": "Sub-menu of Salary structure (owner, 28 Oct 2026): Professional Tax rules — state, company, branch, gender, frequency, deduction months, slabs. Payroll and PT Applicable read them (surface/PtRules.php)."
+    },
+    {
+     "key": "certificate-holds",
+     "route": "certificate-holds",
+     "label": "Certificate-linked Deductions",
+     "icon": "fa-certificate",
+     "permission": "payroll.view"
+    },
+    {
+     "key": "commission-setup",
+     "module": "commission-setup",
+     "label": "Commission Setup",
+     "icon": "fa-bullseye",
+     "permission": "payroll.view",
+     "note": "Owner, 30 Oct 2026: Commission & Incentive Schemes split into Commission Setup and Incentive Setup (same incentive_schemes table, scheme_kind)."
+    },
+    {
+     "key": "incentive-setup",
+     "module": "incentive-setup",
+     "label": "Incentive Setup",
+     "icon": "fa-gift",
+     "permission": "payroll.view"
+    },
+    {
+     "key": "setup-pay-cycles",
+     "route": "pay-cycles",
+     "label": "Salary Schedule / Pay Cycle",
+     "icon": "fa-money-bill-transfer",
+     "permission": "tenant.settings.update"
+    },
+    {
+     "key": "payslip-format",
+     "route": "payslip-format",
+     "label": "Payslip format",
+     "icon": "fa-file-invoice",
+     "permission": "payroll.structure.view"
+    },
+    {
+     "key": "configure-id-card",
+     "route": "configure-id-card",
+     "label": "ID Card Format",
+     "icon": "fa-id-card",
+     "permission": "tenant.settings.view"
+    },
+    {
+     "key": "configure-attendance-report",
+     "route": "configure-attendance-report",
+     "label": "Attendance report",
+     "icon": "fa-sliders",
+     "permission": "tenant.settings.view"
+    },
+    {
+     "key": "kra-kpi",
+     "route": "kra-kpi",
+     "label": "KRAs and KPIs",
+     "icon": "fa-bullseye",
+     "permission": "tenant.settings.view"
+    },
+    {
+     "key": "biometric-config",
+     "route": "biometric-setup",
+     "label": "Biometric Device Setup",
+     "icon": "fa-gear",
+     "permission": "employee.view",
+     "hidden": true
+    },
+    {
+     "key": "api-keys",
+     "route": "api-keys",
+     "label": "Biometric API Keys",
+     "icon": "fa-key",
+     "permission": "access.apikey.list",
+     "hidden": true
+    },
+    {
+     "key": "configuration",
+     "route": "configuration",
+     "label": "Configuration",
+     "icon": "fa-gears",
+     "permission": "tenant.settings.view",
+     "hidden": true
+    },
+    {
+     "key": "configure-menu",
+     "route": "configure-menu",
+     "label": "Menu",
+     "icon": "fa-bars",
+     "permission": "tenant.settings.view"
+    },
+    {
+     "key": "performance-appraisal",
+     "route": "performance-appraisal",
+     "label": "Performance Appraisal",
+     "icon": "fa-money-bill-trend-up",
+     "permission": "tenant.settings.update"
+    },
+    {
+     "key": "alert-emails",
+     "route": "alert-emails",
+     "label": "Alert Email Drafts",
+     "icon": "fa-envelope-open-text",
+     "permission": "tenant.settings.view"
+    }
+   ],
+   "keep_when_empty": true,
+   "empty_note": "Sub-menus to be assigned"
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+  "note": "WHAT A LEAVE REQUEST IS REFUSED FOR, AS CONFIGURATION. `Surface\\Leave::request()` checked two things: that the dates span at least one day, and that a reason was typed. It did NOT check the balance — an employee with three days of earned leave could ask for forty and the request was accepted, sat in the approvals queue looking exactly like every other one, and the only thing standing between it and a negative balance was an approver noticing. SmartPRS 2 has the same gap in a different place. These rules are evaluated by `Platform\\Rules\\Engine` at `leave.request.validate`, with ALL_MATCH as the conflict policy because a request can be refused for one reason and need a document for another at the same time — and the person deserves to be told both at once rather than one per attempt.",
+  "decision_point": "leave.request.validate",
+  "policy_note": "ALL_MATCH, and it is NOT declared here. The conflict policy of leave.request.validate belongs to the decision point (src/Platform/Rules/DecisionPoints.php) and PublishedRules asks it — this file used to state it too, which is a second copy of one fact and the copy that was believed was the wrong one for an afternoon.",
+  "why_no_priorities": "ALL_MATCH means every matching rule contributes, so priority orders the answers rather than choosing between them. The blocks are numbered above the documents so that a person reading the refusal sees why they cannot go before what they would have needed to bring.",
+  "rules": [
+    {
+      "code": "LV-NO-BALANCE",
+      "module": "leave",
+      "name": "More days than the balance holds",
+      "description": "A request for more days than the balance on the day it is submitted is BLOCKED — for a PAID type only (12 Oct: loss of pay has no balance, and this rule refused every LOP request, including the unpaid half of Leave → Apply's beyond-balance split). Not warned about, not left for the approver to catch: an approver looking at a queue sees a request that looks like every other one, and the balance is not on the row. This is the check the product did not have.",
+      "priority": 100,
+      "when": "leave.is_paid = true AND leave.units > leave.balance(leave.type)",
+      "then": [
+        {
+          "action": "BLOCK",
+          "code": "INSUFFICIENT_BALANCE",
+          "reason": "This asks for more days than the balance holds on the day of the request. The balance is the ledger's answer, not a stored column, so it is the same figure the approver and the payslip see."
+        }
+      ]
+    },
+    {
+      "code": "LV-PENDING-EATS-BALANCE",
+      "module": "leave",
+      "name": "Days already asked for are not still available",
+      "description": "Days sitting in other pending requests are counted against the balance. Without this an employee with five days can submit five separate five-day requests, every one of which passes the balance check on its own, and the ledger only discovers it when the last one is approved.",
+      "priority": 90,
+      "when": "leave.is_paid = true AND leave.units > leave.balance(leave.type) - leave.pending(leave.type)",
+      "except": "leave.units > leave.balance(leave.type)",
+      "then": [
+        {
+          "action": "BLOCK",
+          "code": "PENDING_ALREADY_COMMITTED",
+          "reason": "The balance covers this on its own, but days already asked for in other requests still awaiting a decision do not. Withdraw one of those first, or wait for it to be decided."
+        }
+      ]
+    },
+    {
+      "code": "LV-LONG-ABSENCE-DOC",
+      "module": "leave",
+      "name": "A long absence needs something on file",
+      "description": "More than three consecutive days requires a supporting document. Stated as a rule rather than left to whoever approves it, because an inconsistently applied documentation requirement is worse than none: it is the same policy producing different answers depending on who is looking.",
+      "priority": 50,
+      "when": "leave.units > 3d",
+      "then": [
+        {
+          "action": "REQUIRE_DOCUMENT",
+          "doc_type": "SUPPORTING",
+          "by": "leave.to"
+        }
+      ]
+    }
+  ]
+}

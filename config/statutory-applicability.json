@@ -1,0 +1,51 @@
+{
+  "note": "WHICH STATUTORY DEDUCTIONS APPLY TO ONE EMPLOYEE (owner, 28 Sep: \"Once the Probation has ended, the applicable fields like PF, PT, ESI, etc should also be updated Yes, or No and all these should be wired accurately for calculations in payroll generation, salary, payslip\"). Each head names the employee field that answers it and the salary components it switches off when that answer is No. BLANK MEANS NOT DECIDED, and a head nobody has decided keeps computing exactly as it did before this existed — a switch nobody touched must not quietly take PF off four hundred payslips. Only an explicit No removes a component. The field is a column on `employees` where the table has one and is kept beside the record (employee_field_values) where it has not, so no migration is needed for PT, LWF or TDS.",
+  "heads": {
+    "PF": {
+      "label": "Provident Fund (PF)",
+      "field": "pf_applicable",
+      "column": "pf_applicable",
+      "column_kind": "flag",
+      "components": ["PF_EMPLOYEE", "PF_EMPLOYER"],
+      "government": {
+        "note": "Worked out from the employee's salary every time it is read (owner, 16 Oct 2026). EPF is compulsory when PF wages (Basic + DA + retaining allowance, with the Code on Wages 50% add-back — config/gratuity.json wage_components / fifty_percent_rule) are at or below the wage ceiling. Above it the employee is an 'excluded employee' (EPF Scheme 1952 para 2(f)) unless already a member: a UAN / PF number on file or PF in an earlier payroll keeps PF on.",
+        "wage_ceiling": "15000.00",
+        "ceiling_source": "MoLE notification under Code on Social Security 2020 s.2(89), 29-05-2026: Rs 15,000 retained",
+        "member_fields": ["uan", "pf_no"],
+        "member_component": "PF_EMPLOYEE"
+      }
+    },
+    "ESI": {
+      "label": "ESIC",
+      "field": "esi_applicable",
+      "column": "esi_applicable",
+      "column_kind": "text",
+      "components": ["ESI_EMPLOYEE", "ESI_EMPLOYER"],
+      "government": {
+        "note": "Worked out from the employee's salary every time it is read (owner, 16 Oct 2026): ESI wages (gross earnings less config/esi.json wages_exclude) at or below the ceiling (PwD ceiling for a physically challenged employee), or covered earlier in the same contribution period. Rates and ceilings: config/esi.json."
+      }
+    },
+    "PT": {
+      "label": "Professional Tax (PT)",
+      "field": "pt_applicable",
+      "column": null,
+      "components": ["PT"],
+      "government": { "note": "PT from the employee's current monthly gross and their PT state (else the branch's state) on config/pt.json (owner, 26 Oct 2026). A state pt.json does not list: the saved answer stands." }
+    },
+    "LWF": {
+      "label": "Labour Welfare Fund (LWF)",
+      "field": "lwf_applicable",
+      "column": null,
+      "components": ["LWF_EMPLOYEE", "LWF_EMPLOYER"],
+      "government": { "note": "No LWF wage test is configured; Yes when the employee's Salary structure carries an LWF component (owner, 26 Oct 2026)." }
+    },
+    "TDS": {
+      "label": "Income Tax (TDS)",
+      "field": "tds_applicable",
+      "column": null,
+      "components": ["TDS"],
+      "government": { "note": "Yes when the year's income tax on the current salary (config/income-tax.json, declared regime else the default) is above zero (owner, 26 Oct 2026)." }
+    }
+  },
+  "components_note": "Component codes are the Salary Structure catalogue's (config/salary-components.json). The flat structure's kind-prefixed codes (D-PT, D-PF_EMPLOYEE) are matched with the prefix off, the same way ComponentRules does, so one list covers both."
+}

@@ -1,0 +1,16 @@
+{
+  "note": "GST on platform invoices. A buyer whose state code matches home_state_code is charged CGST+SGST (each half the rate); any other state is charged IGST at the full rate. Rate is a whole percent.",
+  "rate_percent": 18,
+  "home_state_code": "36",
+  "seller": {
+    "name": "Ametecs India Private Limited",
+    "address": "Modern Profound Techpark, Ground Floor, HIVE Business Space, Whitefields, Kondapur, Hyderabad, Telangana 500084",
+    "gstin": "",
+    "note": "Printed on on-prem licence invoices. Fill in the GSTIN."
+  },
+  "state_codes": {
+    "Andhra Pradesh": "37", "Delhi": "07", "Gujarat": "24", "Karnataka": "29", "Kerala": "32",
+    "Madhya Pradesh": "23", "Maharashtra": "27", "Odisha": "21", "Punjab": "03", "Rajasthan": "08",
+    "Tamil Nadu": "33", "Telangana": "36", "Uttar Pradesh": "09", "West Bengal": "19"
+  }
+}

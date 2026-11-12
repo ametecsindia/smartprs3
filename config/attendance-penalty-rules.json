@@ -1,0 +1,30 @@
+{
+  "note": "THREE LATE ARRIVALS COST HALF A DAY — the blueprint's own RL-ATT-001, published at last. `attendance.late_minutes` has been computed for every settled day since Phase 4 and, like overtime, nothing had ever read it: a person could be forty minutes late every morning of the month and the payslip would not know. SmartPRS 2 does have this rule, in `PayrollGenController::attendanceCut():449-455`, as a loop with the numbers written into it — which is why 'we give fifteen minutes, not ten' is a release there and a line in this file here.",
+  "decision_point": "attendance.day.penalise",
+  "policy_note": "ALL_MATCH, from the decision point. A day can be penalised for lateness and for something else at once, and the penalties add — which is why APPLY_DAY_PENALTY is declared ADDITIVE in the action catalogue and why a policy that returned only the winner would quietly forgive one of them.",
+  "policy": {
+    "late_grace_min": 10,
+    "late_grace_note": "Minutes past the shift start before an arrival counts as LATE FOR THE PURPOSES OF THIS PENALTY. Deliberately not the same number as calendar.grace_minutes, which decides whether the day is marked late at all — an employer can mark somebody late at five minutes and only start penalising at ten, and collapsing the two numbers into one takes that choice away.",
+    "late_marks_before_penalty": 3,
+    "penalty_days": "0.5"
+  },
+  "rules": [
+    {
+      "code": "RL-ATT-001",
+      "module": "attendance",
+      "name": "Three late arrivals in a payroll month cost half a day",
+      "description": "The third and every later late arrival over the grace, within one payroll month, costs half a day of pay. Counted over the PAYROLL PERIOD rather than a rolling window, because that is the month the payslip is for and a rolling count would penalise a day twice across a month boundary.",
+      "priority": 100,
+      "when": "attendance.late_minutes > policy.value('late_grace_min')\nAND agg.count(late_arrival, payroll_period, { event.value > policy.value('late_grace_min') }) >= 3",
+      "except": "day.is_holiday OR day.is_weekly_off",
+      "then": [
+        {
+          "action": "APPLY_DAY_PENALTY",
+          "fraction": { "expr": "0.5d" },
+          "reason": "Third or later late arrival over the grace this payroll month",
+          "cap_ref": "ATT-PENALTY-CAP-MONTH"
+        }
+      ]
+    }
+  ]
+}

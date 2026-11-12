@@ -1,0 +1,26 @@
+{
+  "note": "Compensation & Claims rules. Every vocabulary the register screens offer as a dropdown is in config/modules.d/leave-comp.json beside the field; what is here is what the hand-built screens compute with.",
+  "claims": {
+    "note": "The approval screen lists rows in a `pending` status and moves them to `approved` / `rejected`; the recovery statuses are what surface/Recoveries.php reads.",
+    "expenses": {"pending": ["pending", "claimed"], "approved": "approved", "rejected": "rejected"},
+    "advances": {"pending": ["pending", "requested"], "approved": "approved", "rejected": "rejected"}
+  },
+  "commission": {
+    "note": "rate_type: percent = rate_value % of the figure; fixed = rate_value rupees per row; slab = the rate of the band the WHOLE figure falls into (not marginal), bands ordered by upto, blank upto = top band; open = the typed amount is the payout. threshold: when set, a row pays only if collected / target * 100 >= threshold. TDS u/s 194H is deducted from the gross; the net is what pays.",
+    "rate_types": ["percent", "fixed", "slab", "open"],
+    "default_tds_rate": "2",
+    "flat_tds_salary_types": ["Commission"],
+    "flat_tds_note": "Owner, 29 Oct 2026: employees whose Salary Type is listed here have the flat TDS % (194H) of the commission entry deducted; every other Salary Type (Salary, Salary + Commission) has no flat TDS on the entry — the commission is added to salary and taxed on the income-tax slabs in payroll.",
+    "default_status": "pending",
+    "rounding": "HalfUp"
+  },
+  "loan": {
+    "note": "An EMI schedule is principal / emi instalments from start_month; the last instalment is the remainder, never the standing EMI. Recovery is read from the closed payroll runs (component code LOAN-<id>), exactly as Recoveries does.",
+    "recovering_statuses": ["active", "disbursed", "recovering"],
+    "line_prefix": "LOAN-"
+  },
+  "bank_pack": {
+    "note": "One CSV per approved run, in BankAdvice's generic shape: employee, name, account, ifsc, amount, of_which_arrears.",
+    "csv_download_permission": "payroll.payout.authorise"
+  }
+}

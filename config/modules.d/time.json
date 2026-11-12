@@ -1,0 +1,434 @@
+{
+ "note": "TIME & ATTENDANCE register screens at SmartPRS 2 parity. `devices`, `biometric-config` and `geofence` SUPERSEDE the entries of the same key in modules.json (a drop-in wins); `overtime` is new. Columns beyond the ported tables come from database/migrations/2026_03_02_000100_time_device_and_overtime_columns.php.",
+ "modules": [
+  {
+   "key": "devices",
+   "group": "Attendance",
+   "label": "Biometric Devices",
+   "description": "Register attendance devices of any make (SmartPRS 2's Biometric Devices / ZKTeco Devices). Cloud-push devices land under Pending Punches; LAN devices export a file for Import punches; offline devices: download by USB, then bulk-upload under Bulk Attendance.",
+   "table": "devices",
+   "columns": [
+    "name",
+    "brand",
+    "unique_id",
+    "employer_company_id",
+    "location",
+    "connect_mode",
+    "ip_address",
+    "direction",
+    "status",
+    "last_sync_at"
+   ],
+   "search": [
+    "name",
+    "unique_id",
+    "location",
+    "brand",
+    "ip_address"
+   ],
+   "fields": {
+    "name": {
+     "label": "Device Name",
+     "required": true
+    },
+    "brand": {
+     "label": "Make / Brand",
+     "options": [
+      "ZKTeco",
+      "ESSL",
+      "Realtime",
+      "Matrix",
+      "Mantra",
+      "Hikvision",
+      "Suprema",
+      "Secureye",
+      "Other"
+     ]
+    },
+    "model": {
+     "label": "Model",
+     "help": "e.g. K40, X990, F22"
+    },
+    "device_type": {
+     "label": "Verification Type",
+     "options": [
+      "Fingerprint",
+      "Face",
+      "Finger_face",
+      "Card",
+      "Finger_card",
+      "Palm"
+     ],
+     "help": "fingerprint / face / fingerprint + face / card (RFID) / fingerprint + card / palm or iris"
+    },
+    "unique_id": {
+     "label": "Serial / Device ID",
+     "required": true,
+     "help": "As printed on the device; a cloud push identifies the device by it"
+    },
+    "employer_company_id": {
+     "label": "Company"
+    },
+    "branch_id": {
+     "label": "Branch"
+    },
+    "location": {
+     "label": "Location / Branch",
+     "help": "Where it is mounted"
+    },
+    "connect_mode": {
+     "label": "Connection Method",
+     "options": [
+      "Cloud_push",
+      "Lan_pull",
+      "Essl_webapi",
+      "Usb_offline"
+     ],
+     "help": "cloud_push: the device pushes to this server (ADMS) · lan_pull: read from IP : Port · essl_webapi: eSSL eTimeTrackLite local WebAPI (port 81) — set up under Biometric Device Setup · usb_offline: download by USB, then bulk-upload"
+    },
+    "ip_address": {
+     "label": "IP Address (LAN mode)",
+     "help": "e.g. 192.168.1.50"
+    },
+    "port": {
+     "label": "Port",
+     "help": "ZKTeco default 4370",
+     "min": 1,
+     "max": 65535
+    },
+    "api_url": {
+     "label": "Device API URL (LAN / WebAPI mode)",
+     "help": "e.g. http://192.168.1.50:81 for eSSL eTimeTrackLite; blank for cloud push"
+    },
+    "api_key": {
+     "label": "Comm Key / Device Password",
+     "type": "password",
+     "permission": "tenant.settings.update"
+    },
+    "direction": {
+     "label": "Punch Direction",
+     "options": [
+      "Auto",
+      "In",
+      "Out"
+     ],
+     "help": "auto — the device records both In and Out; in — entry device only; out — exit device only"
+    },
+    "status": {
+     "label": "Status",
+     "options": [
+      "Active",
+      "Offline",
+      "Error",
+      "Retired"
+     ]
+    },
+    "last_sync_at": {
+     "label": "Last sync",
+     "readonly": true,
+     "help": "Set by the last push or import that named this device"
+    },
+    "notes": {
+     "label": "Notes",
+     "type": "textarea",
+     "help": "AMC, installer contact…"
+    },
+    "comm_key": {
+     "label": "Comm Key / Device Password",
+     "help": "The device's communication key (ZKTeco: Comm Key), needed for LAN pull"
+    }
+   }
+  },
+  {
+   "key": "biometric-config",
+   "group": "Attendance",
+   "label": "Biometric Device Setup",
+   "description": "How each device's punches reach attendance (SmartPRS 2's Biometric Device Setup). Push / ADMS: point the device at this server (Menu → Comm → Cloud Server) — it auto-registers by serial and its punches land under Pending Punches. eTimeTrackLite / eTimeOffice / generic API: the credentials below. Punches are matched to an employee by device user id (+ prefix); one reader alternates IN/OUT per day, two readers are told apart by machine id.",
+   "table": "biometric_configs",
+   "columns": [
+    "label",
+    "branch_id",
+    "provider",
+    "enabled",
+    "device_mode",
+    "sync_interval_min",
+    "last_sync_at",
+    "last_status"
+   ],
+   "search": [
+    "label",
+    "serial_number",
+    "provider"
+   ],
+   "permissions": {
+    "view": "employee.view",
+    "edit": "tenant.settings.update"
+   },
+   "fields": {
+    "enabled": {
+     "label": "Enabled",
+     "type": "checkbox",
+     "help": "Auto-sync / accept its pushes"
+    },
+    "label": {
+     "label": "Device label",
+     "required": true,
+     "help": "A friendly name for this device / location, e.g. Main Gate, 3rd Floor"
+    },
+    "branch_id": {
+     "label": "Branch / Location",
+     "help": "Which branch this device belongs to"
+    },
+    "provider": {
+     "label": "Provider / Device type",
+     "required": true,
+     "options": [
+      "Push",
+      "Etimetracklite",
+      "Etimeoffice",
+      "Generic"
+     ],
+     "help": "push: device pushes to SmartPRS (recommended, no URL or password needed) · etimetracklite: on-prem eSSL SOAP WebAPI · etimeoffice: eSSL cloud API · generic: any HTTP API"
+    },
+    "serial_number": {
+     "label": "Device Serial Number",
+     "help": "e.g. CUB7244600978 — printed on the device. Push devices may leave it blank: they register themselves on first push"
+    },
+    "base_url": {
+     "label": "API Base URL / WebAPI URL",
+     "help": "eTimeTrackLite: http://192.168.1.100:81/iclock/WebAPIservice.asmx · eTimeOffice: https://api.etimeoffice.com/api · generic: the full URL with {from} {to} {serial} {user} {pass} {key} placeholders"
+    },
+    "endpoint": {
+     "label": "Endpoint",
+     "help": "eTimeOffice: DownloadPunchDataMCID"
+    },
+    "corp_id": {
+     "label": "Corporate ID",
+     "help": "eTimeOffice corporate ID"
+    },
+    "username": {
+     "label": "API Username",
+     "help": "eTimeTrackLite: a user with API permission granted — not the desktop login"
+    },
+    "password": {
+     "label": "API Password",
+     "type": "password",
+     "permission": "tenant.settings.update"
+    },
+    "empcode": {
+     "label": "Employee code filter",
+     "help": "eTimeOffice: usually ALL"
+    },
+    "sync_interval_min": {
+     "label": "Sync frequency (minutes)",
+     "options": [
+      "0",
+      "5",
+      "10",
+      "15",
+      "30",
+      "60"
+     ],
+     "help": "0 = real-time (each punch, push only); otherwise how often punches are pulled / pushed"
+    },
+    "emp_prefix": {
+     "label": "Employee ID prefix",
+     "help": "If the device returns 12345 and your employees are A12345, enter A"
+    },
+    "device_mode": {
+     "label": "Device setup",
+     "options": [
+      "Single",
+      "Dual"
+     ],
+     "help": "single: one reader, punches alternate IN / OUT per employee per day · dual: separate IN and OUT readers told apart by machine id"
+    },
+    "in_machine_id": {
+     "label": "IN Machine ID",
+     "help": "Device number / serial of the entry reader (single: the only reader). Blank = keep the IN/OUT flag the device sends"
+    },
+    "out_machine_id": {
+     "label": "OUT Machine ID",
+     "help": "Exit reader (dual only)"
+    },
+    "api_config": {
+     "label": "Generic API mapping (JSON)",
+     "type": "textarea",
+     "help": "generic provider only: {\"method\":\"GET\",\"headers\":\"X-API-Key: {key}\",\"body_type\":\"none\",\"response_type\":\"json\",\"record_path\":\"data\",\"map\":{\"emp\":\"empcode\",\"datetime\":\"punchtime\",\"direction\":\"inout\"},\"dir_in\":\"in,0,I\",\"dir_out\":\"out,1,O\"}"
+    },
+    "last_sync_at": {
+     "label": "Last synced",
+     "readonly": true
+    },
+    "last_status": {
+     "label": "Last status",
+     "readonly": true
+    },
+    "last_count": {
+     "label": "Last count",
+     "readonly": true,
+     "help": "Punches received on the last sync"
+    }
+   }
+  },
+  {
+   "key": "geofence",
+   "group": "Attendance",
+   "label": "Geo-Fence Rules",
+   "description": "For people who punch from the mobile / web app instead of a biometric device (field staff, work-from-home). Add ONE row per such employee: pick the employee, choose where their day starts (Home or Office), enter that place's latitude and longitude (open Google Maps, right-click the spot, click the numbers to copy them), and the radius in km they may punch within. Outside Rule = what happens to a punch outside the circle: Strict (not accepted) or a 1 km / 2 km tolerance. Employees with no row here use the Home Latitude / Longitude / Allowed Radius on their employee record. Office staff on biometric devices need no row. Every fence is drawn on the Geo-Fence Map below.",
+   "table": "geofence_rules",
+   "filters": {
+    "employee": "employee_id"
+   },
+   "columns": [
+    "employee_id",
+    "start",
+    "lat",
+    "lng",
+    "radius_km",
+    "outside"
+   ],
+   "search": [],
+   "fields": {
+    "employee_id": {
+     "label": "Employee",
+     "required": true,
+     "empty": "— choose —",
+     "lookup": {
+      "table": "employees",
+      "value": "id",
+      "show": [
+       "emp_code",
+       "name"
+      ]
+     }
+    },
+    "start": {
+     "label": "Start From",
+     "options": [
+      "Home",
+      "Office"
+     ],
+     "help": "Where the day begins for this person"
+    },
+    "lat": {
+     "label": "Latitude",
+     "help": "e.g. 17.4485",
+     "min": -90,
+     "max": 90
+    },
+    "lng": {
+     "label": "Longitude",
+     "help": "e.g. 78.3908",
+     "min": -180,
+     "max": 180
+    },
+    "radius_km": {
+     "label": "Radius (km)",
+     "help": "A punch inside this circle is at the start point",
+     "min": 0
+    },
+    "outside": {
+     "label": "Outside Rule",
+     "options": [
+      "Strict",
+      "1km",
+      "2km"
+     ],
+     "help": "strict: outside = not counted · 1km / 2km: that much tolerance beyond the radius"
+    }
+   }
+  },
+  {
+   "key": "overtime",
+   "group": "Attendance",
+   "label": "Overtime Register",
+   "description": "Record overtime per employee: date, hours, rate multiplier, amount, status (SmartPRS 2's Overtime Register). Payroll pays APPROVED entries only. HOW OT HOURS ARE KNOWN: the day's settlement (Attendance::settledDays → DaySettlement.overtimeMinutes) = worked minutes beyond the shift's scheduled minutes, from the raw punches; the Attendance report shows it per day (drill-down) and per employee (OT column). Enter that figure here, in hours — the register is the approved, valued record; the settlement is the evidence.",
+   "table": "overtime",
+   "columns": [
+    "employee_id",
+    "employer_company_id",
+    "ot_date",
+    "hours",
+    "rate",
+    "amount",
+    "status",
+    "multiplier"
+   ],
+   "search": [
+    "status",
+    "remarks"
+   ],
+   "permissions": {
+    "view": "attendance.day.view",
+    "edit": "attendance.punch.create.manual"
+   },
+   "fields": {
+    "employee_id": {
+     "label": "Employee",
+     "required": true,
+     "empty": "— choose —",
+     "lookup": {
+      "table": "employees",
+      "value": "id",
+      "show": [
+       "emp_code",
+       "name"
+      ]
+     }
+    },
+    "employer_company_id": {
+     "label": "Company"
+    },
+    "ot_date": {
+     "label": "OT Date",
+     "type": "date",
+     "required": true
+    },
+    "hours": {
+     "label": "OT Hours",
+     "required": true,
+     "help": "Overtime minutes ÷ 60 from that day's settlement (Attendance report → the day → Overtime)",
+     "min": 0,
+     "max": 24
+    },
+    "rate": {
+     "label": "Rate Multiplier",
+     "options": [
+      "1",
+      "1.5",
+      "2"
+     ],
+     "help": "1 = normal, 1.5 = time and a half, 2 = double (Sundays / holidays)"
+    },
+    "amount": {
+     "label": "Amount (₹)",
+     "help": "hours × multiplier × hourly rate (monthly gross ÷ working days ÷ shift hours). Typed here until payroll values it",
+     "min": 0,
+     "permission": "employee.salary.view"
+    },
+    "status": {
+     "label": "Status",
+     "options": [
+      "Pending",
+      "Approved",
+      "Paid"
+     ],
+     "help": "Only approved entries are paid; paid is set by the payroll run"
+    },
+    "remarks": {
+     "label": "Remarks"
+    },
+    "multiplier": {
+     "label": "Rate Multiplier",
+     "options": [
+      "1",
+      "1.5",
+      "2"
+     ],
+     "help": "1× ordinary, 1.5× or 2× per the Factories Act / company policy"
+    }
+   }
+  }
+ ]
+}

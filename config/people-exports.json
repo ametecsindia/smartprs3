@@ -1,0 +1,15 @@
+{
+  "note": "Employees-tab lists that export as Excel/CSV through surface/actions/people-export.php: screen key => the route the browser returns to. Each key has a surface/partials/people-<key>-data.php that computes the same rows for the screen and for the file. Column headers on the files are ALL-CAPS, like the sample files.",
+  "screens": {
+    "bgv": "bgv",
+    "documents": "document-tracker",
+    "onboarding": "onboarding-status",
+    "transfers": "transfers",
+    "probation": "probation",
+    "roster": "roster",
+    "mobile-devices": "mobile-devices",
+    "recruitment": "recruitment",
+    "inbox": "inbox",
+    "notifications": "notifications"
+  }
+}

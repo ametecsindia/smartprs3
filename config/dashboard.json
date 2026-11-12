@@ -1,0 +1,20 @@
+{
+  "note": "THE DASHBOARD IS A DECLARATION, AND EVERY FIGURE ON IT COMES FROM A REPORT. SmartPRS 2's dashboard runs its own queries in DashboardController, so the headcount on the dashboard and the headcount on the report screen are two answers to one question and the argument that follows cannot be settled. Here each tile names a report; `bucket` takes one row of it, and no bucket takes the report's total. A tile whose report does not exist is REPORTED, never rendered as zero — a KPI showing 0 because its source is missing is indistinguishable from a real zero, and that is the worst number on any screen. A tile whose report the viewer may not open shows a padlock rather than the figure: a dashboard is the easiest place to leak a total that the report behind it is locked for.",
+  "kpis": [
+    { "key": "headcount", "label": "Total Employees", "report": "headcount-by-status",
+      "tint": "orange", "icon": "fa-users", "sub": "on the books" },
+    { "key": "active", "label": "Active", "report": "headcount-by-status", "bucket": "active",
+      "tint": "green", "icon": "fa-user-check", "sub": "currently working" }
+  ],
+  "kpis_note": "Owner, 22 Oct 2026: Annual CTC, Leave pending and Attendance open removed; the dashboard shows Present today, On leave and Absent after these tiles (app.php, from the same muster as the Attendance Report). On a holiday or weekly off for everyone they show -.",
+  "panels": [
+    { "key": "by-department", "label": "Workforce by department",
+      "question": "Where are our people?", "report": "headcount-by-department", "width": "wide" },
+    { "key": "by-type", "label": "By employee type", "question": "How much is on-roll?",
+      "report": "headcount-by-type", "width": "narrow" },
+    { "key": "pf", "label": "PF applicability", "question": "How many are inside PF?",
+      "report": "pf-esi-applicability", "width": "narrow" },
+    { "key": "cost", "label": "Cost by department", "question": "What does each one cost?",
+      "report": "ctc-by-department", "width": "full" }
+  ]
+}

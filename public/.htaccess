@@ -1,0 +1,35 @@
+# SmartPRS 3 — Apache routing (the web root is this public/ folder).
+# The same URLs SmartPRS 2 answered, so devices, apps and on-prem installs keep working:
+#   /login /c/{slug}     sign-in (app.php)            /super     Super Admin (super.php)
+#   /demo                passkey live demo (demo.php)
+#   /activate            on-prem activation           /api/v1/*  SBB, SmartEPT, field force (v1.php)
+#   /api/mobile/*        mobile app device gate       /iclock/*  ZKTeco/eSSL push (iclock.php)
+#   /update/*            licence server (cloud only)  /api/v3/*  SmartPRS 3 API (api.php)
+# nginx equivalent: deploy/nginx-app.smartprs.com.conf
+
+DirectoryIndex app.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pass the Authorization header through to PHP (API keys sent as "Bearer …").
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    RewriteRule ^api/v1/ v1.php [L,QSA]
+    RewriteRule ^api/mobile/ mobile.php [L,QSA]
+    RewriteRule ^api/v3/ api.php [L,QSA]
+    RewriteRule ^iclock/ iclock.php [L,QSA]
+    RewriteRule ^update/ update.php [L,QSA]
+    RewriteRule ^super/?$ super.php [L,QSA]
+    RewriteRule ^demo/?$ demo.php [L,QSA]
+    RewriteRule ^activate/?$ activate.php [L,QSA]
+    RewriteRule ^login/?$ app.php?r=signin [L,QSA]
+    # /c/{slug} lands on app.php, which redirects to the root so relative css/ and ?r= links resolve.
+    RewriteRule ^c/([A-Za-z0-9]+)/?$ app.php?r=signin&ws=$1 [L,QSA]
+</IfModule>
+
+# Never serve dot-files (.env copies, .git) even if one lands in public/.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

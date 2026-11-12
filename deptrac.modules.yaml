@@ -1,0 +1,93 @@
+# SmartPRS 3 — Deptrac, axis 2 of 2: THE MODULE MAP (Part IV §IV.3).
+#
+#     vendor/bin/deptrac analyse --config-file=deptrac.modules.yaml
+#
+# "A module owns its tables; no module reads another module's tables", and
+# §IV.3.1: a module references another module only through its Contracts
+# namespace. This is the substitute for the network boundary a microservice
+# split would have given, at a fraction of the operational cost — which matters
+# because on-premise customers cannot run a service mesh (spine S2).
+#
+# See deptrac.layers.yaml for axis 1 and for why the two are separate files.
+#
+# STATE: fourteen of the fifteen layers below are empty. Phase 2 built only the
+# Platform kernel, so there is exactly one module and nothing to cross. That is
+# expected, not a hole — but it does mean this config proves nothing yet, in the
+# same way three of the gates were passing over zero files until the vacuity
+# suppression made it visible. Read it as a declaration Phase 3 must satisfy,
+# and expect its first real run to produce violations as concerns move out of
+# Platform into their modules.
+
+deptrac:
+  paths:
+    - ./src
+
+  exclude_files:
+    - '#tools/gates/fixtures#'
+
+  ignore_uncovered_internal_classes: false
+
+  layers:
+    # -- every module's declared public surface ------------------------------
+    - name: Contracts
+      collectors: [{ type: classLike, value: '^SmartPRS\\[A-Za-z]+\\Contracts\\.*' }]
+
+    # -- the framework -------------------------------------------------------
+    - name: Framework
+      collectors:
+        - { type: classLike, value: '^Illuminate\\.*' }
+        - { type: classLike, value: '^Laravel\\.*' }
+        - { type: classLike, value: '^Symfony\\.*' }
+
+    # -- the fifteen modules (§IV.3). Internals only; Contracts sit above. ---
+    - name: Platform
+      collectors: [{ type: classLike, value: '^SmartPRS\\Platform\\(?!Contracts\\).*' }]
+    - name: IdentityAccess
+      collectors: [{ type: classLike, value: '^SmartPRS\\IdentityAccess\\(?!Contracts\\).*' }]
+    - name: Organisation
+      collectors: [{ type: classLike, value: '^SmartPRS\\Organisation\\(?!Contracts\\).*' }]
+    - name: People
+      collectors: [{ type: classLike, value: '^SmartPRS\\People\\(?!Contracts\\).*' }]
+    - name: TimeAttendance
+      collectors: [{ type: classLike, value: '^SmartPRS\\TimeAttendance\\(?!Contracts\\).*' }]
+    - name: Absence
+      collectors: [{ type: classLike, value: '^SmartPRS\\Absence\\(?!Contracts\\).*' }]
+    - name: Payroll
+      collectors: [{ type: classLike, value: '^SmartPRS\\Payroll\\(?!Contracts\\).*' }]
+    - name: Statutory
+      collectors: [{ type: classLike, value: '^SmartPRS\\Statutory\\(?!Contracts\\).*' }]
+    - name: MoneyMovement
+      collectors: [{ type: classLike, value: '^SmartPRS\\MoneyMovement\\(?!Contracts\\).*' }]
+    - name: Talent
+      collectors: [{ type: classLike, value: '^SmartPRS\\Talent\\(?!Contracts\\).*' }]
+    - name: Compliance
+      collectors: [{ type: classLike, value: '^SmartPRS\\Compliance\\(?!Contracts\\).*' }]
+    - name: Communication
+      collectors: [{ type: classLike, value: '^SmartPRS\\Communication\\(?!Contracts\\).*' }]
+    - name: Integration
+      collectors: [{ type: classLike, value: '^SmartPRS\\Integration\\(?!Contracts\\).*' }]
+    - name: Configuration
+      collectors: [{ type: classLike, value: '^SmartPRS\\Configuration\\(?!Contracts\\).*' }]
+    - name: Audit
+      collectors: [{ type: classLike, value: '^SmartPRS\\Audit\\(?!Contracts\\).*' }]
+
+  ruleset:
+    # §IV.3.1: "a module only references another module through Contracts".
+    # Every module gets exactly the same entry; that uniformity is the rule.
+    Platform: [Contracts, Framework]
+    IdentityAccess: [Contracts, Framework]
+    Organisation: [Contracts, Framework]
+    People: [Contracts, Framework]
+    TimeAttendance: [Contracts, Framework]
+    Absence: [Contracts, Framework]
+    Payroll: [Contracts, Framework]
+    Statutory: [Contracts, Framework]
+    MoneyMovement: [Contracts, Framework]
+    Talent: [Contracts, Framework]
+    Compliance: [Contracts, Framework]
+    Communication: [Contracts, Framework]
+    Integration: [Contracts, Framework]
+    Configuration: [Contracts, Framework]
+    Audit: [Contracts, Framework]
+    Contracts: []
+    Framework: []

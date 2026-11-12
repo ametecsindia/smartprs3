@@ -1,0 +1,864 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "SmartPRS 3 API",
+        "version": "3.0.0",
+        "description": "The only programmatic surface of SmartPRS 3. The first-party client calls these routes with the identical serialisation, authorisation and error envelope a third party gets."
+    },
+    "servers": [
+        {
+            "url": "https:\/\/{host}\/api\/v3",
+            "variables": {
+                "host": {
+                    "default": ""
+                }
+            }
+        }
+    ],
+    "paths": {
+        "\/api\/v3\/employees": {
+            "get": {
+                "operationId": "employees.list",
+                "summary": "List employments",
+                "security": [
+                    {
+                        "bearer": [
+                            "employees:read"
+                        ]
+                    }
+                ],
+                "x-permission": "employee.view",
+                "x-scopes": [
+                    "employees:read"
+                ],
+                "parameters": [
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "An opaque cursor from a previous response. Offset pagination is not offered: it silently skips and duplicates rows under concurrent writes."
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 500
+                        }
+                    },
+                    {
+                        "name": "as_of",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "description": "Resolve effective-dated content as at this date; defaults to today."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/EmployeeCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "auth.unauthenticated",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "auth.forbidden",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "resource.not_found",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "rate.exceeded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server.unexpected",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/v3\/employees\/{id}": {
+            "get": {
+                "operationId": "employees.show",
+                "summary": "Fetch one employment",
+                "security": [
+                    {
+                        "bearer": [
+                            "employees:read"
+                        ]
+                    }
+                ],
+                "x-permission": "employee.view",
+                "x-scopes": [
+                    "employees:read"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Employee"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "auth.unauthenticated",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "auth.forbidden",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "resource.not_found",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "rate.exceeded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server.unexpected",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "employees.update",
+                "summary": "Update an employment",
+                "security": [
+                    {
+                        "bearer": [
+                            "employees:write"
+                        ]
+                    }
+                ],
+                "x-permission": "employee.edit",
+                "x-scopes": [
+                    "employees:write"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Employee"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "auth.unauthenticated",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "auth.forbidden",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "resource.not_found",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "rate.exceeded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server.unexpected",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "validation.failed",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "423": {
+                        "description": "record.locked_by_workflow",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/EmployeePatch"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/v3\/payroll-runs": {
+            "post": {
+                "operationId": "runs.create",
+                "summary": "Start a payroll run",
+                "security": [
+                    {
+                        "bearer": [
+                            "payroll:write"
+                        ]
+                    }
+                ],
+                "x-permission": "payroll.run",
+                "x-scopes": [
+                    "payroll:write"
+                ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Required. A replay with the same key and body returns the stored response; a replay with a different body is refused and never executed."
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PayrollRun"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "auth.unauthenticated",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "auth.forbidden",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "resource.not_found",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "rate.exceeded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server.unexpected",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "validation.failed",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "period.locked",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "idempotency.key_required",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/PayrollRunRequest"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/v3\/payroll-runs\/{id}\/approve": {
+            "post": {
+                "operationId": "runs.approve",
+                "summary": "Approve a payroll run",
+                "security": [
+                    {
+                        "bearer": [
+                            "payroll:write"
+                        ]
+                    }
+                ],
+                "x-permission": "payroll.approve",
+                "x-scopes": [
+                    "payroll:write"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Required. A replay with the same key and body returns the stored response; a replay with a different body is refused and never executed."
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PayrollRun"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "auth.unauthenticated",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "auth.forbidden",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "resource.not_found",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "rate.exceeded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server.unexpected",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "state.conflict",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/ApprovalRequest"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "Employee": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "employee_code",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "employee_code": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "department": {
+                        "type": "string"
+                    }
+                }
+            },
+            "EmployeeCollection": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/Employee"
+                        }
+                    },
+                    "next_cursor": {
+                        "type": "string"
+                    }
+                }
+            },
+            "EmployeePatch": {
+                "type": "object",
+                "required": [],
+                "properties": {
+                    "department": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PayrollRun": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "period_code",
+                    "state"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "period_code": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PayrollRunRequest": {
+                "type": "object",
+                "required": [
+                    "period_code"
+                ],
+                "properties": {
+                    "period_code": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ApprovalRequest": {
+                "type": "object",
+                "required": [
+                    "reason"
+                ],
+                "properties": {
+                    "reason": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Error": {
+                "type": "object",
+                "required": [
+                    "error"
+                ],
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "required": [
+                            "code",
+                            "message",
+                            "status",
+                            "request_id",
+                            "correlation_id",
+                            "retryable"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "request.malformed",
+                                    "request.unknown_filter",
+                                    "request.bad_cursor",
+                                    "idempotency.key_required",
+                                    "auth.unauthenticated",
+                                    "auth.forbidden",
+                                    "auth.insufficient_scope",
+                                    "auth.out_of_data_scope",
+                                    "resource.not_found",
+                                    "request.method_not_allowed",
+                                    "request.unsupported_media_type",
+                                    "state.conflict",
+                                    "idempotency.in_progress",
+                                    "period.locked",
+                                    "endpoint.sunset",
+                                    "precondition.failed",
+                                    "validation.failed",
+                                    "idempotency.key_reuse_conflict",
+                                    "rule.violated",
+                                    "record.locked_by_workflow",
+                                    "rate.exceeded",
+                                    "quota.exceeded",
+                                    "server.unexpected",
+                                    "dependency.unavailable",
+                                    "maintenance.in_progress"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "integer"
+                            },
+                            "request_id": {
+                                "type": "string"
+                            },
+                            "correlation_id": {
+                                "type": "string"
+                            },
+                            "documentation_url": {
+                                "type": "string"
+                            },
+                            "details": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "retryable": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "x-error-catalogue": {
+            "request.malformed": {
+                "status": 400,
+                "since": "3.0"
+            },
+            "request.unknown_filter": {
+                "status": 400,
+                "since": "3.0"
+            },
+            "request.bad_cursor": {
+                "status": 400,
+                "since": "3.0"
+            },
+            "idempotency.key_required": {
+                "status": 400,
+                "since": "3.0"
+            },
+            "auth.unauthenticated": {
+                "status": 401,
+                "since": "3.0"
+            },
+            "auth.forbidden": {
+                "status": 403,
+                "since": "3.0"
+            },
+            "auth.insufficient_scope": {
+                "status": 403,
+                "since": "3.0"
+            },
+            "auth.out_of_data_scope": {
+                "status": 403,
+                "since": "3.0"
+            },
+            "resource.not_found": {
+                "status": 404,
+                "since": "3.0"
+            },
+            "request.method_not_allowed": {
+                "status": 405,
+                "since": "3.0"
+            },
+            "request.unsupported_media_type": {
+                "status": 415,
+                "since": "3.0"
+            },
+            "state.conflict": {
+                "status": 409,
+                "since": "3.0"
+            },
+            "idempotency.in_progress": {
+                "status": 409,
+                "since": "3.0"
+            },
+            "period.locked": {
+                "status": 409,
+                "since": "3.0"
+            },
+            "endpoint.sunset": {
+                "status": 410,
+                "since": "3.0"
+            },
+            "precondition.failed": {
+                "status": 412,
+                "since": "3.0"
+            },
+            "validation.failed": {
+                "status": 422,
+                "since": "3.0"
+            },
+            "idempotency.key_reuse_conflict": {
+                "status": 422,
+                "since": "3.0"
+            },
+            "rule.violated": {
+                "status": 422,
+                "since": "3.0"
+            },
+            "record.locked_by_workflow": {
+                "status": 423,
+                "since": "3.0"
+            },
+            "rate.exceeded": {
+                "status": 429,
+                "since": "3.0"
+            },
+            "quota.exceeded": {
+                "status": 429,
+                "since": "3.0"
+            },
+            "server.unexpected": {
+                "status": 500,
+                "since": "3.0"
+            },
+            "dependency.unavailable": {
+                "status": 503,
+                "since": "3.0"
+            },
+            "maintenance.in_progress": {
+                "status": 503,
+                "since": "3.0"
+            }
+        }
+    }
+}

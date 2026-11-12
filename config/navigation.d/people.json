@@ -1,0 +1,15 @@
+[
+ {
+  "section": "field",
+  "items": [
+   {
+    "key": "offroll-kyc",
+    "route": "offroll-kyc",
+    "label": "Off-roll KYC & Earnings",
+    "icon": "fa-id-card",
+    "permission": "employee.view",
+    "hidden": true
+   }
+  ]
+ }
+]

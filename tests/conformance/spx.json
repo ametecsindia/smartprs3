@@ -1,0 +1,476 @@
+{
+  "engine": "SPX",
+  "spec": "Part XXX §XXX.3.1, spine S5",
+  "note": "Declarative per R-XXX-021. Each case names the case class it belongs to; the runner reports every class in manifest.php, including the ones no case here covers yet.",
+  "cases": [
+    {
+      "id": "SPX-01.a",
+      "class": "SPX-01",
+      "kind": "parse",
+      "title": "a typed comparison against a declared policy key",
+      "expression": "attendance.late_minutes > policy.value('late_grace_min')",
+      "expect": {
+        "parses": true,
+        "roundtrips": true,
+        "type": "Boolean"
+      }
+    },
+    {
+      "id": "SPX-01.b",
+      "class": "SPX-01",
+      "kind": "parse",
+      "title": "percent-of over Money",
+      "expression": "salary.gross % 40",
+      "expect": {
+        "parses": true,
+        "roundtrips": true,
+        "type": "Money"
+      }
+    },
+    {
+      "id": "SPX-01.c",
+      "class": "SPX-01",
+      "kind": "parse",
+      "title": "CASE with a mandatory ELSE",
+      "expression": "CASE WHEN attendance.late_minutes > 30m THEN 1 ELSE 0 END",
+      "expect": {
+        "parses": true,
+        "roundtrips": true,
+        "type": "Number"
+      }
+    },
+    {
+      "id": "SPX-01.d",
+      "class": "SPX-01",
+      "kind": "parse",
+      "title": "BETWEEN over a duration",
+      "expression": "attendance.late_minutes BETWEEN 10m AND 30m",
+      "expect": {
+        "parses": true,
+        "roundtrips": true,
+        "type": "Boolean"
+      }
+    },
+    {
+      "id": "SPX-01.e",
+      "class": "SPX-01",
+      "kind": "parse",
+      "title": "IN over a declared value set",
+      "expression": "day.weekday IN ['sat', 'sun']",
+      "expect": {
+        "parses": true,
+        "roundtrips": true,
+        "type": "Boolean"
+      }
+    },
+    {
+      "id": "SPX-02.a",
+      "class": "SPX-02",
+      "kind": "parse",
+      "title": "`=` is equality, not assignment — and comparing Money with a bare number is refused",
+      "expression": "salary.gross = 100",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Cannot compare Money with Number"
+      }
+    },
+    {
+      "id": "SPX-02.b",
+      "class": "SPX-02",
+      "kind": "parse",
+      "title": "an unbalanced parenthesis names its position",
+      "expression": "(attendance.late_minutes > 10m",
+      "expect": {
+        "parses": false,
+        "message_contains": "line 1, column"
+      }
+    },
+    {
+      "id": "SPX-02.c",
+      "class": "SPX-02",
+      "kind": "parse",
+      "title": "an incomplete expression is a syntax error, not a null",
+      "expression": "1 +",
+      "expect": {
+        "parses": false,
+        "message_contains": "Expected a value"
+      }
+    },
+    {
+      "id": "SPX-02.d",
+      "class": "SPX-02",
+      "kind": "parse",
+      "title": "the function catalogue is closed",
+      "expression": "NOSUCHFN(1)",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "The catalogue is closed"
+      }
+    },
+    {
+      "id": "SPX-02.e",
+      "class": "SPX-02",
+      "kind": "parse",
+      "title": "an unknown namespace is named",
+      "expression": "nosuch.symbol > 1",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Unknown namespace 'nosuch'"
+      }
+    },
+    {
+      "id": "SPX-03.a",
+      "class": "SPX-03",
+      "kind": "parse",
+      "title": "Money * Money is refused and says what to do instead",
+      "expression": "salary.gross * salary.gross",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Money * Money is not a valid operation"
+      }
+    },
+    {
+      "id": "SPX-03.b",
+      "class": "SPX-03",
+      "kind": "parse",
+      "title": "Money + Number never coerces",
+      "expression": "salary.gross + 5",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Money never coerces to Number"
+      }
+    },
+    {
+      "id": "SPX-03.c",
+      "class": "SPX-03",
+      "kind": "parse",
+      "title": "Money / Number succeeds and stays Money",
+      "expression": "salary.gross / 4",
+      "expect": {
+        "parses": true,
+        "type": "Money"
+      }
+    },
+    {
+      "id": "SPX-03.d",
+      "class": "SPX-03",
+      "kind": "parse",
+      "title": "Money * Number succeeds and stays Money",
+      "expression": "salary.gross * 2",
+      "expect": {
+        "parses": true,
+        "type": "Money"
+      }
+    },
+    {
+      "id": "SPX-03.e",
+      "class": "SPX-03",
+      "kind": "parse",
+      "title": "a bare number has no unit, so it cannot be compared with one",
+      "expression": "attendance.late_minutes > 10",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Cannot compare Minutes with Number"
+      }
+    },
+    {
+      "id": "SPX-04.a",
+      "class": "SPX-04",
+      "kind": "parse",
+      "title": "Minutes and Hours in one comparison is the unit-confusion class, refused",
+      "expression": "attendance.late_minutes > shift.hours",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Minutes"
+      }
+    },
+    {
+      "id": "SPX-04.b",
+      "class": "SPX-04",
+      "kind": "parse",
+      "title": "Days and Minutes do not add",
+      "expression": "period.working_days + attendance.late_minutes",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Days"
+      }
+    },
+    {
+      "id": "SPX-05.a",
+      "class": "SPX-05",
+      "kind": "evaluate",
+      "title": "X % 40 is forty percent of X, not a remainder",
+      "expression": "salary.gross % 40",
+      "context": {
+        "salary.gross": {
+          "money": "1000.00"
+        }
+      },
+      "expect": {
+        "describes": "₹400.00"
+      }
+    },
+    {
+      "id": "SPX-05.b",
+      "class": "SPX-05",
+      "kind": "evaluate",
+      "title": "MOD is the remainder, and is a different operator",
+      "expression": "MOD(7, 3)",
+      "context": {},
+      "expect": {
+        "describes": "1"
+      }
+    },
+    {
+      "id": "SPX-06.a",
+      "class": "SPX-06",
+      "kind": "parse",
+      "title": "ROUND with no mode is refused: there is no default rounding anywhere",
+      "expression": "ROUND(salary.gross)",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "the mode is mandatory"
+      }
+    },
+    {
+      "id": "SPX-08.a",
+      "class": "SPX-08",
+      "kind": "parse",
+      "title": "there is no NOW(): the evaluation date is the only temporal input",
+      "expression": "NOW() > period.start",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "The catalogue is closed"
+      }
+    },
+    {
+      "id": "SPX-08.b",
+      "class": "SPX-08",
+      "kind": "parse",
+      "title": "and no random source either",
+      "expression": "RANDOM() > 0.5",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "The catalogue is closed"
+      }
+    },
+    {
+      "id": "SPX-08.c",
+      "class": "SPX-08",
+      "kind": "clock_independence",
+      "title": "changing the host clock changes nothing about an evaluation",
+      "expression": "context.evaluation_date",
+      "context": {},
+      "expect": {
+        "stable": true
+      }
+    },
+    {
+      "id": "SPX-09.a",
+      "class": "SPX-09",
+      "kind": "budget",
+      "title": "nesting one past the depth limit is refused at publish with the depth named",
+      "depth_over_limit": true,
+      "expect": {
+        "refused": true
+      },
+      "note": "Redundant parentheses collapse and produce depth 1, so the case builds genuine nesting. The runner derives the limit from Sandbox::MAX_DEPTH rather than naming 32, because a corpus that hard-codes the number asserts a constant instead of a property."
+    },
+    {
+      "id": "SPX-09.b",
+      "class": "SPX-09",
+      "kind": "budget",
+      "title": "and nesting just under the limit is accepted",
+      "depth_over_limit": false,
+      "expect": {
+        "refused": false
+      }
+    },
+    {
+      "id": "SPX-10.a",
+      "class": "SPX-10",
+      "kind": "evaluate",
+      "title": "division by zero is a typed error value, not an exception and not a zero",
+      "expression": "salary.gross / 0",
+      "context": {
+        "salary.gross": {
+          "money": "1000.00"
+        }
+      },
+      "expect": {
+        "error": "ERR_DIV_ZERO"
+      }
+    },
+    {
+      "id": "SPX-12.a",
+      "class": "SPX-12",
+      "kind": "stored_ast",
+      "title": "the stored AST is what evaluates, so a published expression cannot change meaning",
+      "expression": "salary.gross % 40",
+      "context": {
+        "salary.gross": {
+          "money": "1000.00"
+        }
+      },
+      "expect": {
+        "describes": "₹400.00"
+      }
+    },
+    {
+      "id": "SPX-13.a",
+      "class": "SPX-13",
+      "kind": "parse",
+      "title": "a namespace outside the decision point's table is refused at publish",
+      "expression": "salary.gross > 0",
+      "symbols": "attendance.day.penalise",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "Namespace 'salary' is not declared available at this decision point"
+      }
+    },
+    {
+      "id": "SPX-13.b",
+      "class": "SPX-13",
+      "kind": "parse",
+      "title": "and the same expression is fine where the namespace IS declared",
+      "expression": "salary.gross > MONEY(0, 'INR')",
+      "symbols": "payroll.component.eligibility",
+      "expect": {
+        "parses": true,
+        "type": "Boolean"
+      }
+    },
+    {
+      "id": "SPX-14.a",
+      "class": "SPX-14",
+      "kind": "evaluate",
+      "title": "CLAMP_DAY_TO_MONTH(31) in a non-leap February is the 28th",
+      "expression": "CLAMP_DAY_TO_MONTH(31, #2026-02-01#)",
+      "context": {},
+      "expect": {
+        "describes": "2026-02-28"
+      }
+    },
+    {
+      "id": "SPX-14.b",
+      "class": "SPX-14",
+      "kind": "evaluate",
+      "title": "and in a leap February it is the 29th",
+      "expression": "CLAMP_DAY_TO_MONTH(31, #2028-02-01#)",
+      "context": {},
+      "expect": {
+        "describes": "2028-02-29"
+      }
+    },
+    {
+      "id": "SPX-14.c",
+      "class": "SPX-14",
+      "kind": "evaluate",
+      "title": "EOMONTH at a month boundary",
+      "expression": "EOMONTH(#2026-08-15#)",
+      "context": {},
+      "expect": {
+        "describes": "2026-08-31"
+      }
+    },
+    {
+      "id": "SPX-14.d",
+      "class": "SPX-14",
+      "kind": "evaluate",
+      "title": "SOMONTH is the other boundary",
+      "expression": "SOMONTH(#2026-08-15#)",
+      "context": {},
+      "expect": {
+        "describes": "2026-08-01"
+      }
+    },
+    {
+      "id": "SPX-14.e",
+      "class": "SPX-14",
+      "kind": "nth_weekday_table",
+      "title": "NTH_WEEKDAY for n in 1..5 and -1, every weekday, every month 2020-2035, against an independently computed calendar",
+      "note": "The blueprint asks for a table computed independently of the engine. The runner builds one with plain date arithmetic and compares every cell — 1,344 months times 7 weekdays times 6 values of n.",
+      "from_year": 2020,
+      "to_year": 2035,
+      "expect": {
+        "matches_table": true
+      }
+    },
+    {
+      "id": "SPX-15.a",
+      "class": "SPX-15",
+      "kind": "parse",
+      "title": "a nested unbounded quantifier is refused at publish by shape, before it ever runs",
+      "expression": "employee.code MATCHES '(a+)+$'",
+      "expect": {
+        "parses": true,
+        "valid": false,
+        "message_contains": "catastrophic-backtracking shape"
+      }
+    },
+    {
+      "id": "SPX-15.b",
+      "class": "SPX-15",
+      "kind": "evaluate_unchecked",
+      "title": "and if one reaches the evaluator anyway it hits the step limit and returns a typed error rather than hanging a worker",
+      "expression": "employee.code MATCHES '(a+)+$'",
+      "context": {
+        "employee.code": {
+          "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!"
+        }
+      },
+      "expect": {
+        "error": "ERR_REGEX_STEPS",
+        "within_ms": 250
+      }
+    },
+    {
+      "id": "SPX-07.a",
+      "class": "SPX-07",
+      "kind": "determinism",
+      "title": "the whole corpus, evaluated repeatedly in shuffled order, is byte-identical every time",
+      "runs": 50,
+      "expect": {
+        "identical": true
+      }
+    },
+    {
+      "id": "SPX-11.a",
+      "class": "SPX-11",
+      "kind": "rules_fail_closed",
+      "title": "an evaluation error inside a rule that would otherwise permit an action: the action does not apply",
+      "note": "The condition divides by a cut-off day of zero. It type-checks — Number / Number — and fails at RUNTIME, which is the only way to ask this question: an expression the type checker rejects never reaches the engine. SmartPRS 2 destroys 50.5% of its caught exceptions and its authorisation helper returns 'allowed' on any exception; here the failure is raised and no action leaks to the caller.",
+      "decision_point": "attendance.day.penalise",
+      "rules": [
+        {
+          "code": "RL-POISON",
+          "when": "period.month / period.cut_off_day > 0"
+        }
+      ],
+      "context": {
+        "period.month": {
+          "number": 8
+        },
+        "period.cut_off_day": {
+          "number": 0
+        }
+      },
+      "expect": {
+        "fails": true,
+        "action_count": 0
+      }
+    }
+  ]
+}

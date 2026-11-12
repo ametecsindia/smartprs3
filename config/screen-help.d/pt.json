@@ -1,0 +1,24 @@
+{
+ "routes": {"pt-remittances": "pt-remittances"},
+ "screens": {
+  "pt-remittances": {
+   "m": "Statutory & Compliance",
+   "t": "Professional Tax",
+   "g": "PT deducted vs paid to the state, month by month",
+   "w": "Three totals — PT deducted from employees (completed payroll), PT paid (challans uploaded) and the balance still to pay — and one row per wage month, company and state: PT registration number, employees, gross wages, PT to be paid (payroll), paid, balance, paid-on date and challan number. PT is a state levy, so the state is the employee's branch state (the company's state when the branch has none). The template lists every active employee with the month's wages, PT and state already filled from the completed payroll; HR adds the challan details and uploads. A line counts as paid once its paid-on date is filled.",
+   "f": [
+    ["fa-file-excel", "Template pre-filled from payroll; add challan no. and paid-on date"],
+    ["fa-filter", "Period, Company and Branch buttons, State and organisation filters"],
+    ["fa-scale-balanced", "To be paid (payroll) vs paid, balance per month and state"]
+   ],
+   "s": [
+    "Pick the month, download the template.",
+    "Fill the challan number and the date it was paid.",
+    "Upload; re-uploading a month supersedes the earlier lines."
+   ],
+   "tip": "Due dates differ by state; the PT schedule (rates) is under PT Slabs and Statutory Configuration.",
+   "r": ["Admin & HR", "Payroll"],
+   "rel": "pf-esi-remittances"
+  }
+ }
+}

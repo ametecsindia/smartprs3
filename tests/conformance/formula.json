@@ -1,0 +1,587 @@
+{
+  "engine": "FORMULA",
+  "spec": "Part XXX §XXX.3.3, spine S7, Law 7",
+  "note": "Money is integer paise everywhere. A case that states an expected amount states it as a formatted rupee string, because that is what a payslip shows and what an argument about a payslip is about.",
+  "cases": [
+    {
+      "id": "FC-02.a",
+      "class": "FC-02",
+      "kind": "formula",
+      "title": "division stays an exact rational until a declared boundary: (₹1,00,000 ÷ 3) × 3 is exactly ₹1,00,000.00",
+      "note": "F-THIRD is an INTERMEDIATE declaring reference_value 'exact' (§6.2, D-VIII-01), so its dependent reads the exact rational rather than the rounded money. Rounding at each step gives ₹99,999.99. R-VIII-025 forbids rounding 'none' on a component, which is why the intermediate kind exists.",
+      "formulas": {
+        "F-THIRD": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up",
+          "kind": "intermediate",
+          "reference_value": "exact"
+        },
+        "F-BACK": {
+          "expression": "formula.value('F-THIRD') * 3",
+          "rounding": "half_up"
+        }
+      },
+      "context": {
+        "salary.gross": {
+          "money": "100000.00"
+        }
+      },
+      "expect": {
+        "values": {
+          "F-BACK": "₹1,00,000.00"
+        }
+      }
+    },
+    {
+      "id": "FC-03.a",
+      "class": "FC-03",
+      "kind": "allocate",
+      "title": "ALLOCATE sums to the whole across randomised amounts and weights, including single and many-element cases",
+      "note": "Randomised rather than enumerated: the property is that SUM(parts) = amount for EVERY input, and a handful of chosen tuples proves it for a handful of inputs.",
+      "trials": 2000,
+      "expect": {
+        "sums_exactly": true,
+        "residue_on_last": true,
+        "reproducible": true
+      }
+    },
+    {
+      "id": "FC-04.a",
+      "class": "FC-04",
+      "kind": "balance_residue",
+      "title": "the residue case: ₹50,000 prorated 22/24, BASIC 50%, HRA 40% of BASIC, SPECIAL as the balance",
+      "note": "The blueprint's own numbers. Naive independent rounding gives ₹45,833.34 and must fail this case — the balance component absorbs the residue, which is the one correct money split in SmartPRS 2 (spine S19.4), generalised.",
+      "gross": "50000.00",
+      "prorate": [
+        22,
+        24
+      ],
+      "basic_pct": 50,
+      "hra_pct_of_basic": 40,
+      "expect": {
+        "basic": "₹22,916.67",
+        "hra": "₹9,166.67",
+        "special": "₹13,749.99",
+        "total": "₹45,833.33",
+        "naive_total": "₹45,833.34"
+      }
+    },
+    {
+      "id": "FC-05.a",
+      "class": "FC-05",
+      "kind": "rounding_table",
+      "title": "every declared mode at the .5 boundary, positive and negative",
+      "note": "Asserted as a table because the modes only differ at the boundary, and a case that avoids the boundary tests nothing.",
+      "cases": [
+        {
+          "minor": 1005,
+          "unit": 10,
+          "mode": "half_up",
+          "expect": 1010
+        },
+        {
+          "minor": 1005,
+          "unit": 10,
+          "mode": "half_down",
+          "expect": 1000
+        },
+        {
+          "minor": 1005,
+          "unit": 10,
+          "mode": "half_even",
+          "expect": 1000
+        },
+        {
+          "minor": 1015,
+          "unit": 10,
+          "mode": "half_even",
+          "expect": 1020
+        },
+        {
+          "minor": 1001,
+          "unit": 10,
+          "mode": "ceil",
+          "expect": 1010
+        },
+        {
+          "minor": 1009,
+          "unit": 10,
+          "mode": "floor",
+          "expect": 1000
+        },
+        {
+          "minor": -1005,
+          "unit": 10,
+          "mode": "half_up",
+          "expect": -1010
+        },
+        {
+          "minor": -1001,
+          "unit": 10,
+          "mode": "floor",
+          "expect": -1010
+        },
+        {
+          "minor": -1009,
+          "unit": 10,
+          "mode": "ceil",
+          "expect": -1000
+        }
+      ]
+    },
+    {
+      "id": "FC-05.b",
+      "class": "FC-05",
+      "kind": "formula_publish",
+      "title": "a component formula declaring no rounding mode is refused at publish",
+      "formula": {
+        "expression": "salary.gross % 50",
+        "rounding": "none"
+      },
+      "expect": {
+        "publishable": false,
+        "gate": "G9",
+        "message_contains": "rounding"
+      }
+    },
+    {
+      "id": "FC-07.a",
+      "class": "FC-07",
+      "kind": "formula_cycle",
+      "title": "A → B → C → A is refused at publish with the full cycle path named",
+      "formulas": {
+        "F-A": {
+          "expression": "formula.value('F-B') * 2",
+          "rounding": "half_up"
+        },
+        "F-B": {
+          "expression": "formula.value('F-C') * 2",
+          "rounding": "half_up"
+        },
+        "F-C": {
+          "expression": "formula.value('F-A') * 2",
+          "rounding": "half_up"
+        }
+      },
+      "expect": {
+        "refused": true,
+        "message_contains": "F-A"
+      }
+    },
+    {
+      "id": "FC-07.b",
+      "class": "FC-07",
+      "kind": "formula_cycle",
+      "title": "and a self-reference is the same defect at length one",
+      "formulas": {
+        "F-SELF": {
+          "expression": "formula.value('F-SELF') * 2",
+          "rounding": "half_up"
+        }
+      },
+      "expect": {
+        "refused": true,
+        "message_contains": "F-SELF"
+      }
+    },
+    {
+      "id": "FC-08.a",
+      "class": "FC-08",
+      "kind": "formula",
+      "title": "a graph declared in reverse dependency order evaluates correctly; declaration order is irrelevant",
+      "note": "HRA is declared first and printed first, and must be computed second. SmartPRS 2 evaluates in sequence_no order, so reordering a payslip changes the arithmetic.",
+      "formulas": {
+        "F-HRA": {
+          "expression": "formula.value('F-BASIC') % 40",
+          "rounding": "half_up",
+          "sequence": 1
+        },
+        "F-BASIC": {
+          "expression": "salary.gross % 50",
+          "rounding": "half_up",
+          "sequence": 99
+        }
+      },
+      "context": {
+        "salary.gross": {
+          "money": "33333.33"
+        }
+      },
+      "expect": {
+        "order": [
+          "F-BASIC",
+          "F-HRA"
+        ],
+        "values": {
+          "F-BASIC": "₹16,666.67",
+          "F-HRA": "₹6,666.67"
+        }
+      }
+    },
+    {
+      "id": "FC-09.a",
+      "class": "FC-09",
+      "kind": "formula",
+      "title": "the trace renders the source, the exact value before the boundary, the declared mode and what the boundary cost",
+      "formulas": {
+        "F-BASIC": {
+          "expression": "salary.gross % 50",
+          "rounding": "half_up"
+        }
+      },
+      "context": {
+        "salary.gross": {
+          "money": "33333.33"
+        }
+      },
+      "expect": {
+        "values": {
+          "F-BASIC": "₹16,666.67"
+        },
+        "trace_contains": [
+          "salary.gross % 50",
+          "exact",
+          "half_up",
+          "delta"
+        ]
+      }
+    },
+    {
+      "id": "FC-11.a",
+      "class": "FC-11",
+      "kind": "currency",
+      "title": "adding two Money values of different currencies is refused, not silently added",
+      "left": {
+        "amount": "100.00",
+        "currency": "INR"
+      },
+      "right": {
+        "amount": "100.00",
+        "currency": "USD"
+      },
+      "expect": {
+        "refused": true,
+        "message_contains": "Currency mismatch"
+      }
+    },
+    {
+      "id": "FC-13.a",
+      "class": "FC-13",
+      "kind": "formula_determinism",
+      "title": "the formula corpus evaluated repeatedly in shuffled order is byte-identical, traces included",
+      "runs": 50,
+      "expect": {
+        "identical": true
+      }
+    },
+    {
+      "id": "FC-12.a",
+      "class": "FC-12",
+      "kind": "formula_clamp",
+      "title": "a component computing negative where its declaration says non_negative is ERR_RANGE, never a silent max(0, …)",
+      "note": "R-VIII-030: there is no implicit max(0, …) anywhere in the engine. SmartPRS 2 clamps net at zero in computeSlip (:2129) and at a different point in the Simulator (:2206-2208), so the two disagree, while computeSlipFromComponents prints a negative residue as a negative earning line. None of the three is declared, so none can be found by reading the configuration.",
+      "expression": "salary.gross - salary.ctc",
+      "clamp": {
+        "kind": "non_negative"
+      },
+      "context": {
+        "salary.gross": {
+          "money": "10000.00"
+        },
+        "salary.ctc": {
+          "money": "12000.00"
+        }
+      },
+      "expect": {
+        "error_contains": "ERR_RANGE",
+        "trace_contains": "VIOLATED"
+      }
+    },
+    {
+      "id": "FC-12.b",
+      "class": "FC-12",
+      "kind": "formula_clamp",
+      "title": "and a negative where negatives are permitted is simply the answer — a recovery is a real number",
+      "expression": "salary.gross - salary.ctc",
+      "clamp": null,
+      "context": {
+        "salary.gross": {
+          "money": "10000.00"
+        },
+        "salary.ctc": {
+          "money": "12000.00"
+        }
+      },
+      "expect": {
+        "value": "-₹2,000.00"
+      }
+    },
+    {
+      "id": "FC-12.c",
+      "class": "FC-12",
+      "kind": "formula_clamp",
+      "title": "a declared bound that does NOT bind still appears in the trace",
+      "note": "A clamp that only shows up when it fires cannot be told apart from no clamp at all, and 'was there a floor on this component?' is a question somebody asks about a payslip that looks right.",
+      "expression": "salary.gross % 50",
+      "clamp": {
+        "kind": "non_negative"
+      },
+      "context": {
+        "salary.gross": {
+          "money": "10000.00"
+        }
+      },
+      "expect": {
+        "value": "₹5,000.00",
+        "trace_contains": "not binding"
+      }
+    },
+    {
+      "id": "FC-12.d",
+      "class": "FC-12",
+      "kind": "formula_clamp",
+      "title": "a min bound DOES modify, and records that it did — that asymmetry with non_negative is deliberate",
+      "note": "min and max are policy bounds where the bound IS the intended answer. non_negative is a guard: a negative earning is a symptom, and clamping it destroys the evidence.",
+      "expression": "salary.gross % 1",
+      "clamp": {
+        "kind": "min",
+        "bound": "500.00"
+      },
+      "context": {
+        "salary.gross": {
+          "money": "10000.00"
+        }
+      },
+      "expect": {
+        "value": "₹500.00",
+        "trace_contains": "APPLIED"
+      }
+    },
+    {
+      "id": "FC-14.a",
+      "class": "FC-14",
+      "kind": "formula_samples",
+      "title": "a formula whose named sample expectations no longer hold is refused at publish, naming the case and the paisa",
+      "note": "R-VIII-047. Until now G10 could only COUNT case names — a formula could be published with three names none of which had ever been evaluated, which its own docblock admitted. §9.10 asserts EXACTLY, in minor units: any tolerance that admits a rounding defect admits every rounding defect there is.",
+      "expression": "salary.gross % 50",
+      "context": {
+        "salary.gross": {
+          "money": "50000.00"
+        }
+      },
+      "samples": [
+        {
+          "name": "nominal",
+          "class": "nominal",
+          "expected_minor": 2500000
+        },
+        {
+          "name": "a stale expectation",
+          "class": "boundary",
+          "expected_minor": 2500001
+        }
+      ],
+      "expect": {
+        "publishable": false,
+        "gate": "G10",
+        "message_contains": "a stale expectation"
+      }
+    },
+    {
+      "id": "FC-14.b",
+      "class": "FC-14",
+      "kind": "formula_samples",
+      "title": "and with no runnable cases the gate reports NOT CHECKED rather than counting names",
+      "expression": "salary.gross % 50",
+      "context": {
+        "salary.gross": {
+          "money": "50000.00"
+        }
+      },
+      "samples": null,
+      "expect": {
+        "publishable": true,
+        "gate_severity": "warn",
+        "message_contains": "NOT CHECKED"
+      }
+    },
+    {
+      "id": "FC-10.a",
+      "class": "FC-10",
+      "kind": "formula_effective_date",
+      "title": "a version published in October effective 1-Oct is not used for September's payroll",
+      "note": "FormulaPublisher wrote every column of formula_payloads and nothing read one back, so effective dating was a property of the write path only. Both versions here are published through the real publisher and read back through resolve(), because the interesting failure is not whether the row has a date but whether the engine evaluates September's rate in September.",
+      "code": "F-BASIC",
+      "context": {
+        "salary.gross": {
+          "money": "100000.00"
+        }
+      },
+      "versions": [
+        {
+          "expression": "salary.gross % 40",
+          "rounding": "half_up",
+          "effective_from": "2026-04-01",
+          "published_at": "2026-03-25 10:00:00"
+        },
+        {
+          "expression": "salary.gross % 50",
+          "rounding": "half_up",
+          "effective_from": "2026-10-01",
+          "published_at": "2026-10-05 10:00:00"
+        }
+      ],
+      "probes": [
+        {
+          "as_of": "2026-03-31",
+          "expect": "unresolved",
+          "note": "nothing governs a date before the first version begins — an unresolved formula is a named error, never a zero"
+        },
+        {
+          "as_of": "2026-09-30",
+          "expect_version": 1,
+          "expect_value": "₹40,000.00",
+          "note": "September's payroll, run in October, still uses September's rate"
+        },
+        {
+          "as_of": "2026-10-01",
+          "expect_version": 2,
+          "expect_value": "₹50,000.00",
+          "note": "and the boundary day itself is the new one — effective_from is inclusive"
+        },
+        {
+          "as_of": "2027-01-15",
+          "expect_version": 2,
+          "expect_value": "₹50,000.00"
+        }
+      ]
+    },
+    {
+      "id": "FC-01.a",
+      "class": "FC-01",
+      "kind": "formula_no_float",
+      "title": "a three-deep dependency graph over a value that has no exact decimal form carries no float anywhere",
+      "note": "₹1,00,000 ÷ 3 is the case: in floats it is 33333.333333333336, and every arithmetic step after that inherits the error. Asserted at runtime over every value and trace the engine produced, AND against the source of the money path, because a graph that happens to avoid floats today says nothing about the line somebody adds tomorrow.",
+      "formulas": {
+        "F-THIRD": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up",
+          "kind": "intermediate",
+          "reference_value": "exact"
+        },
+        "F-SEVENTH": {
+          "expression": "formula.value('F-THIRD') / 7",
+          "rounding": "half_up",
+          "kind": "intermediate",
+          "reference_value": "exact"
+        },
+        "F-BACK": {
+          "expression": "formula.value('F-SEVENTH') * 21",
+          "rounding": "half_up"
+        }
+      },
+      "context": {
+        "salary.gross": {
+          "money": "100000.00"
+        }
+      },
+      "source_paths": [
+        "src/Platform/Support/Money.php",
+        "src/Platform/Support/Rational.php",
+        "src/Platform/Formula/*.php"
+      ],
+      "source_must_not_use": [
+        "(float)",
+        "floatval(",
+        "(double)",
+        "doubleval(",
+        "number_format(",
+        "fdiv("
+      ]
+    },
+    {
+      "id": "FC-06.a",
+      "class": "FC-06",
+      "kind": "formula",
+      "note": "Rounding at the COMPONENT: each third is a payslip line, so each is rounded to the paisa and the total is what the lines add up to. ₹99,999.99, and the missing paisa is real — it is the sum of three lines an employee can read.",
+      "title": "three components rounded at the component, then summed: ₹99,999.99",
+      "formulas": {
+        "F-A": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up"
+        },
+        "F-B": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up"
+        },
+        "F-C": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up"
+        },
+        "F-TOTAL": {
+          "expression": "formula.value('F-A') + formula.value('F-B') + formula.value('F-C')",
+          "rounding": "half_up"
+        }
+      },
+      "context": {
+        "salary.gross": {
+          "money": "100000.00"
+        }
+      },
+      "expect": {
+        "values": {
+          "F-A": "₹33,333.33",
+          "F-TOTAL": "₹99,999.99"
+        },
+        "trace_contains": [
+          "half_up",
+          "delta"
+        ]
+      }
+    },
+    {
+      "id": "FC-06.b",
+      "class": "FC-06",
+      "kind": "formula",
+      "title": "the same three at the TOTAL — declared as exact intermediates — sums to ₹1,00,000.00, and both answers are correct",
+      "note": "Same arithmetic, different DECLARED rounding point, two different and equally correct answers. That is the whole of FC-06: the difference is a paisa, it is visible in the trace, and which one applies is configuration rather than whichever order the code happened to evaluate in. SmartPRS 2 has no declaration at all, so the answer depends on the call site.",
+      "formulas": {
+        "F-A": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up",
+          "kind": "intermediate",
+          "reference_value": "exact"
+        },
+        "F-B": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up",
+          "kind": "intermediate",
+          "reference_value": "exact"
+        },
+        "F-C": {
+          "expression": "salary.gross / 3",
+          "rounding": "half_up",
+          "kind": "intermediate",
+          "reference_value": "exact"
+        },
+        "F-TOTAL": {
+          "expression": "formula.value('F-A') + formula.value('F-B') + formula.value('F-C')",
+          "rounding": "half_up"
+        }
+      },
+      "context": {
+        "salary.gross": {
+          "money": "100000.00"
+        }
+      },
+      "expect": {
+        "values": {
+          "F-TOTAL": "₹1,00,000.00"
+        },
+        "trace_contains": [
+          "exact"
+        ]
+      }
+    }
+  ]
+}

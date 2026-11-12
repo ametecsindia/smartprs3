@@ -1,0 +1,58 @@
+{
+  "note": "LOANS, the owner's way (10 Sep): exactly the Salary Advance flow — amount requested and sanctioned, Manager → Director → HR Admin decisions (signers by designation words), tenure → EMI derived (sanctioned ÷ tenure, rounded up to the rupee), EMI start month, disbursed, recovered per month on the payslip as line LOAN-<id>. Tenures are longer than an advance's. Same rules file shape as config/salary-advance.json.",
+  "levels": [
+    {
+      "key": "manager",
+      "label": "Manager",
+      "designation_words": [
+        "manager"
+      ],
+      "exclude_words": [
+        "hr manager"
+      ]
+    },
+    {
+      "key": "director",
+      "label": "Director",
+      "designation_words": [
+        "director"
+      ]
+    },
+    {
+      "key": "hr",
+      "label": "HR Admin / HR Manager",
+      "designation_words": [
+        "hr admin",
+        "hr manager",
+        "branch admin",
+        "company admin",
+        "hr executive"
+      ]
+    }
+  ],
+  "deciding_level": "hr",
+  "deciding_note": "Owner, 22 Sep: only the HR Admin / HR Manager decision decides the status (Approved → approved, Rejected → rejected, On Hold → on hold, none yet → pending). Manager and Director may record a decision, which is shown, but it neither blocks nor approves. Remove deciding_level to go back to all levels having to approve.",
+  "decisions": [
+    "Approved",
+    "Rejected",
+    "On Hold"
+  ],
+  "tenure_months": [
+    3,
+    6,
+    9,
+    12,
+    18,
+    24,
+    36
+  ],
+  "statuses": {
+    "pending": "pending",
+    "approved": "approved",
+    "rejected": "rejected",
+    "on_hold": "on hold",
+    "disbursed": "disbursed",
+    "recovered": "recovered"
+  },
+  "line_prefix": "LOAN-"
+}

@@ -1,0 +1,28 @@
+{
+  "late_cut_note": "kind `cut` is the Late Login Policy cut in days, from the same rule payroll applies (only on days paid as worked, never on leave); `payable` is net of it, and UNPAID_LEAVE (LOP) carries no weight, so this Payable figure is the one payroll pays over calendar days (8 Oct).",
+  "note": "REPORTS → Attendance summary. One row per employee (or per company / branch / department / designation / team when grouped) over any period — month, year, financial year, YTD, MTD or custom dates — from the same muster the attendance report shows. `columns` are everything the screen can show; the viewer ticks which. kind `status` counts the days whose classified status is `status` (the statuses come from config/attendance-rules.json; a status the rules never produce simply shows 0). kind `measure` reads the muster totals: `days` = calendar days in the period that have happened, `worked_hours` / `break_hours` / `late_hours` / `overtime_hours` are minutes shown as HH:MM, `late_days` and `regularisation` are day counts. kind `payable` is the sum of the status columns in `payable_statuses` with their weights (a half day is half a day) — the figure payroll's calendar-days method needs. `default_columns` are ticked when the screen opens. `chart_statuses` are the statuses drawn in the bar chart, with their colours.",
+  "columns": [
+    {"key": "days", "label": "Days in period", "kind": "measure"},
+    {"key": "PRESENT", "label": "Present", "kind": "status", "status": "PRESENT"},
+    {"key": "HALF_DAY", "label": "Half day", "kind": "status", "status": "HALF_DAY"},
+    {"key": "ABSENT", "label": "Absent", "kind": "status", "status": "ABSENT"},
+    {"key": "WEEKLY_OFF", "label": "Weekly off", "kind": "status", "status": "WEEKLY_OFF"},
+    {"key": "HOLIDAY", "label": "Holiday", "kind": "status", "status": "HOLIDAY"},
+    {"key": "ON_LEAVE", "label": "Paid leave", "kind": "status", "status": "ON_LEAVE"},
+    {"key": "UNPAID_LEAVE", "label": "Unpaid leave (LOP)", "kind": "status", "status": "UNPAID_LEAVE"},
+    {"key": "UNCLASSIFIED", "label": "Unclassified", "kind": "status", "status": "UNCLASSIFIED"},
+    {"key": "late_cut", "label": "Late-login cut (days)", "kind": "cut"},
+    {"key": "payable", "label": "Payable days", "kind": "payable"},
+    {"key": "late_days", "label": "Late days", "kind": "measure"},
+    {"key": "late_hours", "label": "Late (HH:MM)", "kind": "measure"},
+    {"key": "worked_hours", "label": "Worked (HH:MM)", "kind": "measure"},
+    {"key": "break_hours", "label": "Breaks (HH:MM)", "kind": "measure"},
+    {"key": "overtime_hours", "label": "Overtime (HH:MM)", "kind": "measure"},
+    {"key": "regularisation", "label": "Needs regularisation", "kind": "measure"}
+  ],
+  "default_columns": ["days", "PRESENT", "HALF_DAY", "ABSENT", "WEEKLY_OFF", "HOLIDAY", "ON_LEAVE", "UNPAID_LEAVE", "late_cut", "payable", "late_days", "worked_hours", "overtime_hours"],
+  "payable_statuses": {"PRESENT": "1", "HALF_DAY": "0.5", "WEEKLY_OFF": "1", "HOLIDAY": "1", "ON_LEAVE": "1"},
+  "group_by": {"employee": "Employee", "company": "Company", "branch": "Branch", "department": "Department", "designation": "Designation", "team": "Team"},
+  "chart_statuses": {"PRESENT": "#16a34a", "HALF_DAY": "#f59e0b", "ABSENT": "#dc2626", "ON_LEAVE": "#2563eb", "UNPAID_LEAVE": "#9f1239", "WEEKLY_OFF": "#94a3b8", "HOLIDAY": "#a855f7"},
+  "chart_rows_max": 40
+}

@@ -1,0 +1,5 @@
+{"items": {
+  "overtime": "OT hours per employee-day, valued at 1x / 1.5x / 2x; the hours are the settlement's overtime minutes, only approved rows are paid.",
+  "attendance-bulk": "A sheet of days or punches becomes attendance only after an approver says so.",
+  "biometric-config": "Per device: push (ADMS), eTimeTrackLite, eTimeOffice or a generic API; prefix, one or two readers, sync frequency."
+}}

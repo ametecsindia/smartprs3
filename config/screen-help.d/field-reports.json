@@ -1,0 +1,88 @@
+{
+  "routes": {
+    "escalation-desk": "escalations",
+    "offroll-agents": "offroll-agents",
+    "agent-auth": "agent-auth",
+    "agent-authorizations": "agent-auth",
+    "dra-certs": "dra-certs",
+    "complaints": "complaints",
+    "reports": "reports",
+    "report-headcount": "reports",
+    "report-attendance-summary": "reports",
+    "report-leave-summary": "reports",
+    "report-salary-register": "reports",
+    "report-pf-esi-summary": "reports",
+    "report-birthdays": "reports",
+    "attrition": "attrition",
+    "trail": "activity-logs",
+    "report-datasets": "reports"
+  },
+  "screens": {
+    "dra-certs": {
+      "m": "Field Force",
+      "t": "DRA Certificates",
+      "g": "Who holds a valid Debt Recovery Agent certificate",
+      "w": "Every employee's IIBF DRA certificate status and expiry, read from the employee record and ordered so the ones expiring within the configured window come first, then the expired, then the valid. Banks authorise only certified agents; an expired certificate is a visit the bank can refuse to recognise.",
+      "f": [
+        [
+          "fa-certificate",
+          "Expiring within the window listed first"
+        ],
+        [
+          "fa-filter",
+          "Organization Setup filter with ALL"
+        ],
+        [
+          "fa-pen",
+          "One click to the employee to record a renewal"
+        ],
+        [
+          "fa-file-csv",
+          "CSV of exactly the rows shown"
+        ]
+      ],
+      "s": [
+        "Open the screen weekly.",
+        "Send the due-within-window agents for revalidation.",
+        "Record the new expiry on the employee's form."
+      ],
+      "tip": "The window is expiry_window_days in config/field-reports.json \u2014 change the number, not the code.",
+      "r": [
+        "Admin & HR",
+        "Field operations"
+      ],
+      "rel": "agent-auth"
+    },
+    "complaints": {
+      "m": "Field Force",
+      "t": "Complaints",
+      "g": "Borrower complaints against agents, to closure",
+      "w": "A register of complaints received against field agents \u2014 source, channel, severity, date and status \u2014 so a pattern against one agent is visible before a bank sees it, and every complaint has a recorded outcome.",
+      "f": [
+        [
+          "fa-comment-dots",
+          "Source, channel and severity per complaint"
+        ],
+        [
+          "fa-user",
+          "Linked to the employee complained about"
+        ],
+        [
+          "fa-flag-checkered",
+          "Status from received to closed"
+        ]
+      ],
+      "s": [
+        "Log the complaint the day it arrives.",
+        "Record the outcome when the review ends.",
+        "Reports \u2192 Complaints by status shows what is still open."
+      ],
+      "tip": "Substantiated complaints belong on the agent's record before the next bank authorisation is issued.",
+      "r": [
+        "Admin & HR",
+        "Field operations"
+      ],
+      "rel": "escalations"
+    }
+  }
+}

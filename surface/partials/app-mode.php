@@ -1,0 +1,146 @@
+<?php
+/**
+ * THE PAGE INSIDE THE SMARTPRS3 ANDROID APP (owner, 5 Nov 2026) — included at the end of every signed-in page when the
+ * app's cookie sprs_app_device is present (the device gate itself is boot-hooks). It behaves as a phone app, not a
+ * browser page: no side menu, a slim top bar (screen title, bell, profile), and a fixed bottom bar — Home (the icon grid,
+ * surface/screens/app-home.php), Punch, Leave, Alerts (with the unread count) and Profile. Same screens and permissions
+ * as the web underneath.
+ */
+declare(strict_types=1);
+
+$amRoute = (string) ($rawRoute ?? '');
+$amTabs = array_values(array_filter([
+    ['app-home', 'fa-house', 'Home', true],
+    ['punch', 'fa-fingerprint', 'Punch', $may('ess.attendance.punch')],
+    // MY ATTENDANCE (owner, 12 Nov 2026): own days, punches in / out, worked and late — a tab of its own.
+    ['my-attendance', 'fa-calendar-check', 'Attendance', $may('ess.attendance.punch') && trim((string) ($session->user()['employee_id'] ?? '')) !== ''],
+    ['leave', 'fa-umbrella-beach', 'Leave', $may('leave.request.view')],
+    ['notifications', 'fa-bell', 'Alerts', true],
+    ['account-settings', 'fa-user', 'Profile', true],
+], static fn (array $t): bool => $t[3]));
+$amUnread = (int) ($bellUnread ?? 0);
+?>
+<style>
+  body.in-app .sidebar, body.in-app #nav-toggle, body.in-app .topbar-search, body.in-app .breadcrumb, body.in-app .topbar .page-crumbs { display:none !important; }
+  body.in-app .main-wrap { margin-left:0 !important; }
+  /* THE PAGE SCROLLS AS ONE (owner, 6 Nov 2026: the bottom bar slid away while scrolling): overflow-x:hidden on <body>
+     can turn the body into its own scrolling box inside a phone web view; clip keeps the window the only scroller. */
+  html, body.in-app { overflow-x:clip !important; overflow-y:visible !important; height:auto !important; }
+  body.in-app .topbar { padding:8px 12px !important; min-height:52px; position:sticky; top:0; z-index:50; }
+  body.in-app .content { padding:12px 12px 112px !important; }
+  body.in-app .page-header { flex-wrap:wrap; gap:8px; }
+  body.in-app .card { border-radius:14px; }
+  .app-tabs { position:fixed; left:0; right:0; bottom:0; z-index:9000; transform:none; display:flex; background:var(--card,#fff); border-top:1px solid var(--border,#e2e8f0);
+    box-shadow:0 -6px 18px rgba(15,23,42,.08); padding:6px 4px calc(4px + env(safe-area-inset-bottom)); flex-wrap:wrap; }
+  /* POWERED BY AMETECS under the bottom bar on every app screen (owner, 6 Nov 2026) */
+  .app-powered { flex:0 0 100%; width:100%; display:flex; align-items:center; justify-content:center; text-align:center; gap:6px; padding:5px 0 1px; margin-top:4px; border-top:1px solid var(--border,#e2e8f0); font-size:10.5px; color:var(--text3,#64748b); }
+  .app-powered img { height:14px; width:auto; }
+  .app-powered .lg-dark, [data-mode=dark] .app-powered .lg-light { display:none; }
+  [data-mode=dark] .app-powered .lg-dark { display:inline; }
+  .app-tabs a { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; text-decoration:none; color:var(--text3,#64748b); font-size:11px; font-weight:600; position:relative; padding:4px 0; }
+  .app-tabs a i { font-size:19px; }
+  .app-tabs a.on { color:var(--accent); }
+  .app-tabs a.on i { transform:translateY(-1px); }
+  .app-tabs a b { position:absolute; top:0; left:calc(50% + 6px); min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:#dc2626; color:#fff; font-size:10px; line-height:17px; text-align:center; }
+  @media print { .app-tabs { display:none; } }
+  .app-selfie { display:inline-flex; align-items:center; gap:6px; margin:0 0 6px; font-weight:700; }
+  /* COMPACT CARDS, NO RUNNING TEXT (owner, 6 Nov 2026: "the dashboard cards look very large … remove the descriptive
+     text … in all the modules"). Phone only — the website keeps its layout and notes. Format hints under boxes and
+     message text inside tables / lists stay. */
+  body.in-app .dash-kpis { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:8px !important; margin-bottom:12px !important; }
+  body.in-app .dash-kpis .kpi.dk { padding:10px 10px 9px !important; gap:6px !important; border-radius:12px !important; min-height:0 !important; }
+  body.in-app .dash-kpis .dk-top { gap:6px !important; }
+  body.in-app .dash-kpis .dk-ic { width:26px !important; height:26px !important; font-size:12px !important; border-radius:8px !important; }
+  body.in-app .dash-kpis .dk-label { font-size:10.5px !important; letter-spacing:.02em !important; }
+  body.in-app .dash-kpis .dk-val { font-size:22px !important; }
+  body.in-app .dash-kpis .dk-foot { display:none !important; }
+  body.in-app .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:8px !important; margin-bottom:12px !important; }
+  body.in-app .stat-card { padding:10px 12px !important; }
+  body.in-app .stat-card .icon { width:26px !important; height:26px !important; font-size:12px !important; margin-bottom:6px !important; }
+  body.in-app .stat-card h3 { font-size:20px !important; }
+  body.in-app .kpi { padding:10px 12px !important; }
+  body.in-app .content .page-header p,
+  body.in-app .content .card-header p,
+  body.in-app .content p.note,
+  body.in-app .content .stat-card p,
+  body.in-app .content div.note:not(.fmt-hint):not(td div):not(li div):not(.problem) { display:none !important; }
+  body.in-app .content h2 { font-size:18px; }
+  /* TOP BAR (owner, 6 Nov 2026): SmartPRS logo, the company logo from Branding beside it, then the bell, theme and
+     profile icons. The screen name is not repeated on Home (Home is in the bottom bar). */
+  .app-marks { display:flex; align-items:center; gap:8px; margin-right:6px; flex-shrink:0; }
+  .app-marks img { height:24px; width:auto; display:block; }
+  /* the company logo sits at the RIGHT end of the top row, SmartPRS stays in the left corner (owner, 6 Nov 2026) */
+  .topbar > .app-co-logo { height:26px; width:auto; flex:0 1 64px; min-width:36px; max-width:80px; object-fit:contain; object-position:right center; display:block; margin-left:6px; order:5; }
+  /* ONE ROW whatever the phone width (6 Nov 2026: the company logo dropped to the next line) */
+  body.in-app .topbar { padding:6px 10px !important; }
+  body.in-app .topbar .topbar-actions { gap:4px !important; flex-wrap:nowrap; }
+  /* NO HELP (i) ICONS IN THE APP (owner, 6 Nov 2026: too little room on a phone) */
+  body.in-app #help-i, body.in-app .help-i, body.in-app [title="How this screen works"] { display:none !important; }
+  body.in-app .topbar .topbar-actions .topbar-btn { width:32px !important; height:32px !important; min-width:0 !important; padding:0 !important; }
+  .app-marks .sp-dark, [data-mode=dark] .app-marks .sp-light { display:none; }
+  [data-mode=dark] .app-marks .sp-dark { display:block; }
+  body.in-app.app-on-home .topbar .page-title { display:none; }
+  /* SCREEN NAME ON ITS OWN LINE under the logo row, smaller but bold (owner, 6 Nov 2026) */
+  body.in-app .topbar { flex-wrap:wrap; row-gap:2px; }
+  body.in-app .topbar > div:has(> .page-title) { order:10; flex:0 0 100% !important; min-width:0; }
+  body.in-app .topbar .page-title { font-size:13.5px !important; font-weight:700 !important; line-height:1.3; }
+  body.in-app .topbar .topbar-actions { margin-left:auto; }
+</style>
+<nav class="app-tabs" aria-label="App">
+<?php foreach ($amTabs as [$amR, $amI, $amL]): ?>
+  <a href="?r=<?= e($amR) ?>" class="<?= $amRoute === $amR || ($amR === 'app-home' && $amRoute === 'dashboard') ? 'on' : '' ?>"><i class="fas <?= e($amI) ?>"></i><?= e($amL) ?><?php if ($amR === 'notifications' && $amUnread > 0): ?><b><?= $amUnread > 99 ? '99+' : $amUnread ?></b><?php endif; ?></a>
+<?php endforeach; ?>
+  <div class="app-powered">Powered by <img class="lg-light" src="images/ametecs-logo.png" alt="Ametecs"><img class="lg-dark" src="images/ametecs-logo-white.png" alt="Ametecs"></div>
+</nav>
+<?php if ($amRoute === 'account-settings'): ?>
+<div class="card" id="app-signout" style="margin-top:14px;text-align:center">
+  <button type="button" class="btn btn-outline" style="width:100%;color:#dc2626;border-color:#fca5a5;font-weight:700;padding:12px"
+    onclick="if (confirm('Sign out of the app?')) { document.getElementById('sp-signout-form').submit(); }"><i class="fas fa-right-from-bracket"></i> Sign out</button>
+</div>
+<?php endif; ?>
+<script>
+(function () {
+  var b = document.body;
+  // THE BOTTOM BAR STAYS ON SCREEN WHILE SCROLLING (owner, 6 Nov 2026): it hangs off <body> itself, so no page wrapper
+  // (an animated or scrolling container) can carry it away.
+  var tabs = document.querySelector('.app-tabs');
+  if (tabs && tabs.parentNode !== b) { b.appendChild(tabs); }
+  // TAKE SELFIE UP FRONT (owner, 6 Nov 2026: "Camera option should be upfront, not after clicking choose file"): every
+  // photo box gets its own button that opens the front camera straight away; Choose file stays beside it.
+  var selfie = function (root) {
+    [].forEach.call((root || document).querySelectorAll('input[type=file][data-crop="photo"]'), function (inp) {
+      if (inp._selfie || inp.disabled) { return; } inp._selfie = 1;
+      var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'btn btn-outline btn-sm app-selfie';
+      bt.innerHTML = '<i class="fas fa-camera"></i> Take selfie';
+      bt.onclick = function () {
+        var acc = inp.getAttribute('accept');
+        inp.setAttribute('capture', 'user'); inp.setAttribute('accept', 'image/*');
+        inp.click();
+        setTimeout(function () { inp.removeAttribute('capture'); acc === null ? inp.removeAttribute('accept') : inp.setAttribute('accept', acc); }, 1500);
+      };
+      inp.parentNode.insertBefore(bt, inp);
+      inp.parentNode.insertBefore(document.createElement('br'), inp);
+    });
+  };
+  selfie(document);
+  new MutationObserver(function () { selfie(document); }).observe(document.body, { childList: true, subtree: true });
+  // SIGN OUT UNDER PROFILE (owner, 6 Nov 2026): the button sits at the end of the Profile screen's content.
+  var so = document.getElementById('app-signout'), main = document.querySelector('.content');
+  if (so && main) { main.appendChild(so); }
+  b.classList.add('in-app');
+  b.classList.remove('nav-hidden', 'app-nav-open');
+  var tb = document.querySelector('.topbar');
+  if (tb && !tb.querySelector('.app-marks')) {
+    var mk = document.createElement('div'); mk.className = 'app-marks';
+    mk.innerHTML = '<img class="sp-light" src="images/smartprs-logo-navy.png" alt="SmartPRS"><img class="sp-dark" src="images/smartprs-logo.png" alt="SmartPRS">';
+<?php if (trim((string) ($brandLogo ?? '')) !== ''): ?>
+    var lg = document.createElement('img'); lg.className = 'app-co-logo'; lg.alt = ''; lg.src = <?= json_encode((string) $brandLogo, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    tb.appendChild(lg);
+<?php endif; ?>
+    tb.insertBefore(mk, tb.firstChild);
+  }
+<?php if (in_array($amRoute, ['app-home', 'dashboard', ''], true) && !isset($_GET['full'])): ?>
+  b.classList.add('app-on-home');
+<?php endif; ?>
+})();
+</script>

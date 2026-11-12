@@ -1,0 +1,5131 @@
+{
+    "note": "EVERY MODULE IS A ROW HERE, NOT A CONTROLLER. Adding a screen is an entry in this file; there is no PHP to write, which is the governing sentence of the rebuild made literal. A column named here that the table does not have is REFUSED at load, never skipped — a screen quietly missing a column is one nobody notices is broken.",
+    "modules": [
+        {
+            "key": "employees",
+            "group": "People",
+            "label": "Employees",
+            "table": "employees",
+            "columns": [
+                "name",
+                "emp_code",
+                "department_id",
+                "designation_id",
+                "type",
+                "status",
+                "ctc"
+            ],
+            "search": [
+                "emp_code",
+                "name",
+                "mobile",
+                "email"
+            ],
+            "fields": {
+                "emp_code": {
+                    "label": "Employee code",
+                    "required": true,
+                    "help": "Your own numbering — this is what appears on the payslip."
+                },
+                "name": {
+                    "label": "Full name",
+                    "required": true
+                },
+                "mobile": {
+                    "label": "Mobile",
+                    "type": "tel",
+                    "help": "10 digits, no country code."
+                },
+                "email": {
+                    "label": "Official email",
+                    "type": "email"
+                },
+                "doj": {
+                    "label": "Date of joining",
+                    "type": "date",
+                    "required": true
+                },
+                "dob": {
+                    "label": "Date of birth",
+                    "type": "date"
+                },
+                "gender": {
+                    "label": "Gender",
+                    "options": [
+                        "Female",
+                        "Male",
+                        "Other",
+                        "Not stated"
+                    ]
+                },
+                "type": {
+                    "label": "Employee type",
+                    "options": [
+                        "On-roll",
+                        "Off-roll",
+                        "Contract",
+                        "Intern",
+                        "Consultant"
+                    ]
+                },
+                "salary_type": {
+                    "label": "Salary Type",
+                    "options": [
+                        "Salary",
+                        "Salary + Commission",
+                        "Commission"
+                    ]
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Probation",
+                        "Notice",
+                        "Exited",
+                        "Suspended"
+                    ],
+                    "required": true
+                },
+                "pf_applicable": {
+                    "label": "PF applies",
+                    "type": "checkbox"
+                },
+                "esi_applicable": {
+                    "label": "ESI applies",
+                    "type": "checkbox"
+                },
+                "pt_state": {
+                    "label": "Professional tax state",
+                    "options": [
+                        "Telangana",
+                        "Karnataka",
+                        "Maharashtra",
+                        "Tamil Nadu",
+                        "West Bengal",
+                        "Gujarat",
+                        "Not applicable"
+                    ]
+                },
+                "uan": {
+                    "label": "UAN",
+                    "help": "12 digits, issued by EPFO.",
+                    "permission": "employee.field.sensitive.view"
+                },
+                "pan": {
+                    "label": "PAN",
+                    "permission": "employee.field.sensitive.view"
+                },
+                "ctc": {
+                    "label": "CTC (₹ per year)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "comm_pct": {
+                    "label": "Commission %",
+                    "type": "number"
+                },
+                "department_id": {
+                    "label": "Department",
+                    "lookup": {
+                        "table": "departments",
+                        "value": "id",
+                        "show": [
+                            "name"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "designation_id": {
+                    "label": "Designation",
+                    "lookup": {
+                        "table": "designations",
+                        "value": "id",
+                        "show": [
+                            "name"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "branch_id": {
+                    "label": "Branch",
+                    "lookup": {
+                        "table": "branches",
+                        "value": "id",
+                        "show": [
+                            "name",
+                            "city"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "reporting_manager_id": {
+                    "label": "Reports to",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                }
+            },
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "display": {
+                "avatar": "name",
+                "subtitle": "designation",
+                "badges": {
+                    "status": {
+                        "active": "green",
+                        "probation": "amber",
+                        "notice": "blue",
+                        "exited": "red"
+                    },
+                    "type": {
+                        "permanent": "blue",
+                        "contract": "amber",
+                        "field": "purple",
+                        "consultant": "gray"
+                    }
+                },
+                "money": [
+                    "ctc"
+                ],
+                "stats": [
+                    {
+                        "label": "Employees",
+                        "measure": "count",
+                        "icon": "fa-users",
+                        "tint": "orange"
+                    },
+                    {
+                        "label": "Active",
+                        "measure": "count",
+                        "where": {
+                            "status": [
+                                "active"
+                            ]
+                        },
+                        "icon": "fa-circle-check",
+                        "tint": "green"
+                    },
+                    {
+                        "label": "On probation",
+                        "measure": "count",
+                        "where": {
+                            "status": [
+                                "probation"
+                            ]
+                        },
+                        "icon": "fa-hourglass-half",
+                        "tint": "amber"
+                    },
+                    {
+                        "label": "Annual CTC",
+                        "measure": "sum",
+                        "column": "ctc",
+                        "money": true,
+                        "permission": "employee.salary.view",
+                        "icon": "fa-indian-rupee-sign",
+                        "tint": "blue"
+                    }
+                ]
+            }
+        },
+        {
+            "key": "departments",
+            "group": "Organization",
+            "label": "Departments",
+            "table": "departments",
+            "columns": [
+                "name",
+                "code",
+                "employer_company_id",
+                "branch_id",
+                "head_employee_id",
+                "is_active"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Department Name",
+                    "required": true,
+                    "help": "e.g. Collections, Legal & Recovery"
+                },
+                "code": {
+                    "label": "Code",
+                    "help": "Short code, e.g. COL"
+                },
+                "employer_company_id": {
+                    "label": "Company",
+                    "help": "From Organization Setup → Companies"
+                },
+                "branch_id": {
+                    "label": "Branch",
+                    "help": "From Organization Setup → Branches; leave blank if it spans branches"
+                },
+                "head_employee_id": {
+                    "label": "Department Head",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "description": {
+                    "label": "Description"
+                },
+                "is_active": {
+                    "label": "Status",
+                    "type": "select",
+                    "options": {
+                        "1": "Active",
+                        "0": "Inactive"
+                    },
+                    "help": "Active or inactive. An inactive row keeps its history and stops being offered."
+                }
+            },
+            "description": "Company › Branch › Department › Head"
+        },
+        {
+            "key": "designations",
+            "group": "Organization",
+            "label": "Role / Designation Setup",
+            "table": "designations",
+            "columns": [
+                "name",
+                "role",
+                "level",
+                "department_id",
+                "grade",
+                "employer_company_id",
+                "is_active"
+            ],
+            "search": [
+                "name",
+                "code",
+                "grade",
+                "role"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Designation",
+                    "required": true,
+                    "help": "e.g. Collections Executive, Client Coordinator"
+                },
+                "role": {
+                    "label": "Role",
+                    "help": "The functional role this designation carries, e.g. Individual Contributor, People Manager"
+                },
+                "level": {
+                    "label": "Level",
+                    "type": "number",
+                    "min": 0,
+                    "max": 50,
+                    "help": "Seniority, 0-50 — display and ranking only. It does not decide which modules a profile can reach: two designations in different departments can share a level. Module access comes from User Administration → Roles & Permissions, against this designation's Role."
+                },
+                "employer_company_id": {
+                    "label": "Company",
+                    "help": "From Organization Setup → Companies"
+                },
+                "department_id": {
+                    "label": "Department",
+                    "lookup": {
+                        "table": "departments",
+                        "value": "id",
+                        "show": [
+                            "name"
+                        ]
+                    },
+                    "help": "Optional — the department this title belongs to"
+                },
+                "grade": {
+                    "label": "Grade / Band",
+                    "help": "e.g. A, B, C, D or L1, L2"
+                },
+                "code": {
+                    "label": "Code",
+                    "help": "Short code, e.g. CE"
+                },
+                "description": {
+                    "label": "Description"
+                },
+                "is_active": {
+                    "label": "Status",
+                    "type": "select",
+                    "options": {
+                        "1": "Active",
+                        "0": "Inactive"
+                    },
+                    "help": "Active or inactive. An inactive row keeps its history and stops being offered."
+                }
+            },
+            "description": "Job titles, optionally tied to a department"
+        },
+        {
+            "key": "branches",
+            "group": "Organization",
+            "label": "Branches",
+            "table": "branches",
+            "columns": [
+                "name",
+                "code",
+                "city",
+                "state",
+                "pincode",
+                "is_active",
+                "manager_id"
+            ],
+            "search": [
+                "name",
+                "pincode"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true,
+                    "help": "Hyderabad - Banjara Hills"
+                },
+                "code": {
+                    "label": "Code",
+                    "help": "HYD"
+                },
+                "city": {
+                    "label": "City"
+                },
+                "state": {
+                    "label": "State"
+                },
+                "pincode": {
+                    "label": "Pincode"
+                },
+                "phone": {
+                    "label": "Phone"
+                },
+                "email": {
+                    "label": "Email",
+                    "type": "email"
+                },
+                "lat": {
+                    "label": "Latitude",
+                    "help": "Used by field attendance to judge a punch made here."
+                },
+                "lng": {
+                    "label": "Longitude"
+                },
+                "is_active": {
+                    "label": "Status",
+                    "type": "select",
+                    "options": {
+                        "1": "Active",
+                        "0": "Inactive"
+                    },
+                    "help": "Active or inactive. An inactive row keeps its history and stops being offered."
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "manager_id": {
+                    "label": "Branch Manager",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "address": {
+                    "label": "Address",
+                    "type": "textarea"
+                }
+            }
+        },
+        {
+            "key": "teams",
+            "group": "People",
+            "label": "Teams",
+            "table": "teams",
+            "columns": [
+                "name",
+                "status",
+                "function",
+                "manager_id",
+                "leader_id"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Inactive"
+                    ]
+                },
+                "function": {
+                    "label": "Function"
+                },
+                "manager_id": {
+                    "label": "Manager",
+                    "lookup": {
+                        "table": "employees",
+                        "show": [
+                            "name"
+                        ],
+                        "designation": "manager"
+                    },
+                    "hint": "Employees whose designation is a Manager"
+                },
+                "leader_id": {
+                    "label": "Team Leader",
+                    "lookup": {
+                        "table": "employees",
+                        "show": [
+                            "name"
+                        ],
+                        "designation": "team leader"
+                    },
+                    "hint": "Employees whose designation is a Team Leader"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                }
+            }
+        },
+        {
+            "key": "documents-mgr",
+            "group": "People",
+            "label": "Documents",
+            "table": "documents",
+            "columns": [
+                "employee_id",
+                "status",
+                "kind",
+                "expiry",
+                "file_path"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Pending",
+                        "Submitted",
+                        "Verified",
+                        "Rejected",
+                        "Expired"
+                    ]
+                },
+                "kind": {
+                    "label": "Kind"
+                },
+                "expiry": {
+                    "label": "Expiry"
+                },
+                "file_path": {
+                    "label": "File path",
+                    "permission": "employee.document.view"
+                }
+            }
+        },
+        {
+            "key": "letters",
+            "group": "People",
+            "label": "Letters",
+            "table": "letters",
+            "columns": [
+                "employee_id",
+                "status",
+                "issued_on",
+                "title"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Issued",
+                        "Acknowledged",
+                        "Cancelled"
+                    ]
+                },
+                "issued_on": {
+                    "label": "Issued on"
+                },
+                "title": {
+                    "label": "Template Title",
+                    "required": true
+                },
+                "letter_type": {
+                    "label": "For Letter Type",
+                    "options": [
+                        "Offer",
+                        "Increment",
+                        "Warning",
+                        "Relieving",
+                        "Experience",
+                        "Nda",
+                        "Custom"
+                    ]
+                },
+                "body": {
+                    "label": "Body",
+                    "type": "textarea"
+                }
+            }
+        },
+        {
+            "key": "transfers",
+            "group": "People",
+            "label": "Transfers",
+            "table": "transfers",
+            "columns": [
+                "employee_id",
+                "status",
+                "type",
+                "from_company",
+                "from_branch",
+                "to_company"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Proposed",
+                        "Approved",
+                        "Effected",
+                        "Cancelled"
+                    ]
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "from_company": {
+                    "label": "From company"
+                },
+                "from_branch": {
+                    "label": "From branch"
+                },
+                "to_company": {
+                    "label": "To company"
+                },
+                "reason": {
+                    "label": "Reason"
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "increments",
+            "group": "People",
+            "label": "Increments",
+            "table": "increments",
+            "columns": [
+                "employee_id",
+                "new_ctc",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "new_ctc": {
+                    "label": "New ctc (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Proposed",
+                        "Approved",
+                        "Effected",
+                        "Withheld"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "probation",
+            "group": "People",
+            "label": "Probation",
+            "table": "employees",
+            "columns": [
+                "emp_code",
+                "name",
+                "doj"
+            ],
+            "search": [
+                "emp_code",
+                "name"
+            ],
+            "fields": {
+                "emp_code": {
+                    "label": "Employee code",
+                    "required": true
+                },
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "doj": {
+                    "label": "Date of joining"
+                },
+                "status": {
+                    "label": "Status"
+                }
+            }
+        },
+        {
+            "key": "onboarding",
+            "group": "People",
+            "label": "Onboarding",
+            "table": "self_onboarding",
+            "columns": [
+                "name",
+                "mobile",
+                "status"
+            ],
+            "search": [
+                "name",
+                "mobile"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "mobile": {
+                    "label": "Mobile"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Invited",
+                        "In progress",
+                        "Submitted",
+                        "Verified",
+                        "Rejected"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "self-onboarding",
+            "group": "People",
+            "label": "Self-onboarding",
+            "table": "self_onboarding",
+            "columns": [
+                "name",
+                "mobile",
+                "status",
+                "submitted_at"
+            ],
+            "search": [
+                "name",
+                "mobile"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "mobile": {
+                    "label": "Mobile"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Invited",
+                        "In progress",
+                        "Submitted",
+                        "Verified",
+                        "Rejected"
+                    ]
+                },
+                "submitted_at": {
+                    "label": "Submitted at"
+                }
+            }
+        },
+        {
+            "key": "employee-import",
+            "group": "People",
+            "label": "Employee import",
+            "table": "employees",
+            "columns": [
+                "emp_code",
+                "name",
+                "created_at"
+            ],
+            "search": [
+                "emp_code",
+                "name"
+            ],
+            "fields": {
+                "emp_code": {
+                    "label": "Employee code",
+                    "required": true
+                },
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status"
+                }
+            }
+        },
+        {
+            "key": "code-of-conduct",
+            "group": "People",
+            "label": "Code of conduct",
+            "table": "code_of_conduct_ack",
+            "columns": [
+                "employee_id",
+                "acknowledged",
+                "ack_date"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "acknowledged": {
+                    "label": "Acknowledged"
+                },
+                "ack_date": {
+                    "label": "Ack date"
+                }
+            }
+        },
+        {
+            "key": "assets",
+            "group": "People",
+            "label": "Assets",
+            "table": "assets",
+            "columns": [
+                "status",
+                "asset_type",
+                "asset_name",
+                "asset_id",
+                "issued_to_employee_id",
+                "issue_date",
+                "return_date"
+            ],
+            "search": [
+                "asset_id",
+                "asset_name",
+                "serial_no"
+            ],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "asset_id": {
+                    "label": "Asset ID",
+                    "required": true
+                },
+                "asset_type": {
+                    "label": "Asset type"
+                },
+                "asset_name": {
+                    "label": "Asset name"
+                },
+                "serial_no": {
+                    "label": "Serial number"
+                },
+                "cost": {
+                    "label": "Cost",
+                    "type": "number"
+                },
+                "purchase_date": {
+                    "label": "Date of procurement",
+                    "type": "date"
+                },
+                "issued_to_employee_id": {
+                    "label": "Issued to",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "issue_date": {
+                    "label": "Date of issue to employee",
+                    "type": "date"
+                },
+                "purpose": {
+                    "label": "Purpose"
+                },
+                "return_date": {
+                    "label": "Return date",
+                    "type": "date"
+                },
+                "condition": {
+                    "label": "Condition",
+                    "options": {
+                        "new": "New",
+                        "good": "Good",
+                        "fair": "Fair",
+                        "damaged": "Damaged",
+                        "lost": "Lost"
+                    }
+                },
+                "damage_resolution": {
+                    "label": "Final status (if damaged)",
+                    "options": [
+                        "Waived off",
+                        "Cost recovered",
+                        "Replaced",
+                        "Written off"
+                    ]
+                },
+                "recovery_amount": {
+                    "permission": "payroll.view",
+                    "label": "Recovery amount",
+                    "type": "number"
+                },
+                "recovery_status": {
+                    "label": "Recovery status",
+                    "options": [
+                        "Paid",
+                        "Waived off",
+                        "On hold"
+                    ]
+                },
+                "status": {
+                    "label": "Return status",
+                    "options": {
+                        "in stock": "In stock",
+                        "assigned": "Issued",
+                        "under repair": "Under repair",
+                        "retired": "Retired"
+                    }
+                }
+            }
+        },
+        {
+            "key": "bgv",
+            "group": "People",
+            "label": "Background checks",
+            "table": "bgv",
+            "columns": [
+                "employee_id",
+                "status",
+                "completed_on",
+                "agency",
+                "chk_identity",
+                "chk_address",
+                "chk_criminal",
+                "verified_on",
+                "next_due"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "empty": "— not set —"
+                },
+                "status": {
+                    "label": "Overall Status",
+                    "options": [
+                        "Pending",
+                        "In_progress",
+                        "Clear",
+                        "Discrepancy"
+                    ]
+                },
+                "completed_on": {
+                    "label": "Completed on"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "agency": {
+                    "label": "Agency"
+                },
+                "chk_identity": {
+                    "label": "Identity / KYC",
+                    "options": [
+                        "Pending",
+                        "Clear",
+                        "Flag",
+                        "Na"
+                    ],
+                    "help": "pending · clear · flag (a discrepancy) · na (not checked)"
+                },
+                "chk_address": {
+                    "label": "Address",
+                    "options": [
+                        "Pending",
+                        "Clear",
+                        "Flag",
+                        "Na"
+                    ],
+                    "help": "pending · clear · flag (a discrepancy) · na (not checked)"
+                },
+                "chk_education": {
+                    "label": "Education",
+                    "options": [
+                        "Pending",
+                        "Clear",
+                        "Flag",
+                        "Na"
+                    ],
+                    "help": "pending · clear · flag (a discrepancy) · na (not checked)"
+                },
+                "chk_employment": {
+                    "label": "Previous employment",
+                    "options": [
+                        "Pending",
+                        "Clear",
+                        "Flag",
+                        "Na"
+                    ],
+                    "help": "pending · clear · flag (a discrepancy) · na (not checked)"
+                },
+                "chk_criminal": {
+                    "label": "Criminal / court record",
+                    "options": [
+                        "Pending",
+                        "Clear",
+                        "Flag",
+                        "Na"
+                    ],
+                    "help": "pending · clear · flag (a discrepancy) · na (not checked)"
+                },
+                "chk_references": {
+                    "label": "References",
+                    "options": [
+                        "Pending",
+                        "Clear",
+                        "Flag",
+                        "Na"
+                    ],
+                    "help": "pending · clear · flag (a discrepancy) · na (not checked)"
+                },
+                "verified_on": {
+                    "label": "Verified On",
+                    "type": "date"
+                },
+                "revalidate_months": {
+                    "label": "Re-verify every (months)",
+                    "min": 0
+                },
+                "next_due": {
+                    "label": "Next Re-verify Due",
+                    "type": "date"
+                }
+            }
+        },
+        {
+            "key": "exits",
+            "group": "People",
+            "label": "Exits",
+            "table": "exits",
+            "columns": [
+                "employee_id",
+                "reason",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    },
+                    "empty": "— not set —"
+                },
+                "reason": {
+                    "label": "Reason"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Notice served",
+                        "Last day passed",
+                        "Settled",
+                        "Absconded"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "attendance",
+            "group": "Attendance",
+            "label": "Attendance",
+            "table": "attendance",
+            "columns": [
+                "employee_id",
+                "date",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "attendance.day.view",
+                "edit": "attendance.punch.create.manual"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "date": {
+                    "label": "Date"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Present",
+                        "Absent",
+                        "Half day",
+                        "Weekly off",
+                        "Holiday",
+                        "On leave",
+                        "Needs regularisation"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "attendance-logs",
+            "group": "Attendance",
+            "label": "Punch log",
+            "table": "attendance_logs",
+            "columns": [
+                "punch_at",
+                "direction",
+                "source"
+            ],
+            "search": [],
+            "fields": {
+                "punch_at": {
+                    "label": "Punch time"
+                },
+                "direction": {
+                    "label": "Direction"
+                },
+                "source": {
+                    "label": "Source"
+                }
+            }
+        },
+        {
+            "key": "pending-punches",
+            "group": "Attendance",
+            "label": "Pending Punches",
+            "table": "attendance_pending",
+            "columns": [
+                "punch_at",
+                "device_code",
+                "device_user_id",
+                "direction",
+                "verify_mode"
+            ],
+            "search": [
+                "device_user_id",
+                "device_code"
+            ],
+            "fields": {
+                "punch_at": {
+                    "label": "Punched at"
+                },
+                "device_code": {
+                    "label": "Device"
+                },
+                "device_sn": {
+                    "label": "Device serial"
+                },
+                "device_user_id": {
+                    "label": "Device user ID",
+                    "help": "The number enrolled on the device; matched to an employee by device_user_id on the record"
+                },
+                "direction": {
+                    "label": "Direction",
+                    "options": [
+                        "In",
+                        "Out",
+                        "Auto"
+                    ]
+                },
+                "verify_mode": {
+                    "label": "Verified by",
+                    "options": [
+                        "Fingerprint",
+                        "Face",
+                        "Card",
+                        "Password",
+                        "Other"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "attendance-corrections",
+            "group": "Attendance",
+            "label": "Regularisations",
+            "table": "attendance_corrections",
+            "columns": [
+                "employee_id",
+                "status",
+                "reason"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "attendance.day.view",
+                "edit": "attendance.punch.create.manual"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Pending",
+                        "Approved",
+                        "Rejected"
+                    ]
+                },
+                "reason": {
+                    "label": "Reason"
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "shifts",
+            "group": "Attendance",
+            "label": "Working Shifts",
+            "table": "shifts",
+            "columns": [
+                "name",
+                "code",
+                "employer_company_id",
+                "department_id",
+                "branch_id",
+                "start_time",
+                "end_time",
+                "grace_min",
+                "status"
+            ],
+            "search": [
+                "name",
+                "code"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Shift Name",
+                    "required": true,
+                    "help": "e.g. General Shift, Morning, Night"
+                },
+                "code": {
+                    "label": "Code",
+                    "help": "Short code, e.g. GEN / MOR / NGT"
+                },
+                "employer_company_id": {
+                    "label": "Company",
+                    "help": "ALL = every company",
+                    "empty": "ALL"
+                },
+                "branch_id": {
+                    "label": "Branch",
+                    "empty": "ALL"
+                },
+                "department_id": {
+                    "label": "Department",
+                    "empty": "ALL"
+                },
+                "designation_id": {
+                    "label": "Designation",
+                    "empty": "ALL"
+                },
+                "team_id": {
+                    "label": "Team",
+                    "empty": "ALL"
+                },
+                "employee_id": {
+                    "label": "Employee",
+                    "empty": "ALL",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "start_time": {
+                    "label": "Start Time",
+                    "required": true,
+                    "help": "24-hour HH:MM, e.g. 09:30 or 22:00",
+                    "type": "time"
+                },
+                "end_time": {
+                    "label": "End Time",
+                    "required": true,
+                    "help": "HH:MM. Earlier than start = night shift ending next morning",
+                    "type": "time"
+                },
+                "grace_min": {
+                    "label": "Grace (minutes)",
+                    "help": "Optional — overrides the Late Policy grace for this shift. Blank = use policy",
+                    "min": 0,
+                    "max": 240
+                },
+                "full_day_hours": {
+                    "label": "Full Day (hours)",
+                    "help": "Optional override, e.g. 9. Blank = use Late Policy",
+                    "min": 0,
+                    "max": 24
+                },
+                "half_day_hours": {
+                    "label": "Half Day (hours)",
+                    "help": "Optional override, e.g. 4.5. Blank = use Late Policy",
+                    "min": 0,
+                    "max": 24
+                },
+                "break_budget": {
+                    "label": "Break Budget (minutes)",
+                    "help": "Optional override. Blank = use Late Policy",
+                    "min": 0,
+                    "max": 480
+                },
+                "night_allowance": {
+                    "label": "Night Allowance (₹ / night)",
+                    "help": "Paid per night actually worked — only for night shifts. Blank or 0 = none",
+                    "min": 0
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Inactive"
+                    ]
+                }
+            },
+            "description": "Named shift timings (General / Morning / Night). An end time earlier than the start time = night shift."
+        },
+        {
+            "key": "holidays",
+            "group": "Attendance",
+            "label": "Holidays",
+            "table": "holidays",
+            "columns": [
+                "name",
+                "date",
+                "applies_to"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "date": {
+                    "label": "Date"
+                },
+                "applies_to": {
+                    "label": "Applies to"
+                }
+            }
+        },
+        {
+            "key": "late-policy",
+            "group": "Attendance",
+            "label": "Late Login Policy",
+            "table": "late_policy",
+            "columns": [
+                "employer_company_id",
+                "grace_min",
+                "full_day_hours",
+                "lates_before_cut",
+                "addl_late",
+                "weekoff_action",
+                "scope",
+                "mode",
+                "cut_mode",
+                "l1_min",
+                "l1_badge",
+                "l2_min",
+                "l2_badge",
+                "l3_min",
+                "l3_badge",
+                "break_budget",
+                "break_over_badge"
+            ],
+            "search": [],
+            "fields": {
+                "employer_company_id": {
+                    "label": "Company",
+                    "help": "Blank = every company"
+                },
+                "grace_min": {
+                    "label": "Grace (min)",
+                    "help": "A day is late when the first punch-in is after shift start + grace",
+                    "min": 0
+                },
+                "full_day_hours": {
+                    "label": "Full-day Hours",
+                    "help": "Net hours that make a full day",
+                    "min": 0
+                },
+                "lates_before_cut": {
+                    "label": "Free Lates / month",
+                    "help": "Lates tolerated before any cut",
+                    "min": 0
+                },
+                "addl_late": {
+                    "label": "Notes",
+                    "options": [
+                        "None",
+                        "Half_day",
+                        "One_day_per_n",
+                        "Full_day"
+                    ],
+                    "help": "What each late beyond the free ones costs"
+                },
+                "weekoff_action": {
+                    "label": "Week-off Action",
+                    "options": [
+                        "Ignore",
+                        "Comp_off",
+                        "Pay_ot"
+                    ],
+                    "help": "What working on a weekly off earns — a comp-off day, overtime pay, or nothing"
+                },
+                "no_cut_on_weekoff": {
+                    "label": "No cut on weekly off",
+                    "options": [
+                        "1",
+                        "0"
+                    ]
+                },
+                "scope": {
+                    "label": "Applies To",
+                    "options": [
+                        "Company",
+                        "Team",
+                        "Employee"
+                    ],
+                    "empty": "company"
+                },
+                "scope_target": {
+                    "label": "Team name / Emp code (if not company)",
+                    "help": "Leave blank when Applies To is company"
+                },
+                "mode": {
+                    "label": "Calculation Mode",
+                    "options": [
+                        "Simple",
+                        "Tiered",
+                        "Net_hours"
+                    ]
+                },
+                "shift_start": {
+                    "label": "Shift Start (HH:MM)",
+                    "type": "time"
+                },
+                "shift_end": {
+                    "label": "Shift End (HH:MM)",
+                    "type": "time"
+                },
+                "half_day_hours": {
+                    "label": "Half-day Hours (net mode)",
+                    "min": 0
+                },
+                "cut_mode": {
+                    "label": "Simple Cut Rule",
+                    "options": [
+                        "None",
+                        "Half_day_per_late",
+                        "One_day_per_n",
+                        "Half_day_per_n",
+                        "Full_day_per_late"
+                    ],
+                    "help": "What each late beyond the free ones costs in payroll. Per N: every Nth chargeable late costs one day / half a day."
+                },
+                "cut_n": {
+                    "label": "N (for 1 day / half day per N)",
+                    "min": 0
+                },
+                "l1_min": {
+                    "label": "Tier 1 late after (minutes)",
+                    "help": "Daily Attendance colours \"late Nm\" from this tier once a day's late minutes reach it. Blank or 0 = this tier never fires.",
+                    "min": 0
+                },
+                "l1_badge": {
+                    "label": "Tier 1 colour",
+                    "options": [
+                        "Amber",
+                        "Gray",
+                        "Blue",
+                        "Purple",
+                        "Red",
+                        "Green"
+                    ],
+                    "empty": "Amber"
+                },
+                "l1_cut": {
+                    "label": "L1 cut (days)",
+                    "min": 0
+                },
+                "l2_min": {
+                    "label": "Tier 2 late after (minutes)",
+                    "help": "Overrides Tier 1's colour once late minutes reach this. Blank or 0 = this tier never fires.",
+                    "min": 0
+                },
+                "l2_badge": {
+                    "label": "Tier 2 colour",
+                    "options": [
+                        "Amber",
+                        "Gray",
+                        "Blue",
+                        "Purple",
+                        "Red",
+                        "Green"
+                    ],
+                    "empty": "Amber"
+                },
+                "l2_cut": {
+                    "label": "L2 cut (days)",
+                    "min": 0
+                },
+                "l3_min": {
+                    "label": "Tier 3 late after (minutes)",
+                    "help": "Overrides Tier 1/2's colour once late minutes reach this. Blank or 0 = this tier never fires.",
+                    "min": 0
+                },
+                "l3_badge": {
+                    "label": "Tier 3 colour",
+                    "options": [
+                        "Red",
+                        "Amber",
+                        "Gray",
+                        "Blue",
+                        "Purple",
+                        "Green"
+                    ],
+                    "empty": "Red"
+                },
+                "l3_cut": {
+                    "label": "L3 cut (days)",
+                    "min": 0
+                },
+                "break_budget": {
+                    "label": "Break Budget (min/day)",
+                    "help": "Daily Attendance highlights a day's Break Time in red once it exceeds this. Blank or 0 = never highlighted.",
+                    "min": 0
+                },
+                "break_over_badge": {
+                    "label": "Break over-budget colour",
+                    "help": "Daily Attendance shows Break Time in this colour once it exceeds the budget above.",
+                    "options": [
+                        "Red",
+                        "Amber",
+                        "Gray",
+                        "Blue",
+                        "Purple",
+                        "Green"
+                    ],
+                    "empty": "Red"
+                },
+                "break_cut": {
+                    "label": "Break Over-budget (payroll)",
+                    "options": [
+                        "None",
+                        "Half_day",
+                        "Per_30min"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "biometric-config",
+            "group": "Attendance",
+            "label": "Biometric devices",
+            "table": "biometric_configs",
+            "columns": [
+                "last_sync_at",
+                "label",
+                "provider",
+                "enabled",
+                "base_url",
+                "endpoint"
+            ],
+            "search": [],
+            "fields": {
+                "last_sync_at": {
+                    "label": "Last synced"
+                },
+                "label": {
+                    "label": "Label"
+                },
+                "provider": {
+                    "label": "Provider"
+                },
+                "enabled": {
+                    "label": "Enabled",
+                    "type": "checkbox"
+                },
+                "base_url": {
+                    "label": "Base url"
+                },
+                "endpoint": {
+                    "label": "Endpoint"
+                }
+            }
+        },
+        {
+            "key": "devices",
+            "group": "Attendance",
+            "label": "Biometric Devices",
+            "table": "devices",
+            "columns": [
+                "name",
+                "unique_id",
+                "location",
+                "direction",
+                "status",
+                "last_sync_at"
+            ],
+            "search": [
+                "name",
+                "unique_id",
+                "location"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Device Name",
+                    "required": true
+                },
+                "unique_id": {
+                    "label": "Serial / Device ID",
+                    "required": true,
+                    "help": "As printed on the device; ZKTeco pushes use it to identify the device"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "branch_id": {
+                    "label": "Branch"
+                },
+                "location": {
+                    "label": "Location / Branch",
+                    "help": "Where it is mounted"
+                },
+                "direction": {
+                    "label": "Punch Direction",
+                    "options": [
+                        "Auto",
+                        "In",
+                        "Out"
+                    ],
+                    "help": "Auto — the device records both In and Out; In only (entry device); Out only (exit device)"
+                },
+                "api_url": {
+                    "label": "Device API URL (LAN / WebAPI mode)",
+                    "help": "e.g. http://192.168.1.50:81 for eSSL eTimeTrackLite; blank for cloud push"
+                },
+                "api_key": {
+                    "label": "Comm Key / Device Password",
+                    "permission": "tenant.settings.update"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Offline",
+                        "Error",
+                        "Retired"
+                    ]
+                },
+                "last_sync_at": {
+                    "label": "Last sync"
+                }
+            }
+        },
+        {
+            "key": "geofence",
+            "group": "Attendance",
+            "label": "Geo-Fence Rules",
+            "table": "geofence_rules",
+            "columns": [
+                "employee_id",
+                "start",
+                "lat",
+                "lng",
+                "radius_km",
+                "outside"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "required": true
+                },
+                "start": {
+                    "label": "Start From",
+                    "options": [
+                        "Home",
+                        "Office"
+                    ],
+                    "help": "Where the day begins for this person"
+                },
+                "lat": {
+                    "label": "Latitude",
+                    "help": "e.g. 17.4485"
+                },
+                "lng": {
+                    "label": "Longitude",
+                    "help": "e.g. 78.3908"
+                },
+                "radius_km": {
+                    "label": "Radius (km)",
+                    "help": "A punch inside this circle is at the start point"
+                },
+                "outside": {
+                    "label": "Outside Rule",
+                    "options": [
+                        "Strict",
+                        "1km",
+                        "2km"
+                    ],
+                    "help": "Strict: outside = not counted; Allow 1km / 2km tolerance"
+                }
+            }
+        },
+        {
+            "key": "leaves",
+            "group": "Leave",
+            "label": "Leave applications",
+            "table": "leaves",
+            "columns": [
+                "employee_id",
+                "type_id",
+                "from_date",
+                "to_date",
+                "days",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "status": {
+                    "label": "Decision",
+                    "options": [
+                        "Pending",
+                        "Approved",
+                        "Rejected",
+                        "Cancelled"
+                    ],
+                    "required": true
+                },
+                "from_date": {
+                    "label": "From",
+                    "type": "date",
+                    "required": true
+                },
+                "to_date": {
+                    "label": "To",
+                    "type": "date",
+                    "required": true
+                },
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "type_id": {
+                    "label": "Leave type",
+                    "lookup": {
+                        "table": "leave_types",
+                        "value": "id",
+                        "show": [
+                            "name"
+                        ]
+                    }
+                },
+                "days": {
+                    "label": "Days"
+                },
+                "reason": {
+                    "label": "Reason"
+                }
+            },
+            "permissions": {
+                "view": "leave.request.view",
+                "edit": "leave.request.decide"
+            }
+        },
+        {
+            "key": "leave-types",
+            "group": "Leave",
+            "label": "Leave types",
+            "table": "leave_types",
+            "columns": [
+                "name",
+                "paid",
+                "days_per_year",
+                "carry_forward"
+            ],
+            "search": [
+                "name"
+            ],
+            "permissions": {
+                "view": "leave.balance.view",
+                "edit": "leave.request.decide"
+            },
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "paid": {
+                    "label": "Paid leave",
+                    "type": "checkbox"
+                },
+                "days_per_year": {
+                    "label": "Days per year"
+                },
+                "carry_forward": {
+                    "label": "Carries forward",
+                    "type": "checkbox"
+                }
+            }
+        },
+        {
+            "key": "absence",
+            "group": "Leave",
+            "label": "Absence",
+            "table": "attendance",
+            "columns": [
+                "employee_id",
+                "date",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "date": {
+                    "label": "Date"
+                },
+                "status": {
+                    "label": "Status"
+                }
+            }
+        },
+        {
+            "key": "payroll-runs",
+            "group": "Payroll",
+            "label": "Payroll runs",
+            "table": "payroll_runs",
+            "columns": [
+                "cycle_label",
+                "pay_date",
+                "status",
+                "lot"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "cycle_label": {
+                    "label": "Cycle label"
+                },
+                "pay_date": {
+                    "label": "Pay date"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Computed",
+                        "Approved",
+                        "Paid",
+                        "Reversed"
+                    ]
+                },
+                "lot": {
+                    "label": "Lot"
+                }
+            }
+        },
+        {
+            "key": "payslips",
+            "group": "Payroll",
+            "label": "Payslips",
+            "table": "payslips",
+            "columns": [
+                "employee_id",
+                "run_id",
+                "gross",
+                "net"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "run_id": {
+                    "label": "Run"
+                },
+                "gross": {
+                    "label": "Gross (₹)",
+                    "type": "number"
+                },
+                "net": {
+                    "label": "Net (₹)",
+                    "type": "number"
+                }
+            }
+        },
+        {
+            "key": "salary-components",
+            "group": "Payroll",
+            "label": "Salary components",
+            "table": "salary_components",
+            "columns": [
+                "code",
+                "name",
+                "ctype",
+                "calc_type",
+                "calc_value",
+                "taxable",
+                "seq",
+                "employer_company_id",
+                "base"
+            ],
+            "search": [
+                "code",
+                "name"
+            ],
+            "permissions": {
+                "view": "payroll.structure.view",
+                "edit": "payroll.structure.publish"
+            },
+            "fields": {
+                "code": {
+                    "label": "Code",
+                    "required": true
+                },
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "ctype": {
+                    "label": "Type",
+                    "options": [
+                        "Earning",
+                        "Deduction"
+                    ]
+                },
+                "calc_type": {
+                    "label": "Calc type"
+                },
+                "calc_value": {
+                    "label": "Value (% or amount)"
+                },
+                "taxable": {
+                    "label": "Taxable?",
+                    "options": [
+                        "1",
+                        "0"
+                    ]
+                },
+                "employer_company_id": {
+                    "label": "Company (blank = all)",
+                    "empty": "ALL"
+                },
+                "scope": {
+                    "label": "Applies To",
+                    "options": [
+                        "Company",
+                        "Team",
+                        "Employee"
+                    ],
+                    "empty": "company"
+                },
+                "scope_target": {
+                    "label": "Team name / Emp code (if not company)"
+                },
+                "seq": {
+                    "label": "Seq (order)",
+                    "min": 0
+                },
+                "category": {
+                    "label": "Category (earnings only)",
+                    "options": [
+                        "Fixed",
+                        "Variable",
+                        "Reimbursement"
+                    ]
+                },
+                "base": {
+                    "label": "Base",
+                    "options": [
+                        "Pct_gross",
+                        "Pct_basic",
+                        "Fixed",
+                        "Balance"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "salary-schedules",
+            "group": "Payroll",
+            "label": "Salary Schedules",
+            "table": "salary_schedules",
+            "columns": [
+                "name",
+                "pay_cycle",
+                "lots",
+                "applicable_to",
+                "status",
+                "pay_day"
+            ],
+            "search": [
+                "name"
+            ],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "name": {
+                    "label": "Schedule Name",
+                    "required": true,
+                    "help": "e.g. Monthly – Office staff"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "pay_cycle": {
+                    "label": "Pay Cycle",
+                    "options": [
+                        "Monthly",
+                        "Fortnightly",
+                        "Weekly"
+                    ],
+                    "help": "How often this schedule pays"
+                },
+                "lots": {
+                    "label": "Lots",
+                    "help": "How many disbursement lots in a cycle (1 = one payout; 2 = two lots, e.g. 7th and 22nd)"
+                },
+                "applicable_to": {
+                    "label": "Applicable To",
+                    "options": [
+                        "All types",
+                        "Office",
+                        "Field / FOS",
+                        "Commission-based"
+                    ],
+                    "help": "Descriptive — payroll pays each employee per the schedule on their record"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Inactive"
+                    ]
+                },
+                "pay_day": {
+                    "label": "Pay Day",
+                    "min": 1,
+                    "max": 31,
+                    "help": "Day of the month salary is paid (1–31; 31 = last day). Pay Cycle & Lots under Organization Setup carries the same day per cycle."
+                }
+            }
+        },
+        {
+            "key": "deductions",
+            "group": "Payroll",
+            "label": "Deductions Ledger",
+            "table": "deductions",
+            "columns": [
+                "employee_id",
+                "type",
+                "amount",
+                "month",
+                "source_ref",
+                "status"
+            ],
+            "search": [
+                "source_ref"
+            ],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "required": true
+                },
+                "type": {
+                    "label": "Type",
+                    "options": [
+                        "Late",
+                        "Pcc",
+                        "Advance_emi",
+                        "Escalation",
+                        "Lop",
+                        "Other",
+                        "Asset Damage Recovery"
+                    ],
+                    "help": "Late · PCC · Advance EMI · Escalation · Loss of Pay · Other · Asset Damage Recovery (written by a Damaged/Lost asset return)"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "required": true,
+                    "permission": "payroll.view"
+                },
+                "month": {
+                    "label": "Month (YYYY-MM)",
+                    "help": "The payroll month this is applied in"
+                },
+                "source_ref": {
+                    "label": "Reference",
+                    "help": "What it came from — a late slip, an escalation number, a loan"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Pending",
+                        "Applied",
+                        "Waived"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "advances",
+            "group": "Payroll",
+            "label": "Advances",
+            "table": "advances",
+            "columns": [
+                "employee_id",
+                "amount",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Requested",
+                        "Approved",
+                        "Disbursed",
+                        "Recovering",
+                        "Recovered",
+                        "Written off"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "loans",
+            "group": "Payroll",
+            "label": "Loans",
+            "table": "loans",
+            "columns": [
+                "employee_id",
+                "emi",
+                "outstanding",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "emi": {
+                    "label": "EMI (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "outstanding": {
+                    "label": "Outstanding (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Requested",
+                        "Approved",
+                        "Disbursed",
+                        "Recovering",
+                        "Closed",
+                        "Written off"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "expenses",
+            "group": "Payroll",
+            "label": "Expenses",
+            "table": "expenses",
+            "columns": [
+                "employee_id",
+                "type",
+                "amount",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Claimed",
+                        "Approved",
+                        "Rejected",
+                        "Reimbursed"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "bonus",
+            "group": "Payroll",
+            "label": "Bonus & encashment",
+            "table": "bonus_encashment",
+            "columns": [
+                "employee_id",
+                "type",
+                "amount",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Declared",
+                        "Approved",
+                        "Paid",
+                        "Withheld"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            },
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            }
+        },
+        {
+            "key": "clawbacks",
+            "group": "Payroll",
+            "label": "Clawbacks",
+            "table": "clawbacks",
+            "columns": [
+                "employee_id",
+                "amount",
+                "reason",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "reason": {
+                    "label": "Reason"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Raised",
+                        "Recovering",
+                        "Recovered",
+                        "Waived"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            },
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            }
+        },
+        {
+            "key": "payout-recon",
+            "group": "Payroll",
+            "label": "Payout Reconciliation",
+            "table": "payout_recon",
+            "columns": [
+                "employer_company_id",
+                "bank",
+                "portfolio",
+                "month",
+                "expected",
+                "received",
+                "variance",
+                "status"
+            ],
+            "search": [
+                "bank",
+                "portfolio"
+            ],
+            "fields": {
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "bank": {
+                    "label": "Bank",
+                    "permission": "payroll.view"
+                },
+                "portfolio": {
+                    "label": "Portfolio"
+                },
+                "month": {
+                    "label": "Month (YYYY-MM)"
+                },
+                "expected": {
+                    "label": "Expected (₹)"
+                },
+                "received": {
+                    "label": "Received (₹)"
+                },
+                "variance": {
+                    "label": "Variance (₹)",
+                    "help": "Received minus expected"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Open",
+                        "Matched",
+                        "Closed"
+                    ]
+                }
+            },
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            }
+        },
+        {
+            "key": "incentive-schemes",
+            "group": "Incentive",
+            "label": "Incentive schemes",
+            "table": "incentive_schemes",
+            "columns": [
+                "name",
+                "status",
+                "portfolio",
+                "basis",
+                "slabs",
+                "clawback"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Active",
+                        "Suspended",
+                        "Closed"
+                    ]
+                },
+                "portfolio": {
+                    "label": "Portfolio"
+                },
+                "basis": {
+                    "label": "Basis"
+                },
+                "slabs": {
+                    "label": "Slabs",
+                    "type": "json",
+                    "help": "Structured data. A list looks like [\"one\",\"two\"]; a setting like {\"key\":\"value\"}."
+                },
+                "clawback": {
+                    "label": "Clawback"
+                }
+            }
+        },
+        {
+            "key": "commissions",
+            "group": "Incentive",
+            "label": "Commissions",
+            "table": "commissions",
+            "columns": [
+                "employee_id",
+                "amount",
+                "status"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Accrued",
+                        "Approved",
+                        "Paid",
+                        "Clawed back"
+                    ]
+                },
+                "remarks": {
+                    "label": "Remarks"
+                }
+            }
+        },
+        {
+            "key": "commission-payments",
+            "group": "Incentive",
+            "label": "Commission payments",
+            "table": "commission_payments",
+            "columns": [
+                "employee_id",
+                "amount",
+                "paid_on"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "payroll.view"
+                },
+                "paid_on": {
+                    "label": "Paid on"
+                },
+                "note": {
+                    "label": "Note"
+                }
+            },
+            "permissions": {
+                "view": "payroll.view",
+                "edit": "payroll.run"
+            }
+        },
+        {
+            "key": "points",
+            "group": "Incentive",
+            "label": "Points ledger",
+            "table": "points_ledger",
+            "columns": [
+                "employee_id",
+                "points",
+                "created_at"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            },
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "points": {
+                    "label": "Points",
+                    "permission": "employee.salary.view"
+                },
+                "note": {
+                    "label": "Note"
+                }
+            }
+        },
+        {
+            "key": "point-rules",
+            "group": "Incentive",
+            "label": "Point rules",
+            "table": "point_rules",
+            "columns": [
+                "points",
+                "category",
+                "event",
+                "note"
+            ],
+            "search": [],
+            "fields": {
+                "points": {
+                    "label": "Points"
+                },
+                "category": {
+                    "label": "Category"
+                },
+                "event": {
+                    "label": "Event"
+                },
+                "note": {
+                    "label": "Note"
+                }
+            }
+        },
+        {
+            "key": "pf-esi",
+            "group": "Statutory",
+            "label": "PF & ESI settings",
+            "table": "pf_esi_settings",
+            "columns": [
+                "pf_ee_pct",
+                "pf_er_pct",
+                "esi_ee_pct",
+                "esi_er_pct",
+                "esi_ceiling"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.structure.view",
+                "edit": "payroll.structure.publish"
+            },
+            "fields": {
+                "pf_ee_pct": {
+                    "label": "PF employee %"
+                },
+                "pf_er_pct": {
+                    "label": "PF employer %"
+                },
+                "esi_ee_pct": {
+                    "label": "ESI employee %"
+                },
+                "esi_er_pct": {
+                    "label": "ESI employer %"
+                },
+                "esi_ceiling": {
+                    "label": "ESI wage ceiling (₹)"
+                }
+            }
+        },
+        {
+            "key": "pt-slabs",
+            "group": "Statutory",
+            "label": "PT slabs",
+            "table": "pt_slabs",
+            "columns": [
+                "state",
+                "amount",
+                "wage_from",
+                "wage_to"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.structure.view",
+                "edit": "payroll.structure.publish"
+            },
+            "fields": {
+                "state": {
+                    "label": "State"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number"
+                },
+                "wage_from": {
+                    "label": "Wage from (₹)"
+                },
+                "wage_to": {
+                    "label": "Wage to (₹)"
+                }
+            }
+        },
+        {
+            "key": "tds-rules",
+            "group": "Statutory",
+            "label": "TDS rules",
+            "table": "tds_rules",
+            "columns": [
+                "incentive_pct",
+                "commission_pct",
+                "salary_tds_mode",
+                "higher_if_no_pan"
+            ],
+            "search": [],
+            "permissions": {
+                "view": "payroll.structure.view",
+                "edit": "payroll.structure.publish"
+            },
+            "fields": {
+                "incentive_pct": {
+                    "label": "Incentive pct"
+                },
+                "commission_pct": {
+                    "label": "Commission pct"
+                },
+                "salary_tds_mode": {
+                    "label": "Salary tds mode"
+                },
+                "higher_if_no_pan": {
+                    "label": "Higher if no pan"
+                }
+            }
+        },
+        {
+            "key": "tds-returns",
+            "group": "Statutory",
+            "label": "TDS returns",
+            "table": "tds_returns",
+            "columns": [
+                "quarter",
+                "status",
+                "deductees",
+                "tax_deducted",
+                "deposited",
+                "due_date"
+            ],
+            "search": [],
+            "fields": {
+                "quarter": {
+                    "label": "Quarter"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Not filed",
+                        "Filed",
+                        "Revised",
+                        "Defaulted"
+                    ]
+                },
+                "deductees": {
+                    "label": "Deductees"
+                },
+                "tax_deducted": {
+                    "label": "Tax deducted (₹)",
+                    "type": "number"
+                },
+                "deposited": {
+                    "label": "Deposited (₹)",
+                    "type": "number"
+                },
+                "due_date": {
+                    "label": "Due date"
+                }
+            },
+            "permissions": {
+                "view": "payroll.structure.view",
+                "edit": "payroll.structure.publish"
+            }
+        },
+        {
+            "key": "offroll-agents",
+            "group": "Offroll",
+            "label": "Off-roll agents",
+            "table": "offroll_agents",
+            "columns": [
+                "name",
+                "mobile",
+                "status"
+            ],
+            "search": [
+                "name",
+                "mobile"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "mobile": {
+                    "label": "Mobile"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Onboarded",
+                        "Active",
+                        "Suspended",
+                        "Terminated"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "agent-authorizations",
+            "group": "Offroll",
+            "label": "Authorisations",
+            "table": "agent_authorizations",
+            "columns": [
+                "valid_to",
+                "status",
+                "employee_id",
+                "bank",
+                "portfolio",
+                "auth_no"
+            ],
+            "search": [],
+            "fields": {
+                "valid_to": {
+                    "label": "Valid to"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Valid",
+                        "Expiring",
+                        "Expired",
+                        "Revoked"
+                    ]
+                },
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "bank": {
+                    "label": "Bank"
+                },
+                "portfolio": {
+                    "label": "Portfolio"
+                },
+                "auth_no": {
+                    "label": "Authorisation number"
+                }
+            }
+        },
+        {
+            "key": "complaints",
+            "group": "Offroll",
+            "label": "Complaints",
+            "table": "complaints",
+            "columns": [
+                "status",
+                "channel",
+                "date",
+                "employee_id",
+                "source",
+                "severity"
+            ],
+            "search": [],
+            "fields": {
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Received",
+                        "Under review",
+                        "Substantiated",
+                        "Unsubstantiated",
+                        "Closed"
+                    ]
+                },
+                "channel": {
+                    "label": "Channel",
+                    "options": [
+                        "Whatsapp",
+                        "Sms",
+                        "Email",
+                        "Push",
+                        "In-app"
+                    ]
+                },
+                "date": {
+                    "label": "Date"
+                },
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "source": {
+                    "label": "Source"
+                },
+                "severity": {
+                    "label": "Severity"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "description": {
+                    "label": "Description",
+                    "type": "textarea"
+                }
+            }
+        },
+        {
+            "key": "escalations",
+            "group": "Main",
+            "label": "Escalations",
+            "table": "escalations",
+            "columns": [
+                "date",
+                "bank",
+                "team",
+                "issue",
+                "severity",
+                "priority",
+                "status",
+                "action_taken"
+            ],
+            "search": [
+                "bank",
+                "team",
+                "issue"
+            ],
+            "fields": {
+                "date": {
+                    "label": "Date",
+                    "type": "date"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "bank": {
+                    "label": "Bank"
+                },
+                "team": {
+                    "label": "Team"
+                },
+                "issue": {
+                    "label": "Issue — describe what happened"
+                },
+                "severity": {
+                    "label": "Severity",
+                    "options": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Critical"
+                    ]
+                },
+                "priority": {
+                    "label": "Priority",
+                    "options": [
+                        "Low",
+                        "Normal",
+                        "High",
+                        "Critical"
+                    ]
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Open",
+                        "Acknowledged",
+                        "In_progress",
+                        "Resolved",
+                        "Breached"
+                    ]
+                },
+                "action_taken": {
+                    "label": "Action taken"
+                },
+                "updated_on": {
+                    "label": "Updated on"
+                },
+                "reason": {
+                    "label": "Reason"
+                }
+            }
+        },
+        {
+            "key": "training-programs",
+            "group": "Learning",
+            "label": "Training programmes",
+            "table": "training_programs",
+            "columns": [
+                "name",
+                "status",
+                "category",
+                "mode",
+                "mandatory",
+                "validity"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Open",
+                        "Running",
+                        "Closed"
+                    ]
+                },
+                "category": {
+                    "label": "Category"
+                },
+                "mode": {
+                    "label": "Mode"
+                },
+                "mandatory": {
+                    "label": "Mandatory",
+                    "type": "checkbox"
+                },
+                "validity": {
+                    "label": "Validity"
+                },
+                "description": {
+                    "label": "Description",
+                    "type": "textarea"
+                }
+            }
+        },
+        {
+            "key": "training-records",
+            "group": "Learning",
+            "label": "Training records",
+            "table": "training_records",
+            "columns": [
+                "employee_id",
+                "program_id",
+                "completed_on"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "program_id": {
+                    "label": "Program"
+                },
+                "completed_on": {
+                    "label": "Completed on"
+                },
+                "status": {
+                    "label": "Status"
+                }
+            }
+        },
+        {
+            "key": "tests",
+            "group": "Learning",
+            "label": "Tests",
+            "table": "tests",
+            "columns": [
+                "name",
+                "pass_mark",
+                "category",
+                "target_type",
+                "target",
+                "questions"
+            ],
+            "search": [
+                "name",
+                "questions"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "pass_mark": {
+                    "label": "Pass mark"
+                },
+                "category": {
+                    "label": "Category"
+                },
+                "target_type": {
+                    "label": "Target type"
+                },
+                "target": {
+                    "label": "Target"
+                },
+                "questions": {
+                    "label": "Questions"
+                }
+            }
+        },
+        {
+            "key": "test-attempts",
+            "group": "Learning",
+            "label": "Test attempts",
+            "table": "test_attempts",
+            "columns": [
+                "employee_id",
+                "test_id",
+                "score",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "test_id": {
+                    "label": "Test"
+                },
+                "score": {
+                    "label": "Score"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "In progress",
+                        "Passed",
+                        "Failed",
+                        "Abandoned"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "kb",
+            "group": "Learning",
+            "label": "Knowledge base",
+            "table": "kb_topics",
+            "columns": [
+                "title",
+                "category",
+                "icon",
+                "body",
+                "roles",
+                "sort"
+            ],
+            "search": [
+                "title"
+            ],
+            "fields": {
+                "title": {
+                    "label": "Title",
+                    "required": true
+                },
+                "category": {
+                    "label": "Category"
+                },
+                "icon": {
+                    "label": "Icon"
+                },
+                "body": {
+                    "label": "Body"
+                },
+                "roles": {
+                    "label": "Roles",
+                    "type": "json",
+                    "help": "Structured data. A list looks like [\"one\",\"two\"]; a setting like {\"key\":\"value\"}."
+                },
+                "sort": {
+                    "label": "Sort"
+                }
+            }
+        },
+        {
+            "key": "faqs",
+            "group": "Learning",
+            "label": "FAQs",
+            "table": "faqs",
+            "columns": [
+                "question",
+                "category",
+                "answer"
+            ],
+            "search": [
+                "question"
+            ],
+            "fields": {
+                "question": {
+                    "label": "Question",
+                    "required": true
+                },
+                "category": {
+                    "label": "Category"
+                },
+                "answer": {
+                    "label": "Answer"
+                }
+            }
+        },
+        {
+            "key": "helpdesk",
+            "group": "Learning",
+            "label": "Helpdesk",
+            "table": "helpdesk",
+            "columns": [
+                "subject",
+                "status",
+                "category",
+                "employee_id",
+                "priority",
+                "assigned_to",
+                "hr_comment"
+            ],
+            "search": [
+                "subject"
+            ],
+            "fields": {
+                "subject": {
+                    "label": "Subject",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Open",
+                        "Assigned",
+                        "Waiting",
+                        "Resolved",
+                        "Closed"
+                    ]
+                },
+                "category": {
+                    "label": "Category"
+                },
+                "employee_id": {
+                    "label": "Employee"
+                },
+                "priority": {
+                    "label": "Priority",
+                    "options": [
+                        "Low",
+                        "Normal",
+                        "High",
+                        "Critical"
+                    ]
+                },
+                "assigned_to": {
+                    "label": "Assigned to"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                },
+                "description": {
+                    "label": "Description — explain the issue in your own words",
+                    "type": "textarea"
+                },
+                "hr_comment": {
+                    "label": "HR Comment — reply shown to the employee",
+                    "type": "textarea"
+                }
+            }
+        },
+        {
+            "key": "messages-log",
+            "group": "Communications",
+            "label": "Message log",
+            "table": "messages_log",
+            "columns": [
+                "sent_at",
+                "target",
+                "recipients",
+                "channels",
+                "message",
+                "sent_by"
+            ],
+            "search": [],
+            "fields": {
+                "sent_at": {
+                    "label": "Sent at"
+                },
+                "target": {
+                    "label": "Target",
+                    "required": true
+                },
+                "recipients": {
+                    "label": "Recipients"
+                },
+                "channels": {
+                    "label": "Channels",
+                    "required": true
+                },
+                "message": {
+                    "label": "Message",
+                    "required": true
+                },
+                "sent_by": {
+                    "label": "Sent by"
+                }
+            }
+        },
+        {
+            "key": "wa-templates",
+            "group": "Communications",
+            "label": "WhatsApp templates",
+            "table": "sms_templates",
+            "columns": [
+                "name",
+                "status",
+                "type",
+                "dlt_template_id",
+                "content"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status"
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "dlt_template_id": {
+                    "label": "Dlt template"
+                },
+                "content": {
+                    "label": "Content"
+                }
+            }
+        },
+        {
+            "key": "sms-templates",
+            "group": "Communications",
+            "label": "SMS templates",
+            "table": "sms_templates",
+            "columns": [
+                "name",
+                "status",
+                "type",
+                "dlt_template_id",
+                "content"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status"
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "dlt_template_id": {
+                    "label": "Dlt template"
+                },
+                "content": {
+                    "label": "Content"
+                }
+            }
+        },
+        {
+            "key": "sms-settings",
+            "group": "Communications",
+            "label": "SMS settings",
+            "table": "sms_settings",
+            "columns": [
+                "provider",
+                "sender_id",
+                "status",
+                "api_url",
+                "api_key",
+                "dlt_entity_id"
+            ],
+            "search": [],
+            "fields": {
+                "provider": {
+                    "label": "Provider",
+                    "required": true
+                },
+                "sender_id": {
+                    "label": "Sender",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status"
+                },
+                "api_url": {
+                    "label": "Api url",
+                    "required": true
+                },
+                "api_key": {
+                    "label": "Api key",
+                    "permission": "tenant.settings.update"
+                },
+                "dlt_entity_id": {
+                    "label": "Dlt entity"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "wa-settings",
+            "group": "Communications",
+            "label": "WhatsApp settings",
+            "table": "wa_settings",
+            "columns": [
+                "provider",
+                "status",
+                "api_url",
+                "api_key",
+                "sender_number",
+                "waba_id"
+            ],
+            "search": [
+                "sender_number"
+            ],
+            "fields": {
+                "provider": {
+                    "label": "Provider",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status"
+                },
+                "api_url": {
+                    "label": "Api url",
+                    "required": true
+                },
+                "api_key": {
+                    "label": "Api key",
+                    "permission": "tenant.settings.update"
+                },
+                "sender_number": {
+                    "label": "Sender number",
+                    "required": true
+                },
+                "waba_id": {
+                    "label": "Waba"
+                },
+                "employer_company_id": {
+                    "label": "Company"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "greetings",
+            "group": "Communications",
+            "label": "Greetings",
+            "table": "messages_log",
+            "columns": [
+                "sent_at",
+                "target",
+                "recipients",
+                "channels",
+                "message",
+                "sent_by"
+            ],
+            "search": [],
+            "fields": {
+                "sent_at": {
+                    "label": "Sent at"
+                },
+                "target": {
+                    "label": "Target"
+                },
+                "recipients": {
+                    "label": "Recipients"
+                },
+                "channels": {
+                    "label": "Channels"
+                },
+                "message": {
+                    "label": "Message"
+                },
+                "sent_by": {
+                    "label": "Sent by"
+                }
+            }
+        },
+        {
+            "key": "webhooks",
+            "group": "Communications",
+            "label": "Webhook endpoints",
+            "table": "smartept_webhook_endpoints",
+            "columns": [
+                "name",
+                "slug",
+                "secret",
+                "events",
+                "active",
+                "last_received_at"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "slug": {
+                    "label": "Slug"
+                },
+                "secret": {
+                    "label": "Secret",
+                    "permission": "tenant.settings.update"
+                },
+                "events": {
+                    "label": "Events",
+                    "type": "json",
+                    "help": "Structured data. A list looks like [\"one\",\"two\"]; a setting like {\"key\":\"value\"}."
+                },
+                "active": {
+                    "label": "Active",
+                    "type": "checkbox"
+                },
+                "last_received_at": {
+                    "label": "Last received at",
+                    "type": "datetime-local",
+                    "readonly": true,
+                    "help": "Written when a delivery arrives, not typed. It was declared as a number with a rupee sign in its label over a datetime column — so the form offered a number box and the database refused the row."
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "notifications",
+            "group": "Communications",
+            "label": "Notifications",
+            "table": "notifications_feed",
+            "columns": [
+                "read_at",
+                "created_at",
+                "type",
+                "user_id",
+                "message",
+                "link"
+            ],
+            "search": [],
+            "fields": {
+                "read_at": {
+                    "label": "Read at"
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "user_id": {
+                    "label": "User"
+                },
+                "message": {
+                    "label": "Message"
+                },
+                "link": {
+                    "label": "Link"
+                }
+            }
+        },
+        {
+            "key": "plans",
+            "group": "Commercial",
+            "label": "Plans",
+            "table": "plans",
+            "columns": [
+                "name",
+                "status",
+                "base_price",
+                "per_user_price",
+                "billing_cycle",
+                "seat_max"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Offered",
+                        "Withdrawn"
+                    ]
+                },
+                "base_price": {
+                    "label": "Base price (₹)",
+                    "type": "number"
+                },
+                "per_user_price": {
+                    "label": "Per user price"
+                },
+                "billing_cycle": {
+                    "label": "Billing cycle"
+                },
+                "seat_max": {
+                    "label": "Seat max"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "subscriptions",
+            "group": "Commercial",
+            "label": "Subscriptions",
+            "table": "subscriptions",
+            "columns": [
+                "plan_id",
+                "status",
+                "amount"
+            ],
+            "search": [],
+            "fields": {
+                "plan_id": {
+                    "label": "Plan"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Trial",
+                        "Active",
+                        "Past due",
+                        "Cancelled",
+                        "Expired"
+                    ]
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "tenant.settings.view"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "invoices",
+            "group": "Commercial",
+            "label": "Invoices",
+            "table": "invoices",
+            "columns": [
+                "number",
+                "amount",
+                "status",
+                "issued_on"
+            ],
+            "search": [
+                "number"
+            ],
+            "fields": {
+                "number": {
+                    "label": "Number"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "tenant.settings.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Issued",
+                        "Part paid",
+                        "Paid",
+                        "Overdue",
+                        "Cancelled"
+                    ]
+                },
+                "issued_on": {
+                    "label": "Issued on"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "payments",
+            "group": "Commercial",
+            "label": "Payments",
+            "table": "payments",
+            "columns": [
+                "invoice_id",
+                "amount",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "invoice_id": {
+                    "label": "Invoice"
+                },
+                "amount": {
+                    "label": "Amount (₹)",
+                    "type": "number",
+                    "permission": "tenant.settings.view"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Initiated",
+                        "Succeeded",
+                        "Failed",
+                        "Refunded"
+                    ]
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "payment-gateways",
+            "group": "Commercial",
+            "label": "Payment gateways",
+            "table": "payment_gateways",
+            "columns": [
+                "status",
+                "gateway",
+                "mode",
+                "key_id",
+                "secret",
+                "webhook_url"
+            ],
+            "search": [],
+            "fields": {
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Configured",
+                        "Live",
+                        "Disabled"
+                    ]
+                },
+                "gateway": {
+                    "label": "Gateway"
+                },
+                "mode": {
+                    "label": "Mode"
+                },
+                "key_id": {
+                    "label": "Key",
+                    "permission": "tenant.settings.update"
+                },
+                "secret": {
+                    "label": "Secret",
+                    "permission": "tenant.settings.update"
+                },
+                "webhook_url": {
+                    "label": "Webhook url"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "users",
+            "group": "Administration",
+            "label": "Users",
+            "table": "users",
+            "columns": [
+                "email",
+                "created_at",
+                "name",
+                "status",
+                "email_verified_at",
+                "password"
+            ],
+            "search": [
+                "email",
+                "name",
+                "email_verified_at"
+            ],
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            },
+            "fields": {
+                "email": {
+                    "label": "Email"
+                },
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Suspended",
+                        "Locked"
+                    ]
+                },
+                "email_verified_at": {
+                    "label": "Email verified at"
+                },
+                "password": {
+                    "label": "Password",
+                    "permission": "tenant.settings.update"
+                }
+            }
+        },
+        {
+            "key": "companies",
+            "record_boxes": true,
+            "sections": {
+                "Company": ["name", "code", "legal_name", "type", "status", "is_master"],
+                "Location & time zone": ["state", "timezone"],
+                "Registration": ["gstin", "pan"],
+                "Statutory — TDS, PF, ESIC": ["tan", "tds_person_name", "tds_person_father", "tds_person_designation", "pf_establishment_code", "esic_employer_code", "pt_registration_no"],
+                "Training & tenure": ["paid_during_training", "tenure_basis"],
+                "Notice period": ["notice_period_days"],
+                "Statutory compliance sign-off": ["compliance_owner", "compliance_designation", "compliance_email", "compliance_verified_on"],
+                "Contact": ["address", "phone", "email", "website"],
+                "Probation": ["probation_months", "probation_days", "probation_reminder_days",
+                    "probation_notify_hr", "probation_notify_manager", "probation_congratulate"],
+                "Branding": ["color", "logo_path", "logo_text"],
+                "Grievance officer": ["grievance_officer", "grievance_phone", "grievance_email"]
+            },
+            "group": "Organization",
+            "label": "Companies",
+            "table": "companies",
+            "columns": [
+                "name",
+                "code",
+                "type",
+                "state",
+                "timezone",
+                "gstin",
+                "probation_months",
+                "probation_days",
+                "probation_reminder_days",
+                "probation_notify_hr",
+                "probation_notify_manager",
+                "probation_congratulate", "notice_period_days",
+                "status"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true,
+                    "help": "Ametecs"
+                },
+                "code": {
+                    "label": "Code",
+                    "help": "AMT"
+                },
+                "legal_name": {
+                    "label": "Legal name",
+                    "help": "As it appears on a payslip, a letter and an invoice — Ametecs India Private Limited."
+                },
+                "type": {
+                    "label": "Type",
+                    "help": "Employer, client, vendor — whatever this customer calls it."
+                },
+                "gstin": {
+                    "label": "GSTIN"
+                },
+                "pan": {
+                    "label": "PAN",
+                    "permission": "tenant.settings.update"
+                },
+                "tan": {
+                    "label": "TAN (Tax Deduction Account Number)",
+                    "pattern": "^[A-Z]{4}[0-9]{5}[A-Z]$",
+                    "pattern_hint": "a TAN like HYDA12345B (4 letters, 5 digits, 1 letter)",
+                    "help": "Printed on Form 130 (old Form 16), the quarterly TDS return and every TDS challan."
+                },
+                "tds_person_name": {
+                    "label": "Person responsible for TDS — name",
+                    "help": "Signs Form 130 and the quarterly TDS return for this company."
+                },
+                "tds_person_father": {
+                    "label": "Person responsible for TDS — father's name"
+                },
+                "tds_person_designation": {
+                    "label": "Person responsible for TDS — designation"
+                },
+                "pf_establishment_code": {
+                    "label": "PF establishment code",
+                    "help": "EPFO establishment ID the ECR is filed under, e.g. APHYD0012345000."
+                },
+                "esic_employer_code": {
+                    "label": "ESIC employer code",
+                    "permission": "tenant.settings.update",
+                    "pattern": "^[0-9]{10,17}$",
+                    "pattern_hint": "the ESIC employer code (digits only)"
+                },
+                "pt_registration_no": {"label": "PT registration (enrolment / PTRC) no.", "help": "Printed beside the company's Professional Tax remittances"},
+                "training_start_date": {"label": "Training start date", "type": "date", "hidden": true, "help": "Moved to each employee (Directory → Training start / end date), 15 Oct."},
+                "training_end_date": {"label": "Training end date", "type": "date", "hidden": true},
+                "paid_during_training": {"label": "Paid during training", "options": ["Yes", "No"], "help": "Each employee's training dates are on their Directory record. Yes: salary and the salary structure start from the date of joining. No: from the date of production (the first working day after training) — payroll, payslips, the Salary Breakup and the offer letter follow it."},
+                "compliance_owner": {"label": "Compliance owner / authorised signatory", "help": "The person who answers for this company's PF, ESI, PT, LWF and TDS rates — e.g. the director, HR head or the company's CA."},
+                "compliance_designation": {"label": "Designation"},
+                "compliance_email": {"label": "Email", "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "pattern_hint": "an email address"},
+                "compliance_verified_on": {"label": "Rates verified on", "type": "date", "help": "The date the owner checked the statutory rates in Salary structure (Government rules), PT slabs and Income Tax Rules. Verify again at least once a year — System Health turns red after 12 months."},
+                "notice_period_days": {"label": "Notice Period (# days)", "help": "Days of notice on a resignation. Last working day = resignation start date + these days. Applies to every employee of this company; blank here = the employee's own Notice Period (Days), else 30."},
+                "tenure_basis": {"label": "Tenure counted from", "options": ["Date of joining", "Date of production", "Date of confirmation"], "help": "What the Directory's Tenure column (and the employee export) counts from. Date of production = the first working day after the employee's training (the date of joining when there is no training)."},
+                "state": {
+                    "label": "State",
+                    "help": "Professional tax is a state levy, so which state a company is registered in decides a deduction."
+                },
+                "timezone": {
+                    "label": "Time zone",
+                    "help": "The IANA time zone this company operates in, e.g. Asia/Kolkata.",
+                    "options": [
+                        "Africa/Abidjan", "Africa/Accra", "Africa/Addis_Ababa", "Africa/Algiers",
+                        "Africa/Asmara", "Africa/Bamako", "Africa/Bangui", "Africa/Banjul",
+                        "Africa/Bissau", "Africa/Blantyre", "Africa/Brazzaville", "Africa/Bujumbura",
+                        "Africa/Cairo", "Africa/Casablanca", "Africa/Ceuta", "Africa/Conakry",
+                        "Africa/Dakar", "Africa/Dar_es_Salaam", "Africa/Djibouti", "Africa/Douala",
+                        "Africa/El_Aaiun", "Africa/Freetown", "Africa/Gaborone", "Africa/Harare",
+                        "Africa/Johannesburg", "Africa/Juba", "Africa/Kampala", "Africa/Khartoum",
+                        "Africa/Kigali", "Africa/Kinshasa", "Africa/Lagos", "Africa/Libreville",
+                        "Africa/Lome", "Africa/Luanda", "Africa/Lubumbashi", "Africa/Lusaka",
+                        "Africa/Malabo", "Africa/Maputo", "Africa/Maseru", "Africa/Mbabane",
+                        "Africa/Mogadishu", "Africa/Monrovia", "Africa/Nairobi", "Africa/Ndjamena",
+                        "Africa/Niamey", "Africa/Nouakchott", "Africa/Ouagadougou", "Africa/Porto-Novo",
+                        "Africa/Sao_Tome", "Africa/Tripoli", "Africa/Tunis", "Africa/Windhoek",
+                        "America/Adak", "America/Anchorage", "America/Anguilla", "America/Antigua",
+                        "America/Araguaina", "America/Argentina/Buenos_Aires", "America/Argentina/Catamarca", "America/Argentina/Cordoba",
+                        "America/Argentina/Jujuy", "America/Argentina/La_Rioja", "America/Argentina/Mendoza", "America/Argentina/Rio_Gallegos",
+                        "America/Argentina/Salta", "America/Argentina/San_Juan", "America/Argentina/San_Luis", "America/Argentina/Tucuman",
+                        "America/Argentina/Ushuaia", "America/Aruba", "America/Asuncion", "America/Atikokan",
+                        "America/Bahia", "America/Bahia_Banderas", "America/Barbados", "America/Belem",
+                        "America/Belize", "America/Blanc-Sablon", "America/Boa_Vista", "America/Bogota",
+                        "America/Boise", "America/Cambridge_Bay", "America/Campo_Grande", "America/Cancun",
+                        "America/Caracas", "America/Cayenne", "America/Cayman", "America/Chicago",
+                        "America/Chihuahua", "America/Ciudad_Juarez", "America/Costa_Rica", "America/Coyhaique",
+                        "America/Creston", "America/Cuiaba", "America/Curacao", "America/Danmarkshavn",
+                        "America/Dawson", "America/Dawson_Creek", "America/Denver", "America/Detroit",
+                        "America/Dominica", "America/Edmonton", "America/Eirunepe", "America/El_Salvador",
+                        "America/Fort_Nelson", "America/Fortaleza", "America/Glace_Bay", "America/Goose_Bay",
+                        "America/Grand_Turk", "America/Grenada", "America/Guadeloupe", "America/Guatemala",
+                        "America/Guayaquil", "America/Guyana", "America/Halifax", "America/Havana",
+                        "America/Hermosillo", "America/Indiana/Indianapolis", "America/Indiana/Knox", "America/Indiana/Marengo",
+                        "America/Indiana/Petersburg", "America/Indiana/Tell_City", "America/Indiana/Vevay", "America/Indiana/Vincennes",
+                        "America/Indiana/Winamac", "America/Inuvik", "America/Iqaluit", "America/Jamaica",
+                        "America/Juneau", "America/Kentucky/Louisville", "America/Kentucky/Monticello", "America/Kralendijk",
+                        "America/La_Paz", "America/Lima", "America/Los_Angeles", "America/Lower_Princes",
+                        "America/Maceio", "America/Managua", "America/Manaus", "America/Marigot",
+                        "America/Martinique", "America/Matamoros", "America/Mazatlan", "America/Menominee",
+                        "America/Merida", "America/Metlakatla", "America/Mexico_City", "America/Miquelon",
+                        "America/Moncton", "America/Monterrey", "America/Montevideo", "America/Montserrat",
+                        "America/Nassau", "America/New_York", "America/Nome", "America/Noronha",
+                        "America/North_Dakota/Beulah", "America/North_Dakota/Center", "America/North_Dakota/New_Salem", "America/Nuuk",
+                        "America/Ojinaga", "America/Panama", "America/Paramaribo", "America/Phoenix",
+                        "America/Port-au-Prince", "America/Port_of_Spain", "America/Porto_Velho", "America/Puerto_Rico",
+                        "America/Punta_Arenas", "America/Rankin_Inlet", "America/Recife", "America/Regina",
+                        "America/Resolute", "America/Rio_Branco", "America/Santarem", "America/Santiago",
+                        "America/Santo_Domingo", "America/Sao_Paulo", "America/Scoresbysund", "America/Sitka",
+                        "America/St_Barthelemy", "America/St_Johns", "America/St_Kitts", "America/St_Lucia",
+                        "America/St_Thomas", "America/St_Vincent", "America/Swift_Current", "America/Tegucigalpa",
+                        "America/Thule", "America/Tijuana", "America/Toronto", "America/Tortola",
+                        "America/Vancouver", "America/Whitehorse", "America/Winnipeg", "America/Yakutat",
+                        "Antarctica/Casey", "Antarctica/Davis", "Antarctica/DumontDUrville", "Antarctica/Macquarie",
+                        "Antarctica/Mawson", "Antarctica/McMurdo", "Antarctica/Palmer", "Antarctica/Rothera",
+                        "Antarctica/Syowa", "Antarctica/Troll", "Antarctica/Vostok", "Arctic/Longyearbyen",
+                        "Asia/Aden", "Asia/Almaty", "Asia/Amman", "Asia/Anadyr",
+                        "Asia/Aqtau", "Asia/Aqtobe", "Asia/Ashgabat", "Asia/Atyrau",
+                        "Asia/Baghdad", "Asia/Bahrain", "Asia/Baku", "Asia/Bangkok",
+                        "Asia/Barnaul", "Asia/Beirut", "Asia/Bishkek", "Asia/Brunei",
+                        "Asia/Chita", "Asia/Colombo", "Asia/Damascus", "Asia/Dhaka",
+                        "Asia/Dili", "Asia/Dubai", "Asia/Dushanbe", "Asia/Famagusta",
+                        "Asia/Gaza", "Asia/Hebron", "Asia/Ho_Chi_Minh", "Asia/Hong_Kong",
+                        "Asia/Hovd", "Asia/Irkutsk", "Asia/Jakarta", "Asia/Jayapura",
+                        "Asia/Jerusalem", "Asia/Kabul", "Asia/Kamchatka", "Asia/Karachi",
+                        "Asia/Kathmandu", "Asia/Khandyga", "Asia/Kolkata", "Asia/Krasnoyarsk",
+                        "Asia/Kuala_Lumpur", "Asia/Kuching", "Asia/Kuwait", "Asia/Macau",
+                        "Asia/Magadan", "Asia/Makassar", "Asia/Manila", "Asia/Muscat",
+                        "Asia/Nicosia", "Asia/Novokuznetsk", "Asia/Novosibirsk", "Asia/Omsk",
+                        "Asia/Oral", "Asia/Phnom_Penh", "Asia/Pontianak", "Asia/Pyongyang",
+                        "Asia/Qatar", "Asia/Qostanay", "Asia/Qyzylorda", "Asia/Riyadh",
+                        "Asia/Sakhalin", "Asia/Samarkand", "Asia/Seoul", "Asia/Shanghai",
+                        "Asia/Singapore", "Asia/Srednekolymsk", "Asia/Taipei", "Asia/Tashkent",
+                        "Asia/Tbilisi", "Asia/Tehran", "Asia/Thimphu", "Asia/Tokyo",
+                        "Asia/Tomsk", "Asia/Ulaanbaatar", "Asia/Urumqi", "Asia/Ust-Nera",
+                        "Asia/Vientiane", "Asia/Vladivostok", "Asia/Yakutsk", "Asia/Yangon",
+                        "Asia/Yekaterinburg", "Asia/Yerevan", "Atlantic/Azores", "Atlantic/Bermuda",
+                        "Atlantic/Canary", "Atlantic/Cape_Verde", "Atlantic/Faroe", "Atlantic/Madeira",
+                        "Atlantic/Reykjavik", "Atlantic/South_Georgia", "Atlantic/St_Helena", "Atlantic/Stanley",
+                        "Australia/Adelaide", "Australia/Brisbane", "Australia/Broken_Hill", "Australia/Darwin",
+                        "Australia/Eucla", "Australia/Hobart", "Australia/Lindeman", "Australia/Lord_Howe",
+                        "Australia/Melbourne", "Australia/Perth", "Australia/Sydney", "Europe/Amsterdam",
+                        "Europe/Andorra", "Europe/Astrakhan", "Europe/Athens", "Europe/Belgrade",
+                        "Europe/Berlin", "Europe/Bratislava", "Europe/Brussels", "Europe/Bucharest",
+                        "Europe/Budapest", "Europe/Busingen", "Europe/Chisinau", "Europe/Copenhagen",
+                        "Europe/Dublin", "Europe/Gibraltar", "Europe/Guernsey", "Europe/Helsinki",
+                        "Europe/Isle_of_Man", "Europe/Istanbul", "Europe/Jersey", "Europe/Kaliningrad",
+                        "Europe/Kirov", "Europe/Kyiv", "Europe/Lisbon", "Europe/Ljubljana",
+                        "Europe/London", "Europe/Luxembourg", "Europe/Madrid", "Europe/Malta",
+                        "Europe/Mariehamn", "Europe/Minsk", "Europe/Monaco", "Europe/Moscow",
+                        "Europe/Oslo", "Europe/Paris", "Europe/Podgorica", "Europe/Prague",
+                        "Europe/Riga", "Europe/Rome", "Europe/Samara", "Europe/San_Marino",
+                        "Europe/Sarajevo", "Europe/Saratov", "Europe/Simferopol", "Europe/Skopje",
+                        "Europe/Sofia", "Europe/Stockholm", "Europe/Tallinn", "Europe/Tirane",
+                        "Europe/Ulyanovsk", "Europe/Vaduz", "Europe/Vatican", "Europe/Vienna",
+                        "Europe/Vilnius", "Europe/Volgograd", "Europe/Warsaw", "Europe/Zagreb",
+                        "Europe/Zurich", "Indian/Antananarivo", "Indian/Chagos", "Indian/Christmas",
+                        "Indian/Cocos", "Indian/Comoro", "Indian/Kerguelen", "Indian/Mahe",
+                        "Indian/Maldives", "Indian/Mauritius", "Indian/Mayotte", "Indian/Reunion",
+                        "Pacific/Apia", "Pacific/Auckland", "Pacific/Bougainville", "Pacific/Chatham",
+                        "Pacific/Chuuk", "Pacific/Easter", "Pacific/Efate", "Pacific/Fakaofo",
+                        "Pacific/Fiji", "Pacific/Funafuti", "Pacific/Galapagos", "Pacific/Gambier",
+                        "Pacific/Guadalcanal", "Pacific/Guam", "Pacific/Honolulu", "Pacific/Kanton",
+                        "Pacific/Kiritimati", "Pacific/Kosrae", "Pacific/Kwajalein", "Pacific/Majuro",
+                        "Pacific/Marquesas", "Pacific/Midway", "Pacific/Nauru", "Pacific/Niue",
+                        "Pacific/Norfolk", "Pacific/Noumea", "Pacific/Pago_Pago", "Pacific/Palau",
+                        "Pacific/Pitcairn", "Pacific/Pohnpei", "Pacific/Port_Moresby", "Pacific/Rarotonga",
+                        "Pacific/Saipan", "Pacific/Tahiti", "Pacific/Tarawa", "Pacific/Tongatapu",
+                        "Pacific/Wake", "Pacific/Wallis", "UTC"
+                    ]
+                },
+                "address": {
+                    "label": "Registered address"
+                },
+                "phone": {
+                    "label": "Phone"
+                },
+                "email": {
+                    "label": "Email",
+                    "type": "email"
+                },
+                "website": {
+                    "label": "Website"
+                },
+                "color": {
+                    "label": "Brand colour",
+                    "help": "A hex value like #F97316. It tints this company's own payslips and documents — not the application itself. See \"Company Branding\" above this list for the app's own theme.",
+                    "type": "color"
+                },
+                "logo_path": {
+                    "label": "Logo",
+                    "help": "Attach the logo (JPG/PNG/PDF). It prints on payslips, letters and the ID card.",
+                    "type": "file"
+                },
+                "logo_text": {
+                    "label": "Logo text",
+                    "help": "Shown when there is no logo file — initials or a short name, so a document is never unbranded."
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Active",
+                        "Inactive"
+                    ]
+                },
+                "is_master": {
+                    "label": "Company Level",
+                    "options": [
+                        "1",
+                        "0"
+                    ],
+                    "help": "1 = master (the group the others belong to), 0 = subsidiary — PRS2's is_master"
+                },
+                "grievance_officer": {
+                    "label": "Grievance Officer"
+                },
+                "grievance_phone": {
+                    "label": "Grievance Phone",
+                    "pattern": "^[6-9][0-9]{9}$",
+                    "hint": "10-digit mobile"
+                },
+                "grievance_email": {
+                    "label": "Grievance Email",
+                    "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+                    "hint": "name@domain"
+                },
+                "probation_months": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 36,
+                    "label": "Probation \u2014 months",
+                    "help": "How long probation runs for this company's employees. Leave BLANK to follow the tenant default \u2014 and it keeps following it when that default changes, which is different from having the same number typed in. Setting this is what makes the five settings below this company's own."
+                },
+                "probation_days": {
+                    "type": "number",
+                    "min": 0,
+                    "max": 30,
+                    "label": "Probation \u2014 extra days",
+                    "help": "Added on top of the months, for a policy like three months and fifteen days. Only read when Probation months is set."
+                },
+                "probation_reminder_days": {
+                    "label": "Probation \u2014 reminder milestones",
+                    "help": "Whole days before the end date, comma separated, e.g. 30, 15, 7, 0. A 0 means the day itself. Only read when Probation months is set."
+                },
+                "probation_notify_hr": {
+                    "label": "Probation \u2014 tell HR",
+                    "help": "Queue a reminder to HR at each milestone."
+                },
+                "probation_notify_manager": {
+                    "label": "Probation \u2014 tell the reporting manager",
+                    "help": "Queue the same reminder to the employee's reporting manager."
+                },
+                "probation_congratulate": {
+                    "label": "Probation \u2014 congratulate on confirmation",
+                    "help": "Send the employee a note the day their probation is confirmed."
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            },
+            "description": "The employers within this organisation; every company dropdown reads this list"
+        },
+        {
+            "key": "banks",
+            "group": "Administration",
+            "label": "Banks",
+            "table": "banks",
+            "columns": [
+                "name"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                }
+            }
+        },
+        {
+            "key": "settings",
+            "group": "Administration",
+            "label": "Settings",
+            "table": "settings",
+            "columns": [
+                "value",
+                "key"
+            ],
+            "search": [],
+            "fields": {
+                "value": {
+                    "label": "Value",
+                    "type": "json",
+                    "help": "Structured data. A list looks like [\"one\",\"two\"]; a setting like {\"key\":\"value\"}."
+                },
+                "key": {
+                    "label": "Key"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "api-keys",
+            "group": "Administration",
+            "label": "API keys",
+            "table": "api_keys",
+            "columns": [
+                "name",
+                "prefix",
+                "last_used_at"
+            ],
+            "search": [
+                "name"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "required": true
+                },
+                "prefix": {
+                    "label": "Prefix"
+                },
+                "last_used_at": {
+                    "label": "Last used"
+                }
+            },
+            "permissions": {
+                "view": "tenant.settings.view",
+                "edit": "tenant.settings.update"
+            }
+        },
+        {
+            "key": "activity",
+            "group": "Administration",
+            "label": "Activity log",
+            "table": "activity_logs",
+            "columns": [
+                "created_at",
+                "user_id",
+                "action",
+                "entity",
+                "entity_id",
+                "detail"
+            ],
+            "search": [],
+            "fields": {
+                "user_id": {
+                    "label": "User"
+                },
+                "action": {
+                    "label": "Action"
+                },
+                "entity": {
+                    "label": "Entity"
+                },
+                "entity_id": {
+                    "label": "Entity"
+                },
+                "detail": {
+                    "label": "Detail"
+                }
+            }
+        },
+        {
+            "key": "job-openings",
+            "group": "Recruitment",
+            "label": "Job openings",
+            "table": "job_openings",
+            "columns": [
+                "req_code",
+                "title",
+                "department",
+                "openings",
+                "filled",
+                "status"
+            ],
+            "search": [
+                "req_code",
+                "title"
+            ],
+            "fields": {
+                "req_code": {
+                    "label": "Requisition",
+                    "required": true
+                },
+                "title": {
+                    "label": "Role",
+                    "required": true
+                },
+                "department": {
+                    "label": "Department"
+                },
+                "location": {
+                    "label": "Location"
+                },
+                "openings": {
+                    "label": "Positions",
+                    "type": "number"
+                },
+                "filled": {
+                    "label": "Filled",
+                    "type": "number"
+                },
+                "engagement": {
+                    "label": "Engagement",
+                    "options": [
+                        "On-roll",
+                        "Off-roll commission agent",
+                        "Contract",
+                        "Intern"
+                    ]
+                },
+                "ctc_min": {
+                    "label": "CTC from (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "ctc_max": {
+                    "label": "CTC to (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "priority": {
+                    "label": "Priority",
+                    "options": [
+                        "Low",
+                        "Normal",
+                        "High",
+                        "Critical"
+                    ]
+                },
+                "target_date": {
+                    "label": "Wanted by",
+                    "type": "date"
+                },
+                "justification": {
+                    "label": "Why this role",
+                    "type": "textarea"
+                },
+                "requested_by": {
+                    "label": "Raised by"
+                },
+                "approval_status": {
+                    "label": "Requisition approval",
+                    "options": [
+                        "Pending",
+                        "Approved",
+                        "Rejected",
+                        "On hold"
+                    ]
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Open",
+                        "On hold",
+                        "Filled",
+                        "Closed"
+                    ],
+                    "required": true
+                },
+                "description": {
+                    "label": "Description",
+                    "type": "textarea"
+                }
+            },
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            }
+        },
+        {
+            "key": "candidates",
+            "group": "Recruitment",
+            "label": "Candidates",
+            "table": "recruitment",
+            "columns": [
+                "name",
+                "position",
+                "stage",
+                "mobile",
+                "source",
+                "rating"
+            ],
+            "search": [
+                "name",
+                "mobile"
+            ],
+            "fields": {
+                "name": {
+                    "label": "Candidate",
+                    "required": true
+                },
+                "job_id": {
+                    "label": "Against opening",
+                    "lookup": {
+                        "table": "job_openings",
+                        "value": "id",
+                        "show": [
+                            "title",
+                            "department"
+                        ]
+                    }
+                },
+                "position": {
+                    "label": "Role applied for"
+                },
+                "stage": {
+                    "label": "Stage",
+                    "required": true,
+                    "options": [
+                        "Sourced",
+                        "Applied",
+                        "Screening",
+                        "Shortlisted",
+                        "Interviewing",
+                        "Selected",
+                        "Offered",
+                        "Offer accepted",
+                        "Joined",
+                        "Rejected",
+                        "Dropped out",
+                        "Talent pool"
+                    ]
+                },
+                "source": {
+                    "label": "Source",
+                    "options": [
+                        "Referral",
+                        "Job portal",
+                        "Walk-in",
+                        "Consultant",
+                        "Campus",
+                        "Social media",
+                        "Internal",
+                        "Hiring drive"
+                    ]
+                },
+                "mobile": {
+                    "label": "Mobile",
+                    "type": "tel"
+                },
+                "email": {
+                    "label": "Email",
+                    "type": "email"
+                },
+                "location": {
+                    "label": "Location"
+                },
+                "experience_years": {
+                    "label": "Experience (years)",
+                    "type": "number"
+                },
+                "current_company": {
+                    "label": "Current employer"
+                },
+                "current_designation": {
+                    "label": "Current designation"
+                },
+                "current_ctc": {
+                    "label": "Current CTC (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "expected_ctc": {
+                    "label": "Expected CTC (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "skills": {
+                    "label": "Skills",
+                    "type": "textarea"
+                },
+                "resume_url": {
+                    "label": "CV link"
+                },
+                "rating": {
+                    "label": "Rating out of 5",
+                    "type": "number"
+                },
+                "applied_on": {
+                    "label": "Applied on",
+                    "type": "date"
+                },
+                "interview_remarks": {
+                    "label": "Interview remarks",
+                    "type": "textarea"
+                },
+                "proposed_ctc": {
+                    "label": "Proposed CTC (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "offered_ctc": {
+                    "label": "Offered CTC (₹)",
+                    "type": "number",
+                    "permission": "employee.salary.view"
+                },
+                "offer_incentive": {
+                    "label": "Incentive offered (₹)",
+                    "type": "number"
+                },
+                "joining_bonus": {
+                    "label": "Joining bonus (₹)",
+                    "type": "number"
+                },
+                "offer_doj": {
+                    "label": "Offered joining date",
+                    "type": "date"
+                },
+                "offer_status": {
+                    "label": "Offer",
+                    "options": [
+                        "Not made",
+                        "Made",
+                        "Accepted",
+                        "Declined",
+                        "Withdrawn",
+                        "Lapsed"
+                    ]
+                },
+                "offer_notes": {
+                    "label": "Offer notes",
+                    "type": "textarea"
+                },
+                "reject_reason": {
+                    "label": "Reason, if rejected"
+                },
+                "notes": {
+                    "label": "Notes",
+                    "type": "textarea"
+                },
+                "pool": {
+                    "label": "Keep in talent pool",
+                    "type": "checkbox"
+                }
+            },
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            }
+        },
+        {
+            "key": "interviews",
+            "group": "Recruitment",
+            "label": "Interviews",
+            "table": "interviews",
+            "columns": [
+                "candidate_id",
+                "round",
+                "round_label",
+                "scheduled_at",
+                "status",
+                "recommendation"
+            ],
+            "search": [],
+            "fields": {
+                "candidate_id": {
+                    "label": "Candidate",
+                    "lookup": {
+                        "table": "recruitment",
+                        "value": "id",
+                        "show": [
+                            "name",
+                            "position"
+                        ]
+                    },
+                    "required": true
+                },
+                "round": {
+                    "label": "Round",
+                    "type": "number"
+                },
+                "round_label": {
+                    "label": "What round this is"
+                },
+                "scheduled_at": {
+                    "label": "When",
+                    "type": "datetime-local"
+                },
+                "mode": {
+                    "label": "Mode",
+                    "options": [
+                        "In person",
+                        "Telephone",
+                        "Video",
+                        "Assessment"
+                    ]
+                },
+                "panel": {
+                    "label": "Panel"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Scheduled",
+                        "Held",
+                        "No show",
+                        "Cancelled",
+                        "Rescheduled"
+                    ]
+                },
+                "score": {
+                    "label": "Score",
+                    "type": "number"
+                },
+                "recommendation": {
+                    "label": "Recommendation",
+                    "options": [
+                        "Strong yes",
+                        "Yes",
+                        "On the fence",
+                        "No",
+                        "Strong no"
+                    ]
+                },
+                "feedback": {
+                    "label": "Feedback",
+                    "type": "textarea"
+                }
+            },
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            }
+        },
+        {
+            "key": "hiring-drives",
+            "group": "Recruitment",
+            "label": "Hiring drives",
+            "table": "hiring_drives",
+            "columns": [
+                "title",
+                "drive_date",
+                "venue",
+                "status",
+                "coordinator_name"
+            ],
+            "search": [
+                "title"
+            ],
+            "fields": {
+                "title": {
+                    "label": "Drive",
+                    "required": true
+                },
+                "job_id": {
+                    "label": "For opening",
+                    "lookup": {
+                        "table": "job_openings",
+                        "value": "id",
+                        "show": [
+                            "title",
+                            "department"
+                        ]
+                    }
+                },
+                "position": {
+                    "label": "Role"
+                },
+                "type": {
+                    "label": "Type",
+                    "options": [
+                        "Walk-in",
+                        "Campus",
+                        "Referral day",
+                        "Consultant",
+                        "Virtual"
+                    ]
+                },
+                "drive_date": {
+                    "label": "From",
+                    "type": "date"
+                },
+                "date_to": {
+                    "label": "To",
+                    "type": "date"
+                },
+                "time_from": {
+                    "label": "Starts",
+                    "type": "time"
+                },
+                "time_to": {
+                    "label": "Ends",
+                    "type": "time"
+                },
+                "venue": {
+                    "label": "Venue"
+                },
+                "location_link": {
+                    "label": "Map link"
+                },
+                "coordinator_name": {
+                    "label": "Coordinator"
+                },
+                "coordinator_phone": {
+                    "label": "Coordinator phone",
+                    "type": "tel"
+                },
+                "instructions": {
+                    "label": "Instructions to candidates",
+                    "type": "textarea"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Planned",
+                        "Open",
+                        "Running",
+                        "Closed",
+                        "Cancelled"
+                    ]
+                }
+            },
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            }
+        },
+        {
+            "key": "onboarding-tracker",
+            "group": "Recruitment",
+            "label": "Onboarding",
+            "table": "onboarding",
+            "columns": [
+                "employee",
+                "company_name",
+                "stage",
+                "joined_on",
+                "status"
+            ],
+            "search": [
+                "employee"
+            ],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "lookup": {
+                        "table": "employees",
+                        "value": "id",
+                        "show": [
+                            "emp_code",
+                            "name"
+                        ]
+                    }
+                },
+                "employee": {
+                    "label": "Name"
+                },
+                "company_name": {
+                    "label": "Employer"
+                },
+                "stage": {
+                    "label": "Stage",
+                    "options": [
+                        "Offer accepted",
+                        "Documents pending",
+                        "Documents verified",
+                        "Background check",
+                        "Ready to join",
+                        "Joined",
+                        "Dropped"
+                    ]
+                },
+                "joined_on": {
+                    "label": "Joined on",
+                    "type": "date"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "In progress",
+                        "Complete",
+                        "Stalled",
+                        "Dropped"
+                    ]
+                }
+            },
+            "permissions": {
+                "view": "employee.view",
+                "edit": "employee.update"
+            }
+        },
+        {
+            "key": "training-content",
+            "group": "Learning",
+            "label": "Training content",
+            "table": "training_content",
+            "columns": [
+                "program_id",
+                "module",
+                "subject",
+                "hours"
+            ],
+            "search": [
+                "subject"
+            ],
+            "fields": {
+                "program_id": {
+                    "label": "Program"
+                },
+                "module": {
+                    "label": "Module",
+                    "required": true
+                },
+                "subject": {
+                    "label": "Subject",
+                    "required": true
+                },
+                "hours": {
+                    "label": "Hours",
+                    "type": "number"
+                },
+                "content": {
+                    "label": "Content",
+                    "type": "textarea"
+                }
+            }
+        },
+        {
+            "key": "policies",
+            "group": "Learning",
+            "label": "Policy repository",
+            "table": "policies",
+            "columns": [
+                "title",
+                "category",
+                "version",
+                "status",
+                "review_due"
+            ],
+            "search": [
+                "title"
+            ],
+            "fields": {
+                "title": {
+                    "label": "Title",
+                    "required": true
+                },
+                "category": {
+                    "label": "Category",
+                    "options": [
+                        "Recovery / Collection Policy",
+                        "Code of Conduct",
+                        "SOP",
+                        "Data Privacy",
+                        "Grievance Redressal",
+                        "HR Policy",
+                        "Other"
+                    ]
+                },
+                "version": {
+                    "label": "Version",
+                    "help": "e.g. v1.0"
+                },
+                "owner": {
+                    "label": "Owner"
+                },
+                "effective_date": {
+                    "label": "Effective date"
+                },
+                "board_approved_on": {
+                    "label": "Approved on"
+                },
+                "review_due": {
+                    "label": "Review due"
+                },
+                "ack_required": {
+                    "label": "Acknowledgement required",
+                    "type": "checkbox"
+                },
+                "reference": {
+                    "label": "Document link / reference"
+                },
+                "summary": {
+                    "label": "Summary",
+                    "type": "textarea"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Draft",
+                        "Active",
+                        "Superseded"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "pf-esi-register",
+            "group": "Statutory",
+            "label": "PF & ESI registrations",
+            "table": "pf_esi_register",
+            "columns": [
+                "employee_id",
+                "uan",
+                "pf_registered",
+                "esi_registered",
+                "registered_on"
+            ],
+            "search": [
+                "uan"
+            ],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "required": true
+                },
+                "uan": {
+                    "permission": "employee.field.sensitive.view",
+                    "label": "UAN"
+                },
+                "esi_ip_number": {
+                    "label": "ESI IP number"
+                },
+                "pf_registered": {
+                    "label": "PF registered",
+                    "type": "checkbox"
+                },
+                "esi_registered": {
+                    "label": "ESI registered",
+                    "type": "checkbox"
+                },
+                "registered_on": {
+                    "label": "Registered on"
+                }
+            }
+        },
+        {
+            "key": "tds-declarations",
+            "group": "Statutory",
+            "label": "TDS declarations",
+            "table": "tds_declarations",
+            "columns": [
+                "employee_id",
+                "financial_year",
+                "regime",
+                "declared_amount",
+                "verified"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "required": true
+                },
+                "financial_year": {
+                    "label": "Financial year",
+                    "help": "e.g. 2026-27"
+                },
+                "regime": {
+                    "label": "Tax regime",
+                    "options": [
+                        "Old",
+                        "New"
+                    ]
+                },
+                "declared_amount": {
+                    "permission": "payroll.view",
+                    "label": "Declared investment / exemption amount (₹)",
+                    "type": "number"
+                },
+                "verified": {
+                    "label": "Verified by HR",
+                    "type": "checkbox"
+                },
+                "verified_on": {
+                    "label": "Verified on"
+                }
+            }
+        },
+        {
+            "key": "bonus-register",
+            "group": "Statutory",
+            "label": "Bonus register",
+            "table": "bonus_register",
+            "columns": [
+                "employee_id",
+                "financial_year",
+                "eligible_salary",
+                "bonus_amount",
+                "status"
+            ],
+            "search": [],
+            "fields": {
+                "employee_id": {
+                    "label": "Employee",
+                    "required": true
+                },
+                "financial_year": {
+                    "label": "Financial year",
+                    "help": "e.g. 2026-27"
+                },
+                "eligible_salary": {
+                    "permission": "payroll.view",
+                    "label": "Bonus-eligible salary (₹)",
+                    "type": "number"
+                },
+                "bonus_pct": {
+                    "label": "Bonus %",
+                    "type": "number"
+                },
+                "bonus_amount": {
+                    "permission": "payroll.view",
+                    "label": "Bonus amount (₹)",
+                    "type": "number"
+                },
+                "paid_on": {
+                    "label": "Paid on"
+                },
+                "status": {
+                    "label": "Status",
+                    "options": [
+                        "Pending",
+                        "Paid"
+                    ]
+                }
+            }
+        },
+        {
+            "key": "min-wages",
+            "group": "Statutory",
+            "label": "Minimum wages",
+            "table": "min_wages",
+            "columns": [
+                "state",
+                "category",
+                "minimum_wage",
+                "effective_from"
+            ],
+            "search": [
+                "state"
+            ],
+            "fields": {
+                "state": {
+                    "label": "State",
+                    "required": true
+                },
+                "category": {
+                    "label": "Skill category",
+                    "options": [
+                        "Unskilled",
+                        "Semi-skilled",
+                        "Skilled",
+                        "Highly skilled"
+                    ]
+                },
+                "minimum_wage": {
+                    "label": "Minimum wage (₹/month)",
+                    "type": "number"
+                },
+                "effective_from": {
+                    "label": "Effective from"
+                }
+            }
+        }
+    ],
+    "fields_note": "Add a `fields` object to any module to customise how it is edited. Every key is a column; every property is optional. label — what to call it in your words. type — text, number, date, datetime-local, time, email, tel, textarea, checkbox. options — turns it into a dropdown and REFUSES anything else. required — refused when empty, with the label in the message. readonly — shown, never written. hidden — kept off the form entirely. help — a line under the field. A key naming a column the table does not have is reported ON THE SCREEN, never silently dropped. lookup — {table, value, show[]} turns the field into a dropdown of rows from ANOTHER table, showing names instead of ids in BOTH the form and the list, and refusing an id that points at nothing. The list is read through the tenant-scoped store, because a dropdown is the easiest place to leak another customer's names. permissions — {view, edit} names the permission this module needs; 'can see the employee list' and 'can see everybody's salary' are not the same permission, and giving them one name is how the second gets granted by somebody who meant the first."
+}

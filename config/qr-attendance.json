@@ -1,0 +1,16 @@
+{
+ "note": "QR ATTENDANCE (owner, 9 Nov 2026) — SmartEPT's QR Attendance (QRONEX) concept without Gate-to-PC. These are the shipped defaults and the allowed ranges; each company's own values are saved on Time & Attendance → QR Attendance as a versioned customisation (key qr-attendance). A gate screen shows a code that changes every few seconds; the employee scans it in the SmartPRS3 mobile app; the server checks the code, its age, the gate, the employee's branch, GPS accuracy and distance before the punch is recorded.",
+ "customisation_key": "qr-attendance",
+ "sources": {
+  "standard": "Standard (biometric / web & app)",
+  "smartept": "SmartEPT punch (SmartEPT API)",
+  "qr": "QR Attendance (gate QR in the app)"
+ },
+ "settings": {
+  "interval_s":           {"label": "New code every (seconds)",                    "short": "Code (s)", "default": 3,   "min": 2,  "max": 30},
+  "grace_s":              {"label": "Accept a just-expired code for (seconds)",    "short": "Grace (s)", "default": 5,   "min": 0,  "max": 15},
+  "duplicate_window_min": {"label": "Ignore repeat scans within (minutes)",        "short": "Repeat (min)", "default": 2,   "min": 0,  "max": 60},
+  "gps_accuracy_m":       {"label": "Required GPS accuracy (metres)",              "short": "GPS (m)", "default": 50,  "min": 10, "max": 500},
+  "radius_m":             {"label": "Default gate geo-fence radius (metres)",      "short": "Radius (m)", "default": 150, "min": 30, "max": 2000}
+ }
+}

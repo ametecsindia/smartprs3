@@ -1,0 +1,113 @@
+{
+  "note": "WHAT COUNTS AS A DAY'S ATTENDANCE IS A BUSINESS DECISION, AND UNTIL THIS FILE IT WAS A LINE OF PHP. `Surface\\Attendance::payableDays()` said `workedMinutes > 0` and its own comment admitted the debt: 'that threshold is a policy decision and in the real product it is a rule the tenant publishes'. SmartPRS 2 has the same threshold spread across three files and a stored procedure, which is why 'we count a 3-hour day as half' is a release there. Here it is these rules, evaluated by `Platform\\Rules\\Engine` — the same engine, the same SPX, the same trace the rule tests drive. Editing this file changes what the attendance screen says about every day, with no deployment and no code.",
+  "decision_point": "attendance.day.classify",
+  "policy": "highest_priority_only",
+  "priority_note": "ONE STATUS PER DAY, so the decision point's conflict policy is highest-priority-only and these numbers are the whole order. They are spaced by tens on purpose: a tenant inserting 'contractors are ABSENT below six hours' needs a gap to put it in, and renumbering published rules to make room is how a rule that used to win quietly stops winning.",
+  "statuses": {
+    "note": "WHAT A STATUS IS WORTH IN PAY, in HALVES OF A DAY and never a decimal. Half a day is 1, a whole day is 2, and the arithmetic downstream stays in whole numbers all the way to the payslip — because 0.5 is a float, floats are how SmartPRS 2 pays a rupee out on a rounding error, and law 7 says money is exact. A status with no entry here is REFUSED rather than defaulted: the day payroll silently treats an unrecognised status as a full day is the day somebody is paid for a month they did not work, and nothing on any screen says so. ON_LEAVE is deliberately 0 — leave is counted by the leave ledger, and counting it here as well is how one day is paid twice. WEEKLY_OFF and HOLIDAY were priced here from the start and were UNREACHABLE: no rule could produce either, because the two symbols that decide it were never supplied to the engine. A status priced in the policy that no rule can reach is the same defect as a permission in the catalogue that no role holds — it reads as configured, it is inert, and every check that walks past it sees a table with an entry in it.",
+    "PRESENT": 2,
+    "HALF_DAY": 1,
+    "ABSENT": 0,
+    "WEEKLY_OFF": 2,
+    "HOLIDAY": 2,
+    "ON_LEAVE": 0
+  },
+  "rules": [
+    {
+      "code": "ATT-HOLIDAY",
+      "name": "A declared holiday is paid",
+      "description": "A date on the working calendar's holiday list is HOLIDAY and paid in full, whether or not anybody punched. It sits above the weekly-off rule because a holiday that lands on a Sunday is still reported as the holiday — which is the answer somebody actually wants when they ask why a day was paid.",
+      "priority": 130,
+      "when": "day.is_holiday",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "HOLIDAY"
+        }
+      ]
+    },
+    {
+      "code": "ATT-WEEKLY-OFF",
+      "name": "A weekly off is paid",
+      "description": "A day the calendar names as a weekly off is WEEKLY_OFF and paid in full. Above every punch-counting rule below it: somebody who comes in on their day off has worked, and the day was still not a working day, and paying it as a shortfall because they left after two hours is the kind of arithmetic that ends in a dispute.",
+      "priority": 120,
+      "when": "day.is_weekly_off",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "WEEKLY_OFF"
+        }
+      ]
+    },
+    {
+      "code": "ATT-NO-PUNCH",
+      "name": "No punch at all is absent",
+      "description": "A day with no punch in either direction is ABSENT. This is first because every rule below it reads worked minutes, and a day with no punches has zero worked minutes for a reason that is not shortfall.",
+      "priority": 100,
+      "when": "attendance.punch_count = 0",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "ABSENT"
+        }
+      ]
+    },
+    {
+      "code": "ATT-OPEN-SHIFT",
+      "name": "Punched in, never punched out",
+      "description": "An in-punch with no out-punch is HALF_DAY and flagged for review, never ABSENT. The person was demonstrably at work; what is missing is a punch, not a day. Marking it absent is the SmartPRS 2 behaviour and it is the single largest source of attendance disputes, because the correction arrives after the payslip.",
+      "priority": 90,
+      "when": "attendance.has_in AND NOT attendance.has_out",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "HALF_DAY"
+        },
+        {
+          "action": "FLAG_FOR_REVIEW",
+          "reason": "missing_out_punch",
+          "severity": "NORMAL"
+        }
+      ]
+    },
+    {
+      "code": "ATT-FULL-DAY",
+      "name": "Worked the shift",
+      "description": "Worked minutes at or above the shift's full-day minutes is PRESENT. The threshold is the shift's own, not a number in this file, so a six-hour shift and a nine-hour shift do not need two rules.",
+      "priority": 50,
+      "when": "attendance.worked_minutes >= shift.full_day_minutes",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "PRESENT"
+        }
+      ]
+    },
+    {
+      "code": "ATT-HALF-DAY",
+      "name": "Worked at least half the shift",
+      "description": "Worked minutes at or above the shift's half-day minutes, but under the full day, is HALF_DAY. Below the full-day rule and above the catch-all, which is the only thing that makes the order between them a decision rather than an accident.",
+      "priority": 40,
+      "when": "attendance.worked_minutes >= shift.half_day_minutes",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "HALF_DAY"
+        }
+      ]
+    },
+    {
+      "code": "ATT-SHORTFALL",
+      "name": "Punched, but under half the shift",
+      "description": "Anything that reaches this rule was punched and worked less than half the shift, and it is ABSENT. Written TRUE explicitly rather than left as a fall-through: an unmatched day would otherwise be classified by whatever the caller does with no answer, and SmartPRS 2's `l1_cut` is exactly that fall-through, which nobody can find and nobody can explain.",
+      "priority": 10,
+      "when": "TRUE",
+      "then": [
+        {
+          "action": "SET_STATUS",
+          "code": "ABSENT"
+        }
+      ]
+    }
+  ]
+}

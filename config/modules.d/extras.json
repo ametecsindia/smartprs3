@@ -1,0 +1,29 @@
+{"modules": [
+  {
+    "key": "assets",
+    "group": "People",
+    "label": "Assets",
+    "description": "Asset register — what is issued to whom. The code is unique; Issue / Return moves an asset and stamps who and when (Assets → Issue & Return). A retired asset leaves this list.",
+    "table": "assets",
+    "columns": ["asset_id", "asset_type", "make_model", "serial_no", "employer_company_id", "branch_id", "issued_to_employee_id", "issue_date", "condition", "status"],
+    "search": ["asset_id", "asset_type", "make_model", "serial_no"],
+    "unique": ["asset_id"],
+    "permissions": {"view": "employee.view", "edit": "employee.update"},
+    "fields": {
+      "asset_id": {"label": "Asset code", "required": true, "help": "The tag on the asset, e.g. LAP-0042. Unique across your organisation"},
+      "asset_type": {"label": "Category", "required": true, "help": "Laptop / Phone / SIM / Vehicle / Furniture…"},
+      "employer_company_id": {"label": "Company", "empty": "— none —"},
+      "branch_id": {"label": "Branch", "empty": "— none —"},
+      "make_model": {"label": "Make / model", "help": "e.g. Dell Latitude 5420"},
+      "serial_no": {"label": "Serial number"},
+      "purchase_date": {"label": "Purchase date", "type": "date"},
+      "cost": {"label": "Cost (₹)", "type": "number", "min": 0, "help": "Purchase cost, exact to the paisa", "permission": "employee.salary.view"},
+      "issued_to_employee_id": {"label": "Assigned to", "readonly": true, "help": "Set by Asset Issue & Returns only", "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+      "issue_date": {"label": "Assigned on", "type": "date", "readonly": true},
+      "return_date": {"label": "Returned on", "type": "date", "readonly": true},
+      "condition": {"label": "Condition", "options": {"new": "New", "good": "Good", "fair": "Fair", "damaged": "Damaged", "lost": "Lost"}},
+      "status": {"label": "Status", "readonly": true, "options": {"in stock": "Available", "assigned": "Issued", "under repair": "Under repair", "lost": "Lost", "retired": "Retired"}, "help": "A new item starts Available; only Asset Stock and Asset Issue & Returns change it"},
+      "notes": {"label": "Notes", "type": "textarea"}
+    }
+  }
+]}

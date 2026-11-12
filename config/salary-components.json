@@ -1,0 +1,340 @@
+{
+    "note": "THE COMPONENT CATALOGUE \u2014 what a customer may put on a payslip, and which side of it. It arrived as a 25-entry object literal inside the configuration screen's JavaScript, which is a business list living in code twice over: in code, and in the ONE file a customer never edits. A customer who calls their conveyance allowance something else, or who has a component this list has never heard of, would have needed a release. Here it is a file. `kind` decides which side of the payslip a component lands on and is not a label: an earning added to the deductions column is a payslip that adds up and is wrong.",
+    "kinds": {
+        "earning": "Paid to the employee and shown in the earnings column.",
+        "deduction": "Taken from the employee's pay and shown in the deductions column.",
+        "employer_cost": "Paid by the employer ON TOP of the salary. It never reduces net pay and it is never an earning \u2014 showing it in either column overstates one of them, which is how a CTC letter and a payslip come to disagree by exactly the employer's PF contribution."
+    },
+    "components": [
+        {
+            "code": "BASIC",
+            "label": "Basic",
+            "kind": "earning",
+            "government": {
+                "calculation": "percent_of",
+                "basis_column": "CTC",
+                "percent": "50",
+                "source": "Code on Wages 2019 s.2(y), in force 21-11-2025: wages (Basic + DA + retaining allowance) must be at least 50% of total remuneration, so Basic is 50% of Gross when there is no DA."
+            }
+        },
+        {
+            "code": "HRA",
+            "label": "House Rent Allowance (HRA)",
+            "kind": "earning",
+            "government": true
+        },
+        {
+            "code": "DA",
+            "label": "Dearness Allowance (DA)",
+            "kind": "earning"
+        },
+        {
+            "code": "CONVEYANCE",
+            "label": "Conveyance Allowance",
+            "kind": "earning"
+        },
+        {
+            "code": "MEDICAL",
+            "label": "Medical Allowance",
+            "kind": "earning"
+        },
+        {
+            "code": "LTA",
+            "label": "Leave Travel Allowance (LTA)",
+            "kind": "earning"
+        },
+        {
+            "code": "SPECIAL",
+            "label": "Special Allowance",
+            "kind": "earning"
+        },
+        {
+            "code": "CCA",
+            "label": "City Compensatory Allowance",
+            "kind": "earning"
+        },
+        {
+            "code": "OT",
+            "label": "Overtime Pay",
+            "kind": "earning",
+            "hours_based": true,
+            "note": "The only component whose formula may use # Hours, and the only one that carries a Max OT hours cap. The cap is here rather than in the screen because 'we allow thirty overtime hours a month' is a policy somebody sets."
+        },
+        {
+            "code": "BONUS",
+            "label": "Performance Bonus",
+            "kind": "earning"
+        },
+        {
+            "code": "OTHER_EARNING",
+            "label": "Other Allowance",
+            "kind": "earning"
+        },
+        {
+            "code": "PF_EMPLOYEE",
+            "payslip_label": "EPF",
+            "label": "Provident Fund (Employee)",
+            "kind": "deduction",
+            "government": true,
+            "statutory": true
+        },
+        {
+            "code": "ESI_EMPLOYEE",
+            "label": "Employee State Insurance (Employee)",
+            "kind": "deduction",
+            "government": true,
+            "statutory": true
+        },
+        {
+            "code": "PT",
+            "label": "Professional Tax",
+            "kind": "deduction",
+            "government": true,
+            "statutory": true
+        },
+        {
+            "code": "TDS",
+            "payslip_label": "TDS",
+            "label": "Income Tax (TDS)",
+            "kind": "deduction",
+            "statutory": true
+        },
+        {
+            "code": "LOAN",
+            "label": "Loan Recovery",
+            "kind": "deduction"
+        },
+        {
+            "code": "DRA_DEDUCTION",
+            "label": "DRA Deduction",
+            "kind": "deduction"
+        },
+        {
+            "code": "PCC_DEDUCTION",
+            "label": "PCC Deduction",
+            "kind": "deduction"
+        },
+        {
+            "code": "OTHER_DEDUCTION",
+            "label": "Other Deduction",
+            "kind": "deduction"
+        },
+        {
+            "code": "ASSET_DAMAGE_RECOVERY",
+            "label": "Asset Damage Recovery",
+            "kind": "deduction"
+        },
+        {
+            "code": "PF_EMPLOYER",
+            "label": "Provident Fund (Employer)",
+            "kind": "employer_cost",
+            "government": true,
+            "statutory": true,
+            "same_as": "PF_EMPLOYEE"
+        },
+        {
+            "code": "ESI_EMPLOYER",
+            "label": "Employee State Insurance (Employer)",
+            "kind": "employer_cost",
+            "government": true,
+            "statutory": true,
+            "same_as": "ESI_EMPLOYEE",
+            "same_as_government_only": true
+        },
+        {
+            "code": "NPS_EMPLOYER",
+            "label": "NPS — Employer contribution (old 80CCD(2))",
+            "kind": "employer_cost"
+        },
+        {
+            "code": "GRATUITY",
+            "label": "Gratuity",
+            "kind": "employer_cost",
+            "statutory": true
+        },
+        {
+            "code": "GRATUITY_PAYOUT",
+            "label": "Gratuity (on exit)",
+            "kind": "earning",
+            "statutory": true
+        },
+        {
+            "code": "LWF_EMPLOYER",
+            "label": "Labour Welfare Fund (Employer)",
+            "kind": "employer_cost",
+            "statutory": true
+        },
+        {
+            "code": "EMPLOYER_BONUS",
+            "label": "Employer Bonus Contribution",
+            "kind": "employer_cost"
+        },
+        {
+            "code": "GROUP_INSURANCE",
+            "label": "Group Insurance (Employer)",
+            "kind": "employer_cost"
+        },
+        {
+            "code": "INCENTIVE",
+            "label": "Incentive",
+            "kind": "earning"
+        },
+        {
+            "code": "TRAVELLING",
+            "label": "Allowance",
+            "kind": "earning"
+        },
+        {
+            "code": "LEAVE_ENCASHMENT",
+            "label": "Leave Encashment",
+            "kind": "earning"
+        },
+        {
+            "code": "REIMBURSEMENT",
+            "label": "Expense Reimbursement",
+            "kind": "earning"
+        },
+        {
+            "code": "TDS_INCENTIVE",
+            "label": "TDS on Incentive (194H)",
+            "kind": "deduction"
+        },
+        {
+            "code": "COMMISSION",
+            "input_only": true,
+            "label": "Commission",
+            "kind": "earning"
+        },
+        {
+            "code": "TDS_COMMISSION",
+            "input_only": true,
+            "label": "TDS on Commission (194H)",
+            "kind": "deduction"
+        },
+        {
+            "code": "CLAWBACK",
+            "input_only": true,
+            "label": "Commission / Incentive Clawback",
+            "kind": "deduction"
+        },
+        {
+            "code": "ESCALATION_DEDUCTION",
+            "label": "Escalation Deduction",
+            "kind": "deduction"
+        },
+    {"code": "DRA_REFUND", "label": "DRA Deduction Refund", "kind": "earning"},
+    {"code": "PCC_REFUND", "label": "PCC Deduction Refund", "kind": "earning"}
+    ],
+    "statutory_note": "A component marked `statutory` is one whose RATE is law, not policy. This build computes none of them: config/statutory is a synthetic pack whose figures are machinery evidence and state no law, and nothing here invents a PF, ESI, PT or gratuity rate. Marking them is what lets the screen say so on the row rather than letting somebody type 12% into a field and believe the product agrees with them.",
+    "calculations": [
+        {
+            "code": "percent_of",
+            "label": "% OF",
+            "needs": [
+                "percent",
+                "basis_column"
+            ],
+            "note": "A percentage of CTC or of Basic. The basis is asked for rather than assumed, because '40% HRA' means two different amounts depending on which it is of and every customer means a different one."
+        },
+        {
+            "code": "flat",
+            "label": "Flat",
+            "needs": [
+                "amount"
+            ]
+        },
+        {
+            "code": "monthly",
+            "label": "Monthly",
+            "needs": [
+                "amount"
+            ],
+            "note": "A flat amount stated per month. Kept apart from Flat because a flat figure on an annual structure and a flat figure per month differ by twelve, which is the exact defect that made every payslip in this product twelve times too high once already."
+        },
+        {
+            "code": "manual",
+            "label": "Manual calculation",
+            "needs": [
+                "branches"
+            ],
+            "note": "Computed as N IF conditions, each with its own calculation, checked in order, plus a default ELSE calculation (owner request, 12 Sep 2026, widened same day to n conditions with n calculations and comparison/conditional operators). Add at least one condition on the Salary Structure screen. A plain term-by-term formula with no condition is not yet computed."
+        },
+        {
+            "code": "balance",
+            "label": "Balance",
+            "needs": [],
+            "note": "Whatever is left of the gross after every other component. Exactly one component may be the balance \u2014 two of them is an unsolvable structure, and the screen refuses it."
+        },
+        {
+            "code": "slab",
+            "label": "Slab",
+            "needs": [
+                "slab"
+            ]
+        },
+        {
+            "code": "employee_status",
+            "label": "Basis Employee status",
+            "needs": [
+                "status"
+            ]
+        },
+        {
+            "code": "employee_gender",
+            "label": "Employee Gender",
+            "needs": [
+                "gender"
+            ],
+            "note": "A treatment per gender (Male, Female, Other / not set): Exempt, Flat amount, % of Gross/Basic, or As per Government rules (owner request, 13 Oct 2026). E.g. Professional Tax exempt for women."
+        },
+        {
+            "code": "same_as",
+            "label": "Same as",
+            "needs": [],
+            "note": "Offered only on a component that names its pair with \"same_as\" (Provident Fund (Employer) -> Provident Fund (Employee)). The employee's own winning rule for the pair is used as-is, so slabs, percentages and criteria are set once (owner request, 16 Oct 2026)."
+        }
+    ],
+    "status_fields": [
+        {
+            "code": "pcc_status",
+            "label": "PCC Status",
+            "column": "pcc_status"
+        },
+        {
+            "code": "dra_status",
+            "label": "DRA Status",
+            "column": "dra_status"
+        },
+        {
+            "code": "pan",
+            "label": "PAN",
+            "column": "pan"
+        },
+        {
+            "code": "national_id",
+            "label": "National ID",
+            "column": "national_id"
+        }
+    ],
+    "status_note": "Each of these is a REAL COLUMN on `employees`, named here so a rule cannot be written against a field the table does not have. That check is the difference between a deduction that applies to nobody and a deduction that applies to nobody VISIBLY.",
+    "system_values": [
+        {
+            "code": "calendar_days",
+            "label": "Number of calendar days in month"
+        },
+        {
+            "code": "payable_days",
+            "label": "Attendance (payable days)"
+        },
+        {
+            "code": "working_days",
+            "label": "Number of working days in month"
+        },
+        {
+            "code": "hours",
+            "label": "# Hours",
+            "hours_only": true
+        }
+    ],
+    "system_values_note": "Calendar days and working days give different answers for the same month and the same attendance, which is why config/calendar.json makes the proration basis a declared choice. Offering both here is deliberate: a formula that says which one it means is one somebody can argue with."
+}

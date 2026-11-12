@@ -1,0 +1,10 @@
+{
+ "note": "Learning & Knowledge → HR Helpdesk. SmartPRS 2's ticket vocabulary: an employee raises a ticket with a subject, category and description and sees only their own; HR sets priority, assignee, status and a reply the employee sees. `closed_statuses` are the ones that count as done on the tiles and that stamp `resolved_at`.",
+ "categories": ["Payroll", "Leave", "Attendance", "IT", "Documents", "Policy", "Other"],
+ "priorities": {"low": "Low", "medium": "Medium", "high": "High", "urgent": "Urgent"},
+ "default_priority": "medium",
+ "statuses": {"open": "Open", "in_progress": "In progress", "resolved": "Resolved", "closed": "Closed"},
+ "default_status": "open",
+ "closed_statuses": ["resolved", "closed"],
+ "list_limit": 300
+}

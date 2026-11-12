@@ -1,0 +1,275 @@
+{
+ "note": "ORGANIZATION CONFIGURATION → ALERT EMAIL DRAFTS (owner, 8 Oct). Every email the product can send by itself: when it goes, who gets it, and the draft text with {placeholders}. These are the SHIPPED defaults; the screen saves the tenant's own version over them (versioned customisation `alert-emails`), and the mail server settings separately (`alert-emails-smtp`). Nothing is sent until a mail server is saved and 'Send emails' is switched on.",
+ "customisation_key": "alert-emails",
+ "smtp_customisation_key": "alert-emails-smtp",
+ "smtp_defaults": {
+  "enabled": false,
+  "host": "",
+  "port": 587,
+  "encryption": "tls",
+  "username": "",
+  "from_email": "",
+  "from_name": "HR",
+  "reply_to": "",
+  "send_after": "09:00",
+  "max_per_run": 200
+ },
+ "placeholders": {
+  "emp_name": "Employee name",
+  "emp_code": "Employee ID",
+  "designation": "Designation",
+  "department": "Department",
+  "branch": "Branch",
+  "company": "Company",
+  "reporting_manager": "Reporting manager",
+  "doj": "Date of joining",
+  "email": "Employee email",
+  "today": "Today's date",
+  "certificate": "Certificate name (certificate alerts)",
+  "expiry_date": "Expiry date (certificate alerts)",
+  "days_left": "Days left (certificate / probation alerts)",
+  "probation_end": "Probation end date",
+  "confirmation_date": "Confirmation date",
+  "years": "Years of service (anniversary)",
+  "old_ctc": "CTC before (appraisal / increment)",
+  "new_ctc": "CTC after (appraisal / increment)",
+  "increment_amount": "Amount increased",
+  "increment_pct": "% increase",
+  "rating": "Appraisal rating",
+  "review_period": "Appraisal review period",
+  "effective_date": "Effective date",
+  "new_designation": "New designation (promotion)",
+  "emi_label": "Loan / advance (EMI alerts)",
+  "emi_amount": "EMI amount this month (EMI alerts)",
+  "emi_month": "Payroll month (EMI alerts)",
+  "emi_detail": "Instalment n of N, outstanding after it (EMI alerts)", "absent_date": "Date marked absent (absence alert)"
+ },
+ "certificate_sources": {
+  "employee_columns": {
+   "label": "Employee record certificate dates",
+   "columns": {
+    "dra_expiry": "DRA Certificate",
+    "pcc_expiry": "PCC Certificate",
+    "passport_expiry": "Passport"
+   }
+  },
+  "documents": {
+   "label": "People → Documents (every document with an expiry)"
+  },
+  "agent_authorizations": {
+   "label": "Offroll → Authorisations (valid to)"
+  },
+  "training_records": {
+   "label": "Training certifications (expiry)"
+  }
+ },
+ "alerts": {
+  "certificate_expiry": {
+   "group": "Automatic alerts",
+   "label": "Certificate expiry alert",
+   "trigger": "days_before",
+   "trigger_note": "Sent when a certificate's expiry is this many days away (each milestone once; if the app was not opened that day it goes out on the next run).",
+   "enabled": true,
+   "days": [
+    15,
+    7,
+    1
+   ],
+   "sources": [
+    "employee_columns",
+    "documents",
+    "agent_authorizations",
+    "training_records"
+   ],
+   "recipients": {
+    "employee": true,
+    "manager": true,
+    "roles": [
+     "administrator",
+     "HR Admin"
+    ],
+    "cc": ""
+   },
+   "subject": "Action needed: your {certificate} expires on {expiry_date} ({days_left} days left)",
+   "body": "Dear {emp_name},\n\nThis is a reminder that your {certificate} expires on {expiry_date} — {days_left} day(s) from today.\n\nPlease renew it and share the renewed copy with HR before the expiry date so your work is not interrupted.\n\nEmployee ID: {emp_code}\nDesignation: {designation}\nBranch: {branch}\nReporting manager: {reporting_manager}\n\nRegards,\nHR — {company}"
+  },
+  "absent_yesterday": {
+    "group": "Automatic alerts",
+    "label": "Previous-day absence alert",
+    "trigger": "morning_after",
+    "trigger_note": "Sent the morning after a working day on which the employee had no punch, no approved leave, no holiday and no weekly off — the same ABSENT the Attendance Report and payroll show. Ships off: switch it on only once the biometric punches arrive before the send time, or people who worked are told they were absent.",
+    "enabled": false,
+    "recipients": {
+      "employee": true,
+      "manager": false,
+      "roles": [],
+      "cc": ""
+    },
+    "subject": "Marked absent on {absent_date} — please regularise if this is wrong",
+    "body": "Dear {emp_name},\n\nOur attendance shows no punch for you on {absent_date}, and no approved leave for that day, so it is marked ABSENT.\n\nIf you were working, please raise an Attendance Regularization in SmartPRS (Time & Attendance → Attendance Regularization) with the correct times. If you were on leave, please apply for it.\n\nEmployee ID: {emp_code}\nBranch: {branch}\nReporting manager: {reporting_manager}\n\nRegards,\nHR, {company}"
+  },
+  "probation_ending": {
+   "group": "Automatic alerts",
+   "label": "Probation ending reminder",
+   "trigger": "days_before",
+   "trigger_note": "Sent when an employee's probation end date is this many days away.",
+   "enabled": false,
+   "days": [
+    15,
+    7,
+    1
+   ],
+   "recipients": {
+    "employee": false,
+    "manager": true,
+    "roles": [
+     "administrator",
+     "HR Admin"
+    ],
+    "cc": ""
+   },
+   "subject": "Probation of {emp_name} ({emp_code}) ends on {probation_end}",
+   "body": "Hello,\n\nThe probation of {emp_name} ({emp_code}, {designation}, {branch}) ends on {probation_end} — {days_left} day(s) from today.\n\nPlease review and confirm or extend the probation on SmartPRS (Probation board).\n\nRegards,\nHR — {company}"
+  },
+  "probation_completed": {
+   "group": "Automatic alerts",
+   "label": "Probation completion",
+   "trigger": "days_before",
+   "trigger_note": "Sent on the day an employee's probation period completes (0 = the end date itself; add 1 or 3 for an advance notice). The end date is the employee's company probation (Organization Configuration → Companies) or an extension.",
+   "enabled": true,
+   "days": [
+    0
+   ],
+   "recipients": {
+    "employee": true,
+    "manager": true,
+    "roles": [
+     "administrator",
+     "HR Admin"
+    ],
+    "cc": ""
+   },
+   "subject": "Probation period of {emp_name} ({emp_code}) completes on {probation_end}",
+   "body": "Hello,\n\nThe probation period of {emp_name} ({emp_code}, {designation}, {branch}) completes on {probation_end}.\n\nReporting manager: please share your feedback. HR: please confirm or extend the probation on SmartPRS (People → Probation). Statutory deductions that do not apply during probation start from the month of confirmation.\n\nRegards,\nHR — {company}"
+  },
+  "emi_deduction": {
+   "group": "Automatic alerts",
+   "label": "Loan / salary advance EMI deduction",
+   "trigger": "days_before",
+   "trigger_note": "Sent this many days before the end of each month to every employee with a loan or salary advance instalment that this month's payroll will deduct — one email per loan / advance, with the instalment and what remains after it (the same figures the payslip will carry).",
+   "enabled": true,
+   "days": [
+    5
+   ],
+   "recipients": {
+    "employee": true,
+    "manager": false,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "{emi_label}: {emi_amount} will be deducted from your {emi_month} salary",
+   "body": "Dear {emp_name},\n\nThis is to let you know that {emi_amount} towards your {emi_label} will be deducted from your salary for {emi_month}.\n\nDetails: {emi_detail}.\n\nEmployee ID: {emp_code}\n\nFor any question, please contact HR.\n\nRegards,\nHR — {company}"
+  },
+  "birthday": {
+   "group": "Automatic alerts",
+   "label": "Birthday wishes",
+   "trigger": "on_day",
+   "trigger_note": "Sent on the employee's birthday.",
+   "enabled": false,
+   "recipients": {
+    "employee": true,
+    "manager": false,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "Happy Birthday, {emp_name}!",
+   "body": "Dear {emp_name},\n\nWishing you a very happy birthday and a wonderful year ahead!\n\nWarm regards,\nTeam {company}"
+  },
+  "work_anniversary": {
+   "group": "Automatic alerts",
+   "label": "Work anniversary wishes",
+   "trigger": "on_day",
+   "trigger_note": "Sent on the anniversary of the date of joining (from one year).",
+   "enabled": false,
+   "recipients": {
+    "employee": true,
+    "manager": false,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "Congratulations on {years} year(s) with {company}, {emp_name}!",
+   "body": "Dear {emp_name},\n\nCongratulations on completing {years} year(s) with {company} today. Thank you for your contribution.\n\nWarm regards,\nTeam {company}"
+  },
+  "appraisal_letter": {
+   "group": "Letters by email",
+   "label": "Appraisal letter",
+   "trigger": "increment",
+   "trigger_note": "Sent for each appraisal applied (Performance Appraisal → Apply, or the rating import on Increment / Appraisal).",
+   "enabled": false,
+   "when": "on_record",
+   "lookback_days": 7,
+   "recipients": {
+    "employee": true,
+    "manager": false,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "Your appraisal for {review_period} — revised CTC effective {effective_date}",
+   "body": "Dear {emp_name},\n\nWe are pleased to inform you that, based on your performance rating of {rating} for {review_period}, your annual CTC has been revised from {old_ctc} to {new_ctc} — an increase of {increment_amount} ({increment_pct}%), effective {effective_date}.\n\nWe thank you for your contribution and look forward to your continued success.\n\nEmployee ID: {emp_code}\nDesignation: {designation}\n\nRegards,\nHR — {company}"
+  },
+  "promotion_letter": {
+   "group": "Letters by email",
+   "label": "Promotion letter",
+   "trigger": "increment",
+   "trigger_note": "Sent for each Effected row on Increment / Appraisal that carries a New Designation.",
+   "enabled": false,
+   "when": "on_record",
+   "lookback_days": 7,
+   "recipients": {
+    "employee": true,
+    "manager": true,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "Congratulations on your promotion to {new_designation}",
+   "body": "Dear {emp_name},\n\nWe are delighted to inform you that you have been promoted from {designation} to {new_designation}, effective {effective_date}. Your revised annual CTC is {new_ctc}.\n\nCongratulations and best wishes in your new role.\n\nRegards,\nHR — {company}"
+  },
+  "increment_letter": {
+   "group": "Letters by email",
+   "label": "Increment letter",
+   "trigger": "increment",
+   "trigger_note": "Sent for each Effected increment that is neither an appraisal nor a promotion.",
+   "enabled": false,
+   "when": "on_record",
+   "lookback_days": 7,
+   "recipients": {
+    "employee": true,
+    "manager": false,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "Revision of your CTC effective {effective_date}",
+   "body": "Dear {emp_name},\n\nYour annual CTC has been revised from {old_ctc} to {new_ctc} ({increment_pct}%), effective {effective_date}.\n\nRegards,\nHR — {company}"
+  },
+  "confirmation_letter": {
+   "group": "Letters by email",
+   "label": "Confirmation letter",
+   "trigger": "confirmation",
+   "trigger_note": "Sent when an employee is confirmed on the Probation board.",
+   "enabled": false,
+   "lookback_days": 7,
+   "recipients": {
+    "employee": true,
+    "manager": true,
+    "roles": [],
+    "cc": ""
+   },
+   "subject": "Confirmation of your employment",
+   "body": "Dear {emp_name},\n\nWe are pleased to confirm your employment as {designation} with {company} with effect from {confirmation_date}.\n\nCongratulations!\n\nRegards,\nHR — {company}"
+  }
+ },
+ "when_options": {
+  "on_record": "As soon as it is recorded",
+  "on_effective": "On the effective date"
+ }
+}

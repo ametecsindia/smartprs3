@@ -1,0 +1,50 @@
+{
+  "note": "FIELD FORCE expiry rules and the REPORTS & ANALYTICS list reports. expiry_window_days: a DRA certificate or a bank authorisation whose end date is within this many days of today is 'due' (listed first); on or before today it is 'expired'. Each report below is a screen surface/screens/report-<key>.php rendered by surface/partials/list-report.php: the same Organization Setup filter (ALL first) and a CSV of exactly the rows shown. permission: the server-side gate for the screen and its CSV. month: the report takes a month picker. period: the report takes the full period picker (month / year / financial year / YTD / MTD / custom dates) and its rows are those inside the period. Every list report draws a bar chart of its counted columns and exports to Excel or CSV. groups: for headcount, which Organization Setup levels it can be broken down by (the first is the default). Money columns are read as exact decimals and never as floats. applicable_values: what pf_applicable / esi_applicable on an employee must hold (case-insensitively) to count as inside PF / ESI.",
+  "expiry_window_days": 30,
+  "employee_edit_anchor": "add-employment",
+  "applicable_values": ["1", "yes", "true", "y"],
+  "reports": [
+    {
+      "key": "headcount",
+      "label": "Headcount",
+      "question": "How many people, by company, branch or department?",
+      "permission": "employee.view",
+      "groups": ["company", "branch", "department"]
+    },
+    {
+      "key": "attendance-summary",
+      "label": "Attendance summary",
+      "question": "Per employee, how many days of each status this month, and the hours?",
+      "permission": "attendance.report.view",
+      "month": true
+    },
+    {
+      "key": "leave-summary",
+      "label": "Leave summary",
+      "question": "Per employee, the approved leave days by type in the period?",
+      "permission": "leave.request.view",
+      "period": true
+    },
+    {
+      "key": "salary-register",
+      "label": "Salary register",
+      "question": "Per employee, gross, deductions and net from the closed run of this month?",
+      "permission": "payroll.view",
+      "money": true,
+      "month": true
+    },
+    {
+      "key": "pf-esi-summary",
+      "label": "PF / ESI summary",
+      "question": "Who is enrolled in Provident Fund (PF) and Employee State Insurance (ESI), with their UAN and ESI numbers?",
+      "permission": "employee.view"
+    },
+    {
+      "key": "birthdays",
+      "label": "Birthdays",
+      "question": "Whose birthday falls this month?",
+      "permission": "employee.view",
+      "month": true
+    }
+  ]
+}

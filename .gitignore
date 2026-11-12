@@ -1,0 +1,9 @@
+/vendor
+/node_modules
+/.env
+/.env.bak
+/env-local.txt
+/storage
+/.phpunit.cache
+/public/uploads
+/Claude outputs

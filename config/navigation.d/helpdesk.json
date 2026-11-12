@@ -1,0 +1,21 @@
+[
+ {
+  "section": "helpdesk-section",
+  "items": [
+   {
+    "key": "helpdesk",
+    "module": "helpdesk",
+    "label": "HR Helpdesk",
+    "icon": "fa-headset",
+    "permission": "employee.view"
+   },
+   {
+    "key": "complaints",
+    "route": "complaints",
+    "label": "Complaints",
+    "icon": "fa-comment-dots",
+    "permission": "employee.view"
+   }
+  ]
+ }
+]

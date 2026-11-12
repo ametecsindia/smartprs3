@@ -1,0 +1,25 @@
+{"routes": {
+  "platform-dashboard": "platform-dashboard",
+  "tenants": "tenants",
+  "plans": "plans",
+  "subscriptions": "subscriptions",
+  "invoices": "invoices",
+  "payments": "payments",
+  "payment-gateways": "gateways",
+  "feature-flags": "feature-flags",
+  "leads": "admin-leads",
+  "quotations": "admin-quotations",
+  "coupons": "admin-coupons",
+  "platform-staff": "admin-staff",
+  "onprem": "admin-onprem",
+  "releases": "admin-releases"
+}, "screens": {
+  "feature-flags": {
+    "m": "SaaS Platform", "t": "Feature Flags", "g": "Platform toggles, global or per tenant",
+    "w": "Every switch the platform honours — self-signup, coupons, WhatsApp alerts, the live demo, beta screens — declared in config/feature-flags.json with a default. The Global column overrides the default for everyone; a tenant column overrides it for that tenant alone.",
+    "f": [["fa-toggle-on", "One click on / off"], ["fa-building-user", "Per-tenant override"], ["fa-rotate-left", "Follow global again"]],
+    "s": ["Add the key to config/feature-flags.json first — an undeclared key is always off.", "Flip Global to change the platform default.", "Flip a tenant's cell to give that tenant its own setting; ↺ removes the override."],
+    "tip": "A tenant cell marked 'inherits' has no row of its own — it shows what Global resolves to.",
+    "r": ["Super Admin / platform staff"], "rel": "Also see: Tenants, Plans & Pricing"
+  }
+}}

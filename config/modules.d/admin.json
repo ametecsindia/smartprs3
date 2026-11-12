@@ -1,0 +1,48 @@
+{
+  "note": "ADMINISTRATION register screens at SmartPRS 2 parity. `banks` SUPERSEDES the one-column entry in modules.json (a drop-in wins) with SmartPRS 2's account holder / number / IFSC / branch / purpose; `smtp-settings` is SmartPRS 2's Email / SMTP Settings, one server per company, the password typed as a password and never mailed from here. Columns come from database/migrations/2026_03_02_000700_admin_tables.php.",
+  "modules": [
+    {
+      "key": "banks",
+      "group": "Administration",
+      "label": "Banks",
+      "description": "Bank accounts with account number, IFSC and purpose — the accounts salary and vendor payouts leave from.",
+      "table": "banks",
+      "columns": ["name", "employer_company_id", "account_holder", "account_number", "ifsc", "purpose", "status"],
+      "search": ["name", "account_holder", "account_number", "ifsc", "bank_branch"],
+      "permissions": {"view": "tenant.settings.view", "edit": "tenant.settings.update"},
+      "fields": {
+        "name": {"label": "Bank Name", "required": true},
+        "employer_company_id": {"label": "Company"},
+        "account_holder": {"label": "Account Holder"},
+        "account_number": {"label": "Account Number", "permission": "tenant.settings.update"},
+        "ifsc": {"label": "IFSC", "help": "Eleven characters, e.g. HDFC0001234"},
+        "bank_branch": {"label": "Bank Branch"},
+        "purpose": {"label": "Purpose", "options": ["Salary", "Vendor", "Disbursement", "Other"]},
+        "status": {"label": "Status", "options": ["Active", "Inactive"]}
+      }
+    },
+    {
+      "key": "smtp-settings",
+      "group": "Administration",
+      "label": "Email / SMTP Settings",
+      "description": "The mail server each company's letters and payslips go out through. Nothing is sent from this screen; a wrong password shows up in Mail Log, not here.",
+      "table": "smtp_settings",
+      "columns": ["employer_company_id", "host", "port", "encryption", "username", "from_email", "status"],
+      "search": ["host", "username", "from_email", "from_name"],
+      "permissions": {"view": "tenant.settings.view", "edit": "tenant.settings.update"},
+      "unique": ["employer_company_id"],
+      "fields": {
+        "employer_company_id": {"label": "Company", "help": "One server per company; leave blank for the server every company falls back to."},
+        "host": {"label": "SMTP Host", "required": true, "help": "e.g. smtp.gmail.com"},
+        "port": {"label": "Port", "min": 1, "max": 65535, "help": "465 with SSL, 587 with TLS"},
+        "encryption": {"label": "Encryption", "options": ["Tls", "Ssl", "None"]},
+        "username": {"label": "Username"},
+        "password": {"label": "Password", "type": "password", "permission": "tenant.settings.update", "help": "Stored, never shown back."},
+        "from_name": {"label": "From Name", "help": "What the recipient sees, e.g. the company's HR desk"},
+        "from_email": {"label": "From Address", "type": "email"},
+        "status": {"label": "Status", "options": ["Active", "Inactive"]},
+        "remarks": {"label": "Remarks"}
+      }
+    }
+  ]
+}

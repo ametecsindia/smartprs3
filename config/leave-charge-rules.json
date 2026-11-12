@@ -1,0 +1,40 @@
+{
+  "note": "WHICH DAYS OF A LEAVE REQUEST ACTUALLY COME OUT OF THE BALANCE. `Surface\\Leave::workingDaysBetween()` counted them with `(int) $day->format('N') <= 5` — Monday to Friday, written into PHP, ignoring the working calendar entirely. Two things followed. A HOLIDAY INSIDE A LEAVE SPAN WAS CHARGED: somebody who took the week of a festival paid for the festival out of their own leave, which is wrong everywhere and is the single most common leave complaint in Indian HR. And a tenant whose weekly off is Sunday only got Saturdays for free, because the code's idea of a week was not theirs. Both are now decisions in this file, evaluated at `leave.request.charge` against the same working calendar the attendance rules read — so the two halves of the product cannot disagree about which days are working days.",
+  "decision_point": "leave.request.charge",
+  "policy_note": "ALL_MATCH, from the decision point. Every day of the span is evaluated on its own and the answers are collected; the two rules below are mutually exclusive by construction (one is the other's `except`), which is deliberate — a day that is both charged and exempted would be a contradiction, and making that impossible in the rules is better than detecting it afterwards.",
+  "rules": [
+    {
+      "code": "LV-CHG-EXEMPT-NON-WORKING",
+      "module": "leave",
+      "name": "A weekly off or a holiday inside the span is not charged",
+      "description": "A day the working calendar does not treat as a working day comes out of nobody's balance. Stated as its own rule with its own EXEMPT_DAY rather than left as the absence of a charge, because 'this day was exempted, here is why' and 'no rule mentioned this day' are different answers and only one of them can be argued with.",
+      "priority": 100,
+      "when": "day.is_weekly_off OR day.is_holiday",
+      "then": [
+        {
+          "action": "EXEMPT_DAY",
+          "date": { "expr": "day.date" },
+          "reason": "Not a working day on the tenant's calendar"
+        }
+      ]
+    },
+    {
+      "code": "LV-CHG-WORKING-DAY",
+      "module": "leave",
+      "name": "Every working day in the span is charged",
+      "description": "One day of the requested type for each working day the span covers. Written TRUE with an `except` rather than as a negated condition, so the two rules read as the pair they are and a third case added later has an obvious place to go.",
+      "priority": 50,
+      "when": "TRUE",
+      "except": "day.is_weekly_off OR day.is_holiday",
+      "then": [
+        {
+          "action": "CHARGE_DAY",
+          "date": { "expr": "day.date" },
+          "type": { "expr": "leave.type" },
+          "units": { "expr": "1d" },
+          "reason": "Working day inside the requested span"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+ "note": "The guide behind Main → How It Works. One paragraph per sidebar section and one line per item, rendered against config/navigation.json so every link on the page is a link the application answers. Edit the words here; the links come from the menu.",
+ "principle": "Change configuration, not code. Every rule this product applies — attendance, leave, salary, statutory, approvals, letters, the menu itself — is a setting under Organization Setup with a version history, never a line of PHP. Every figure on a screen can show its own working.",
+ "laws": [
+  "No business literal in code — every rate, slab and threshold is configuration.",
+  "No schema change while running — tables come from migrations only.",
+  "Nothing is overwritten — corrections supersede, with dates and names.",
+  "Every number explains itself — click a figure and it shows the working.",
+  "Authorisation is server-side and fails closed — a guard that is unsure says no.",
+  "Tenancy is structural — every row carries the tenant it belongs to.",
+  "Money is exact — decimals, never floats."
+ ],
+ "sections": {
+  "main": "Your day starts here: the dashboard, what you are owed so far this month, what is waiting on you, what is overdue on somebody else, and what the system has told you.",
+  "hiring": "From a vacancy to a first day: requisitions and candidates, a self-service onboarding form for the joiner, and verification of what they submitted.",
+  "people": "The employee register and everything that happens to one employee: probation, transfers, ID cards, documents, exit. Every change is a dated timeline event, never an overwrite.",
+  "leave": "Leave types, balances, requests and approvals under the leave policy the tenant publishes.",
+  "payroll": "Salary structures, runs, payslips and bank files — computed by the payroll engine from attendance and structure, with the derivation kept on every line.",
+  "performance": "Reviews, ratings, points and rewards.",
+  "learning": "Courses, tests and the knowledge base.",
+  "letters": "Appointment, confirmation, transfer and other letters rendered from editable templates against the employee record.",
+  "field": "Field staff: geo-fenced attendance and visit tracking.",
+  "communication": "Announcements and messages to staff.",
+  "reports": "Reports and analytics across the modules, each figure traceable to its rows.",
+  "setup": "Where the product is shaped for this company: fields, structure, formats, org units and every rule. Everything here is versioned; the old version stays readable.",
+  "time": "Punches from devices, uploads and manual entries are settled by the published attendance rules into one figure per day — the same figure the report, the muster and the payslip use.",
+  "compensation": "Expenses, advances, loans and other money requests through the approval workflow.",
+  "statutory": "Statutory registers and filings from signed content packs, blocked until a compliance owner signs the rates.",
+  "admin": "Users, roles, tenants, audit trail and health."
+ },
+ "items": {
+  "dashboard": "KPIs and panels chosen in the dashboard configuration; each card links to the rows behind it.",
+  "live-salary": "Running-month earnings till today: payable days settled so far, prorated against the month, through the same payroll engine as the payslip.",
+  "escalation-desk": "Field/ops escalations register (date, company, bank, team, issue, severity, priority, status, action taken) with Add Escalation — and below it, approvals past their due-within with one button to put them in the approvers' Notifications.",
+  "inbox": "Requests waiting on you to decide, and the ones you raised that wait on somebody else.",
+  "notifications": "Everything the system queued for you — leave decisions, absence notices, escalations.",
+  "ai-assistant": "Ask in plain words — who is absent today, my leave balance, pending approvals, where is a screen. Answered from this tenant's own data, inside your permissions; nothing leaves the server.",
+  "how-it-works": "This page.",
+  "recruitment": "Requisition → candidates → stages → interviews → hire, which creates the employee.",
+  "self-onboarding": "Invite a joiner; they fill the form built from the enabled Employee Fields; HR verifies and injects the record.",
+  "employees": "The directory: search, open, edit an employee; add one.",
+  "probation": "Who is on probation, when it ends, confirm or extend — confirmation is a timeline event.",
+  "archived": "Ended employees, read-only.",
+  "add-employee": "The add form, driven by the enabled Employee Fields.",
+  "employee-import": "CSV by field code → preview → commit; errors kept as a file.",
+  "transfers": "Raise, approve by somebody else, applied on the effective date, transfer order letter.",
+  "id-cards": "Print ID cards as PDF in the format designed under Organization Setup.",
+  "daily-attendance": "One row per employee-day with the columns chosen under Organization Setup → Attendance report.",
+  "attendance-report": "The muster grid: a letter per day, totals, drill-down, CSV.",
+  "manual-entry": "Record a punch by hand; it settles like a device punch and says it was manual.",
+  "attendance-corrections": "Regularisation requests, decided from one queue.",
+  "absence": "Sweep a past date for no-punch, no-leave days and tell the person and their manager.",
+  "employee-fields": "Which fields an employee has, their types, whether they are required, and which screens show them.",
+  "structure": "Salary components and how they are computed; published in versions.",
+  "configure-attendance-report": "Which columns the daily attendance report prints.",
+  "configure-id-card": "What goes on the ID card, colours, size, orientation — with a live preview.",
+  "payslip-format": "Payslip layout.",
+  "configuration": "Every published rule set in one place, with history.",
+  "configure-menu": "Rename, reorder or hide sidebar items. Hiding is not a permission.",
+  "devices": "Register attendance devices of any make; ZKTeco pushes land under Pending Punches.",
+  "pending-punches": "Punches received from devices that matched no employee yet.",
+  "shifts": "Named shift timings; a night shift ends the next morning.",
+  "late-policy": "Grace, free lates, the cut per extra late, and what a weekly-off day earns.",
+  "geofence": "Per-employee start point and radius.",
+  "geofence-map": "All geo-fence rules drawn on one map.",
+  "teams": "Teams with their manager and leader; members are the employees whose record names the team.",
+  "document-tracker": "Employee documents with expiry tracking.",
+  "exits": "Exit record, clearance checklist, final clearance; FnF from the settlement.",
+  "onboarding-status": "Each joiner's checklist; starts automatically on injection or transfer.",
+  "bgv": "Per-check outcomes, overall status, re-verification due.",
+  "setup-holidays": "The weekly-off pattern (every Sun, Sat+Sun, Sun + 1st and 4th Sat, any mix) and each year's holidays with type.",
+  "setup-leave-types": "Leave types, and grants by company/branch/department/designation/team/employee that land on the ledgers.",
+  "setup-pay-cycles": "Salary Schedule / Pay Cycle: rows scoped to a company, branch, department, designation, team or employee — cycle, attendance window (calendar, 21st–20th, custom From→To day), pay day. The most specific row wins and the payroll register takes each employee's window from it.",
+  "pay-cycles": "Salary Schedule / Pay Cycle: rows scoped to a company, branch, department, designation, team or employee — cycle, attendance window (calendar, 21st–20th, custom From→To day), pay day. The most specific row wins and the payroll register takes each employee's window from it."
+ },
+ "section_icons": {
+  "main": {
+   "icon": "fa-gauge-high",
+   "colour": "#f97316"
+  },
+  "hiring": {
+   "icon": "fa-user-plus",
+   "colour": "#16a34a"
+  },
+  "people": {
+   "icon": "fa-users",
+   "colour": "#3b82f6"
+  },
+  "leave": {
+   "icon": "fa-plane-departure",
+   "colour": "#f59e0b"
+  },
+  "payroll": {
+   "icon": "fa-rupee-sign",
+   "colour": "#6366f1"
+  },
+  "performance": {
+   "icon": "fa-trophy",
+   "colour": "#8b5cf6"
+  },
+  "learning": {
+   "icon": "fa-pen-to-square",
+   "colour": "#0ea5e9"
+  },
+  "letters": {
+   "icon": "fa-file-signature",
+   "colour": "#ef4444"
+  },
+  "field": {
+   "icon": "fa-route",
+   "colour": "#14b8a6"
+  },
+  "communication": {
+   "icon": "fa-bullhorn",
+   "colour": "#f97316"
+  },
+  "reports": {
+   "icon": "fa-chart-column",
+   "colour": "#64748b"
+  },
+  "setup": {
+   "icon": "fa-sliders",
+   "colour": "#0f172a"
+  },
+  "time": {
+   "icon": "fa-fingerprint",
+   "colour": "#10b981"
+  },
+  "compensation": {
+   "icon": "fa-hand-holding-dollar",
+   "colour": "#0891b2"
+  },
+  "statutory": {
+   "icon": "fa-shield-halved",
+   "colour": "#dc2626"
+  },
+  "admin": {
+   "icon": "fa-user-shield",
+   "colour": "#334155"
+  }
+ }
+}

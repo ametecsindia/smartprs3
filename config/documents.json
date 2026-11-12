@@ -1,0 +1,5 @@
+{
+  "note": "People → Documents (SmartPRS 2's employee document locker). The kinds offered are Organization Setup → Employee fields' expected documents plus whatever is already on file; the statuses are the review states; a document whose expiry falls within `expiring_window_days` is amber, past its expiry red, and the list orders people by their soonest expiry so what needs attention is on top.",
+  "statuses": ["pending", "approved", "rejected"],
+  "expiring_window_days": 30
+}

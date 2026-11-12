@@ -1,0 +1,142 @@
+{
+  "note": "WHAT THE DAILY ATTENDANCE REPORT SHOWS, column by column. These are the columns SmartPRS 2's attendance report prints; a tenant chooses which of them appear on the daily view and in the export from Organization Setup / Configuration → Attendance report, and the choice is versioned in module_customisations under the key below. Every column's VALUE comes from the same settlement the muster and payroll use — this file only decides which of them are printed, never how one is computed.",
+  "customisation_key": "attendance-report",
+  "max_range_days": 366,
+  "max_range_note": "Widest span the muster will settle in one screen or export — every employee's punches for the whole range are read fresh (see the ponytail note on AttendanceReport's class docblock). 366 covers a full year, so a tenant can pick any period up to 12 months rather than being held to single calendar months. Raise it here if this tenant's employee count still renders comfortably at a wider span; there is no cap on the underlying settlement itself, only on how much this one screen tries to draw at once.",
+  "columns": {
+    "emp_code": {
+      "label": "Emp. Code",
+      "default": true
+    },
+    "name": {
+      "label": "Name",
+      "default": true
+    },
+    "company": {
+      "label": "Company",
+      "default": true
+    },
+    "branch": {
+      "label": "Branch",
+      "default": true
+    },
+    "department": {
+      "label": "Department",
+      "default": true
+    },
+    "team": {
+      "label": "Team",
+      "default": true
+    },
+    "team_leader": {
+      "label": "Reporting Manager",
+      "default": true,
+      "note": "Owner, 23 Sep: 'the Team Lead should read as Reporting Manager for more clarity for entire employee list'. The hierarchy is Employee -> Team Lead -> Manager -> Director and every step of it is reporting_manager_id, so one heading that is true for an agent, a team lead AND a manager beats one that is right only for the bottom row. Resolves reporting manager first, then a leader named on the team, then the legacy text column (AttendanceReport::reportingManagerOf)."
+    },
+    "designation": {
+      "label": "Designation",
+      "default": true
+    },
+    "reporting_manager": {
+      "label": "Reporting Manager",
+      "default": true,
+      "note": "The STRICT reporting_manager_id only, with no fallback. On an install whose hierarchy is the reporting line this shows the same value as 'team_leader' above, so ticking both prints the same name twice — pick one. Kept because a tenant who uses the teams register wants the two to differ."
+    },
+    "date": {
+      "label": "Date",
+      "default": true
+    },
+    "shift": {
+      "label": "Shift",
+      "default": true,
+      "always": true,
+      "note": "ALWAYS ON. Late By, Early Exit and Overtime on the same row are all measured against the shift, so a row that omits it says 'late by 42' without saying late for what. Not the tenant's to untick — see the `always` handling in AttendanceReport::columns(). It sits immediately after `date` because that is where the reader is looking when they ask 'against what?'."
+    },
+    "status": {
+      "label": "Status",
+      "default": true
+    },
+    "first_in": {
+      "align": "right",
+      "label": "First In",
+      "default": true
+    },
+    "last_out": {
+      "align": "right",
+      "label": "Last Out",
+      "default": true
+    },
+    "total_time": {
+      "align": "right",
+      "label": "Total Time",
+      "default": true
+    },
+    "break_time": {
+      "align": "right",
+      "label": "Break Time",
+      "default": true
+    },
+    "in_count": {
+      "align": "right",
+      "label": "IN",
+      "default": true
+    },
+    "out_count": {
+      "align": "right",
+      "label": "OUT",
+      "default": true
+    },
+    "late_minutes": {
+      "align": "right",
+      "label": "Late By",
+      "default": true
+    },
+    "early_exit_minutes": {
+      "align": "right",
+      "label": "Early Exit",
+      "default": false
+    },
+    "overtime_minutes": {
+      "align": "right",
+      "label": "Overtime",
+      "default": false
+    },
+    "regularisation": {
+      "label": "Needs Regularisation",
+      "default": false
+    },
+    "rating": {
+      "label": "Rating (1-10)",
+      "default": false
+    },
+    "remarks": {
+      "label": "Manager Remarks",
+      "default": false
+    },
+    "employee_status": {
+      "label": "Employee Status",
+      "default": false
+    },
+    "date_of_joining": {
+      "label": "Date of Joining",
+      "default": false
+    },
+    "logs": {
+      "label": "Log",
+      "default": true
+    }
+  },
+  "status_labels_note": "How a status prints on the daily view. ON_LEAVE prints as Leave, as asked: an approved leave request marks the day automatically, nobody types it.",
+  "status_labels": {
+    "ON_LEAVE": "Leave",
+    "UNPAID_LEAVE": "Unpaid leave (LOP)",
+    "WEEKLY_OFF": "Weekly off",
+    "HALF_DAY": "Half day",
+    "PRESENT": "Present",
+    "ABSENT": "Absent",
+    "HOLIDAY": "Holiday",
+    "UNCLASSIFIED": "Unclassified"
+  },
+  "columns_order_note": "The order columns print in is the order they are declared here. AttendanceReport::columns() walks this map in order and a tenant's saved choice is a SET of codes, never an order — so moving an entry in this file moves the column for every tenant, including ones who have already chosen their columns. `logs` is deliberately LAST: it carries the row's actions (Log, and Edit for a deciding role) and actions belong at the end of a row.",
+  "columns_always_note": "A column marked \"always\": true is printed for every tenant regardless of the column choice they have saved. It exists because a saved list is a snapshot of the columns that existed when Save was pressed and nothing reconciles it afterwards — without this, a column added or promoted later can never reach a tenant who has already configured the screen. Use it only for a column the report cannot honestly be read without."
+}

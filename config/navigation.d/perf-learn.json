@@ -1,0 +1,125 @@
+[
+ {
+  "section": "performance",
+  "items": [
+   {
+    "key": "performance",
+    "route": "performance",
+    "label": "Performance",
+    "icon": "fa-chart-line",
+    "permission": "employee.view"
+   },
+   {
+    "key": "increments",
+    "module": "increments",
+    "label": "Increments",
+    "icon": "fa-arrow-trend-up",
+    "permission": "employee.view"
+   },
+   {
+    "key": "awards",
+    "module": "awards",
+    "label": "Awards & Rewards",
+    "icon": "fa-trophy",
+    "permission": "employee.view",
+    "hidden": true
+   },
+   {
+    "key": "points-scores",
+    "route": "points-scores",
+    "label": "Leaderboard",
+    "icon": "fa-ranking-star",
+    "permission": "employee.view"
+   },
+   {
+    "key": "points-ledger",
+    "module": "points",
+    "label": "Points Ledger",
+    "icon": "fa-book-open",
+    "permission": "employee.view"
+   },
+   {
+    "key": "points-rules",
+    "module": "point-rules",
+    "label": "Points Rules",
+    "icon": "fa-list-check",
+    "permission": "employee.view"
+   },
+   {
+    "key": "tests",
+    "label": "Tests",
+    "icon": "fa-clipboard-question",
+    "permission": "employee.view",
+    "module": "tests"
+   },
+   {
+    "key": "test-results",
+    "module": "test-attempts",
+    "label": "Test Results",
+    "icon": "fa-square-poll-vertical",
+    "permission": "employee.view"
+   },
+   {
+    "key": "test-reports",
+    "route": "test-reports",
+    "label": "Test Reports",
+    "icon": "fa-file-lines",
+    "permission": "employee.view"
+   },
+   {
+    "key": "attrition",
+    "route": "attrition",
+    "label": "Attrition",
+    "icon": "fa-user-minus",
+    "permission": "employee.list"
+   }
+  ]
+ },
+ {
+  "section": "learning",
+  "items": [
+   {
+    "key": "training-programs",
+    "module": "training-programs",
+    "label": "Training Programs",
+    "icon": "fa-graduation-cap",
+    "permission": "employee.view"
+   },
+   {
+    "key": "training-records",
+    "module": "training-records",
+    "label": "Training Records",
+    "icon": "fa-list-check",
+    "permission": "employee.view"
+   },
+   {
+    "key": "training-content",
+    "module": "training-content",
+    "label": "Training Content",
+    "icon": "fa-book",
+    "permission": "employee.view"
+   },
+   {
+    "key": "code-of-conduct",
+    "label": "Code of Conduct",
+    "icon": "fa-scale-balanced",
+    "permission": "employee.view",
+    "module": "code-of-conduct"
+   },
+   {
+    "key": "faqs",
+    "module": "faqs",
+    "label": "FAQs",
+    "icon": "fa-circle-question",
+    "permission": "employee.view"
+   },
+   {
+    "key": "kb",
+    "module": "kb",
+    "label": "Knowledge Base",
+    "icon": "fa-book-open",
+    "permission": "employee.view"
+   }
+  ]
+ }
+]

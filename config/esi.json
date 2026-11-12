@@ -1,0 +1,21 @@
+{
+  "note": "ESI AS PER GOVERNMENT RULES — applied at payroll close to every ESI-eligible employee when the Salary structure sets NO ESI rule for them (owner, 16 Oct 2026: 'If nothing is set for ESIC, consider it as per Government rules'). A Salary structure ESI rule, or ESI switched off on the employee, always wins. Change the law here, not in PHP.",
+  "law": "ESI Act 1948 / Code on Social Security 2020 Ch. IV; ESI (Central) Rules r.50-51",
+  "employee_percent": "0.75",
+  "employer_percent": "3.25",
+  "rates_source": "G.S.R. 423(E), 13-06-2019, in force 01-07-2019",
+  "wage_ceiling": "21000.00",
+  "wage_ceiling_pwd": "25000.00",
+  "ceiling_source": "G.S.R. 1166(E), 22-12-2016, in force 01-01-2017; unchanged for FY 2026-27",
+  "pwd_field": "physically_challenged",
+  "pwd_values": ["Yes"],
+  "daily_wage_exempt_upto": "176.00",
+  "daily_wage_note": "An employee whose average daily wage is this or less pays no employee share; the employer share is still due.",
+  "contribution_periods_start_months": [4, 10],
+  "contribution_period_note": "Coverage is decided on the monthly gross; an employee covered in a contribution period (Apr-Sep, Oct-Mar) stays covered to its end even if the wage rises above the ceiling.",
+  "round_up_to_rupee": true,
+  "wages_exclude": ["REIMBURSEMENT", "GRATUITY_PAYOUT", "LEAVE_ENCASHMENT", "DRA_REFUND", "PCC_REFUND", "TRAVELLING", "BONUS"],
+  "wages_exclude_note": "Not ESI wages: reimbursements, travelling allowance, gratuity, encashment on exit, refunds, annual bonus. Overtime and incentives ARE wages for the contribution.",
+  "employee_code": "ESI_EMPLOYEE",
+  "employer_code": "ESI_EMPLOYER"
+}

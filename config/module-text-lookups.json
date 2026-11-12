@@ -1,0 +1,21 @@
+{
+  "note": "TEXT COLUMNS THAT NAME AN ORGANIZATION SETUP ENTITY, offered as a dropdown of that register rather than a free-text box (owner, 28 Sep: \"NO blanks or free texts where the dropdown values already exists\"). The column keeps the NAME it always held, so nothing already saved changes meaning; what changes is that a new value can only be one that exists. A module that declares its own lookup or options for a column keeps its own.",
+  "columns": {
+    "from_company": {"table": "companies", "value": "name", "show": ["name"]},
+    "to_company": {"table": "companies", "value": "name", "show": ["name"]},
+    "company_name": {"table": "companies", "value": "name", "show": ["name"]},
+    "from_branch": {"table": "branches", "value": "name", "show": ["name"]},
+    "to_branch": {"table": "branches", "value": "name", "show": ["name"]},
+    "location": {"table": "branches", "value": "name", "show": ["name"]},
+    "team": {"table": "teams", "value": "name", "show": ["name"]},
+    "department": {"table": "departments", "value": "name", "show": ["name"]},
+    "position": {"table": "designations", "value": "name", "show": ["name"]},
+    "new_designation": {"table": "designations", "value": "name", "show": ["name"]},
+    "job_openings.title": {"table": "designations", "value": "name", "show": ["name"]},
+    "assigned_to": {"table": "employees", "value": "name", "show": ["emp_code", "name"]},
+    "owner": {"table": "employees", "value": "name", "show": ["emp_code", "name"]},
+    "coordinator_name": {"table": "employees", "value": "name", "show": ["emp_code", "name"]},
+    "requested_by": {"table": "employees", "value": "name", "show": ["emp_code", "name"]}
+  },
+  "skip_tables": ["employees"]
+}

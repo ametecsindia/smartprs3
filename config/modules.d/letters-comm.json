@@ -1,0 +1,316 @@
+{
+ "note": "COMMUNICATION register screens at SmartPRS 2 parity. `messages-log` and `wa-templates` SUPERSEDE the entries of the same key in modules.json (a drop-in wins): the log now has one row per recipient and channel with a status, and WhatsApp templates use the richer wa_templates table instead of sms_templates. `notices` and `sms-templates` are new. Columns beyond the ported tables come from database/migrations/2026_03_02_000500_letters_comm.php.",
+ "modules": [
+  {
+   "key": "messages-log",
+   "group": "Communications",
+   "label": "Messages Log",
+   "description": "Every message queued from Send Message and Greetings, one row per recipient and channel. No transport is configured in this build, so rows stay 'queued'; a provider, when wired, reads this queue and sets sent / failed.",
+   "table": "messages_log",
+   "columns": [
+    "sent_at",
+    "kind",
+    "target",
+    "employee_id",
+    "channel",
+    "to_address",
+    "subject",
+    "status",
+    "sent_by_label",
+    "channels",
+    "recipients"
+   ],
+   "search": [
+    "subject",
+    "message",
+    "to_address",
+    "target"
+   ],
+   "permissions": {
+    "view": "employee.view",
+    "edit": "employee.update"
+   },
+   "fields": {
+    "sent_at": {
+     "label": "Queued at",
+     "readonly": true
+    },
+    "kind": {
+     "label": "Kind",
+     "options": [
+      "Message",
+      "Greeting"
+     ]
+    },
+    "target": {
+     "label": "Target",
+     "help": "The scope it was sent to, as chosen on Send Message"
+    },
+    "employee_id": {
+     "label": "Recipient",
+     "required": true,
+     "lookup": {
+      "table": "employees",
+      "value": "id",
+      "show": [
+       "emp_code",
+       "name"
+      ]
+     }
+    },
+    "channel": {
+     "label": "Channel",
+     "required": true,
+     "options": [
+      "Email",
+      "Whatsapp",
+      "Sms"
+     ]
+    },
+    "to_address": {
+     "label": "To"
+    },
+    "subject": {
+     "label": "Subject"
+    },
+    "message": {
+     "label": "Message",
+     "required": true,
+     "type": "textarea"
+    },
+    "status": {
+     "label": "Status",
+     "options": [
+      "Queued",
+      "Sent",
+      "Failed"
+     ]
+    },
+    "batch_id": {
+     "label": "Batch",
+     "readonly": true,
+     "help": "All rows of one send share a batch"
+    },
+    "sent_by_label": {
+     "label": "Queued by",
+     "readonly": true
+    },
+    "employer_company_id": {
+     "label": "Company"
+    },
+    "channels": {
+     "label": "Channels"
+    },
+    "recipients": {
+     "label": "Recipients",
+     "min": 0
+    }
+   }
+  },
+  {
+   "key": "notices",
+   "group": "Communications",
+   "label": "Notices",
+   "description": "Company notices with a validity window. Published notices inside their dates are current and appear on the Notice Board (and a dashboard that asks Notices::current()); past valid-to they expire on their own.",
+   "table": "notices",
+   "columns": [
+    "title",
+    "employer_company_id",
+    "posted_on",
+    "valid_from",
+    "valid_to",
+    "status",
+    "posted_by"
+   ],
+   "search": [
+    "title",
+    "body"
+   ],
+   "permissions": {
+    "view": "employee.view",
+    "edit": "employee.update"
+   },
+   "fields": {
+    "title": {
+     "label": "Title",
+     "required": true
+    },
+    "body": {
+     "label": "Notice",
+     "type": "textarea",
+     "required": true
+    },
+    "employer_company_id": {
+     "label": "Company",
+     "empty": "ALL"
+    },
+    "posted_on": {
+     "label": "Posted on",
+     "type": "date"
+    },
+    "valid_from": {
+     "label": "Valid from",
+     "type": "date",
+     "help": "Blank = from the posted date"
+    },
+    "valid_to": {
+     "label": "Valid to",
+     "type": "date",
+     "help": "Blank = no expiry"
+    },
+    "status": {
+     "label": "Status",
+     "options": [
+      "Published",
+      "Draft"
+     ],
+     "required": true
+    },
+    "posted_by": {
+     "label": "Posted by"
+    }
+   }
+  },
+  {
+   "key": "wa-templates",
+   "group": "Communications",
+   "label": "WhatsApp Templates",
+   "description": "Approved WhatsApp message templates (name, language, category, body with {{1}} {{2}} variables). Send Message offers them as a starting text.",
+   "table": "wa_templates",
+   "columns": [
+    "name",
+    "purpose",
+    "language",
+    "category",
+    "var_count",
+    "status",
+    "last_test_at"
+   ],
+   "search": [
+    "name",
+    "body"
+   ],
+   "permissions": {
+    "view": "tenant.settings.view",
+    "edit": "tenant.settings.update"
+   },
+   "fields": {
+    "name": {
+     "label": "Template name",
+     "required": true,
+     "help": "Exactly as approved by the provider"
+    },
+    "purpose": {
+     "label": "Purpose",
+     "options": [
+      "Otp",
+      "Payslip",
+      "Attendance",
+      "Leave",
+      "Greeting",
+      "Broadcast",
+      "Other"
+     ]
+    },
+    "language": {
+     "label": "Language",
+     "help": "e.g. en, en_US, hi"
+    },
+    "category": {
+     "label": "Category",
+     "options": [
+      "Utility",
+      "Marketing",
+      "Authentication"
+     ]
+    },
+    "body": {
+     "label": "Body",
+     "type": "textarea",
+     "required": true,
+     "help": "{{1}}, {{2}}… are the provider's variables"
+    },
+    "sample_values": {
+     "label": "Sample values",
+     "help": "Comma-separated, one per variable"
+    },
+    "var_count": {
+     "label": "Variables",
+     "min": 0,
+     "max": 20
+    },
+    "status": {
+     "label": "Status",
+     "options": [
+      "Active",
+      "Pending",
+      "Rejected",
+      "Inactive"
+     ]
+    },
+    "last_test_at": {
+     "label": "Last test",
+     "readonly": true
+    },
+    "last_error": {
+     "label": "Last error",
+     "readonly": true
+    }
+   }
+  },
+  {
+   "key": "sms-templates",
+   "group": "Communications",
+   "label": "SMS Templates",
+   "description": "DLT-approved SMS templates. The DLT template id must match the content registered with the operator, or the message is rejected at the gateway.",
+   "table": "sms_templates",
+   "columns": [
+    "name",
+    "type",
+    "dlt_template_id",
+    "status"
+   ],
+   "search": [
+    "name",
+    "content",
+    "dlt_template_id"
+   ],
+   "permissions": {
+    "view": "tenant.settings.view",
+    "edit": "tenant.settings.update"
+   },
+   "fields": {
+    "name": {
+     "label": "Template name",
+     "required": true
+    },
+    "type": {
+     "label": "Type",
+     "options": [
+      "Transactional",
+      "Promotional",
+      "Otp"
+     ]
+    },
+    "dlt_template_id": {
+     "label": "DLT template id"
+    },
+    "content": {
+     "label": "Content",
+     "type": "textarea",
+     "required": true
+    },
+    "status": {
+     "label": "Status",
+     "options": [
+      "Active",
+      "Inactive"
+     ]
+    },
+    "employer_company_id": {
+     "label": "Company"
+    }
+   }
+  }
+ ]
+}

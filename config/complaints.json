@@ -1,0 +1,11 @@
+{
+ "note": "Field Force → Complaints (owner, 13 Oct). Employees raise a complaint and see only their own; HR / Admin never add one by hand — they see every complaint from the employees in view, set its status and reply. The reply is appended (one row per response, never overwritten) and the employee reads every reply on the same screen. `source` holds the category, `date` the date of the incident, `channel` the default below.",
+ "categories": ["Workplace / facilities", "Supervisor / manager", "Colleague", "Payroll / incentives", "Attendance / leave", "Field operations", "Customer behaviour", "Company policy", "Other"],
+ "severities": ["Low", "Medium", "High", "Critical"],
+ "default_severity": "Medium",
+ "statuses": ["Received", "Under review", "Substantiated", "Unsubstantiated", "Closed"],
+ "default_status": "Received",
+ "closed_statuses": ["Substantiated", "Unsubstantiated", "Closed"],
+ "channel": "In-app",
+ "list_limit": 500
+}

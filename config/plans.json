@@ -1,0 +1,117 @@
+{
+  "note": "Commercial vocabulary for Plans, Subscriptions and Quotations. A plan's base_price is per MONTH and includes seat_max employees; per_user_price is per extra employee per month. cycles maps a billing cycle to the months it bills for. Plan features are stored on the row as {\"modules\": [module keys]}.",
+  "cycles": {
+    "monthly": 1,
+    "quarterly": 3,
+    "halfyear": 6,
+    "annual": 12
+  },
+  "plan_statuses": [
+    "draft",
+    "offered",
+    "withdrawn"
+  ],
+  "subscription_statuses": [
+    "trial",
+    "active",
+    "past due",
+    "cancelled",
+    "expired"
+  ],
+  "subscription_live": [
+    "trial",
+    "active",
+    "past due"
+  ],
+  "invoice_statuses": [
+    "draft",
+    "issued",
+    "part paid",
+    "paid",
+    "overdue",
+    "cancelled"
+  ],
+  "invoice_open": [
+    "issued",
+    "part paid",
+    "overdue"
+  ],
+  "invoice_number_prefix": "SP-",
+  "payment_methods": [
+    "gateway",
+    "bank transfer",
+    "upi",
+    "cheque",
+    "cash"
+  ],
+  "payment_statuses": [
+    "initiated",
+    "succeeded",
+    "failed",
+    "refunded"
+  ],
+  "quotation_statuses": [
+    "draft",
+    "sent",
+    "accepted",
+    "paid",
+    "expired",
+    "declined"
+  ],
+  "quotation_valid_days": 15,
+  "coupon_types": [
+    "percent",
+    "flat"
+  ],
+  "coupon_contexts": [
+    "signup",
+    "renewal",
+    "both"
+  ],
+  "tenant_statuses": [
+    "provisioning",
+    "active",
+    "suspended",
+    "closed"
+  ],
+  "gateway_modes": [
+    "test",
+    "live"
+  ],
+  "gateway_statuses": [
+    "configured",
+    "live",
+    "disabled"
+  ],
+  "licence_expiring_days": 30,
+  "subscription_grace_days": 7,
+  "onprem": {
+    "editions": [
+      "Full"
+    ],
+    "employee_bands": [
+      "up to 50",
+      "51-200",
+      "201-500",
+      "500+"
+    ],
+    "amc_months": 12,
+    "licence_statuses": [
+      "pending",
+      "active",
+      "suspended",
+      "revoked"
+    ],
+    "expiry_modes": {
+      "renew": "On expiry the install stops until a new code is entered",
+      "notify": "On expiry the install keeps running and shows an 'expired' notice"
+    },
+    "payment_modes": [
+      "bank transfer",
+      "upi",
+      "cheque",
+      "cash",
+      "gateway"
+    ]
+  }
+}

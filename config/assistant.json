@@ -1,0 +1,134 @@
+{
+ "note": "Main → AI Assistant. A question is matched to ONE intent by these phrases (any phrase, case-insensitive, whole words); the intent's answer is computed from the tenant's own rows, inside the asker's permissions and row scope, by the front controller. No question or record is sent to any external service — the seventh 'never' in CLAUDE.md forbids customer data in a prompt. Add phrases here to teach it new wording; add an intent here AND a handler in app.php to teach it a new question.",
+ "intents": {
+  "absent_today": {
+   "label": "Who is absent today",
+   "phrases": [
+    "absent",
+    "not come",
+    "who is out",
+    "missing today",
+    "no show"
+   ],
+   "example": "who is absent today?"
+  },
+  "on_leave_today": {
+   "label": "Who is on leave today",
+   "phrases": [
+    "on leave",
+    "leave today",
+    "who is off"
+   ],
+   "example": "who is on leave today?"
+  },
+  "my_leave_balance": {
+   "label": "My leave balance",
+   "phrases": [
+    "my leave balance",
+    "leave balance",
+    "how many leaves",
+    "leaves left",
+    "balance"
+   ],
+   "example": "what is my leave balance?"
+  },
+  "pending_approvals": {
+   "label": "What is waiting on me",
+   "phrases": [
+    "pending approval",
+    "approvals pending",
+    "waiting on me",
+    "to approve",
+    "my inbox",
+    "pending request",
+    "what approvals"
+   ],
+   "example": "what approvals are pending?"
+  },
+  "overdue_approvals": {
+   "label": "Overdue approvals",
+   "phrases": [
+    "overdue",
+    "breached",
+    "past sla",
+    "escalat",
+    "late approval",
+    "past due"
+   ],
+   "example": "which approvals are overdue?"
+  },
+  "headcount": {
+   "label": "Headcount",
+   "phrases": [
+    "headcount",
+    "how many employees",
+    "how many people",
+    "staff count",
+    "total employees",
+    "strength"
+   ],
+   "example": "how many employees do we have?"
+  },
+  "find_employee": {
+   "label": "Find an employee",
+   "phrases": [
+    "who is",
+    "find",
+    "look up",
+    "lookup",
+    "search",
+    "details of",
+    "about"
+   ],
+   "example": "who is SP-004?"
+  },
+  "probation_ending": {
+   "label": "Probation ending",
+   "phrases": [
+    "probation"
+   ],
+   "example": "whose probation is ending?"
+  },
+  "transfers_pending": {
+   "label": "Pending transfers",
+   "phrases": [
+    "transfer"
+   ],
+   "example": "any transfers pending?"
+  },
+  "my_salary": {
+   "label": "My salary so far this month",
+   "phrases": [
+    "my salary",
+    "earned so far",
+    "live salary",
+    "salary till",
+    "how much have i earned"
+   ],
+   "example": "how much have I earned this month?"
+  },
+  "open_screen": {
+   "label": "Open a screen",
+   "phrases": [
+    "open",
+    "go to",
+    "where is",
+    "show me",
+    "take me",
+    "navigate",
+    "how do i"
+   ],
+   "example": "where is the attendance report?"
+  },
+  "help": {
+   "label": "What can you answer",
+   "phrases": [
+    "help",
+    "what can you",
+    "commands",
+    "examples"
+   ],
+   "example": "help"
+  }
+ }
+}

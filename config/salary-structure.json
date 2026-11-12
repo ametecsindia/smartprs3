@@ -1,0 +1,111 @@
+[
+  {
+    "effective_from": "2026-01-01",
+    "contracted_cost_basis": "annual",
+    "basis_note": "WHAT THE NUMBER ON THE CONTRACT MEANS. `employees.ctc` is one figure and it is read by payroll every month, so whether it is a year's cost or a month's is the single most consequential fact about it — and it was nowhere. The column held annual figures (₹7,20,000) and the register used them as the month's gross, so every payslip in the product was twelve times too high, under a per-line derivation that was arithmetically perfect and therefore completely convincing. It is declared here, not assumed in code, because it differs by customer: an agency quoting monthly CTC sets `monthly` and changes no code. It sits on the effective-dated version because a company that switches its contracts over does so FROM A DATE, and payslips issued before that date must keep meaning what they meant.",
+    "note": "The structure this build ships with. It is DATA: nothing below appears in a PHP file, so a new component, a changed percentage or a new statutory flag is an edit here, not a release.",
+    "components": [
+      {
+        "code": "C-BASIC",
+        "kind": "earning",
+        "basis": "percent_of_gross",
+        "rate_percent": 50,
+        "flags": {
+          "prorates": true,
+          "pf_base": true,
+          "is_synth_base": true
+        },
+        "sequence": 10,
+        "note": "is_synth_base is the wage-base flag the synthetic statutory pack asks for. A statutory scheme this build has not met yet is a FLAG SOMEBODY ADDS HERE, not a release — which is why the pack names a flag and never a list of component codes."
+      },
+      {
+        "code": "C-HRA",
+        "kind": "earning",
+        "basis": "percent_of",
+        "of_component": "C-BASIC",
+        "rate_percent": 40,
+        "flags": {
+          "prorates": true
+        },
+        "sequence": 20
+      },
+      {
+        "code": "C-SPECIAL",
+        "kind": "earning",
+        "basis": "balance",
+        "flags": {
+          "prorates": true
+        },
+        "sequence": 90
+      },
+      {
+        "code": "D-PT",
+        "kind": "deduction",
+        "basis": "flat",
+        "flat_amount": "200.00",
+        "flags": {
+          "prorates": false
+        },
+        "sequence": 100
+      }
+    ]
+  },
+  {
+    "effective_from": "2027-04-01",
+    "contracted_cost_basis": "annual",
+    "note": "THE SAME STRUCTURE WITH A CAP ON THE HRA — the worked example of the `formula` basis, and the first component in this product that could not be expressed at all before it existed. C-HRA is still 40% of C-BASIC and it is still an earning that prorates; what is new is that it stops at ₹20,000 a month, which is the single most common thing a customer asks of an HRA and which none of `flat`, `percent_of_gross`, `percent_of`, `balance` or `schedule` can say. Nothing above changed: this is a NEW effective-dated version from the start of the 2027-28 financial year, so every payslip issued for a month before that date is computed by, and reproduces from, the version that was in force then. NOTHING HERE IS A NEW LINE — the payslip still has C-BASIC, C-HRA, C-SPECIAL and D-PT, and where the cap does not bind (a basic under ₹50,000) every figure is identical to the version above. Where it does bind, the balance component absorbs what the cap took off, so the earnings still sum to the gross exactly.",
+    "components": [
+      {
+        "code": "C-BASIC",
+        "kind": "earning",
+        "basis": "percent_of_gross",
+        "rate_percent": 50,
+        "flags": {
+          "prorates": true,
+          "pf_base": true,
+          "is_synth_base": true
+        },
+        "sequence": 10
+      },
+      {
+        "code": "C-HRA",
+        "kind": "earning",
+        "basis": "formula",
+        "flags": {
+          "prorates": true
+        },
+        "sequence": 20,
+        "formula": {
+          "expression": "MIN(salary.component('C-BASIC') % 40, MONEY(20000, 'INR'))",
+          "rounding_mode": "half_up",
+          "rounding_unit": "0.01",
+          "description": "House rent allowance is 40% of C-BASIC and stops at ₹20,000 for the month. The cap is on the month's own figure, not a twelfth of an annual one: in a part-paid month C-BASIC is already prorated, so 40% of it is the smaller number and the cap simply does not bind.",
+          "sample_cases": [
+            "full month under the cap (basic ₹30,000 → HRA ₹12,000)",
+            "full month at the cap (basic ₹60,000 → HRA ₹20,000, not ₹24,000)",
+            "half a month at the capped rate (basic ₹30,000 → HRA ₹12,000, ₹8,000 less than a full month)"
+          ]
+        }
+      },
+      {
+        "code": "C-SPECIAL",
+        "kind": "earning",
+        "basis": "balance",
+        "flags": {
+          "prorates": true
+        },
+        "sequence": 90
+      },
+      {
+        "code": "D-PT",
+        "kind": "deduction",
+        "basis": "flat",
+        "flat_amount": "200.00",
+        "flags": {
+          "prorates": false
+        },
+        "sequence": 100
+      }
+    ]
+  }
+]

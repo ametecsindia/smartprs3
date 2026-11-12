@@ -1,0 +1,148 @@
+# THE DEBT LEDGER, AND WHAT IS DELIBERATELY NOT IN IT.
+#
+# The first full run of this file reported 11,412 findings. That is not 11,412
+# defects: level 9 with `checkImplicitMixed` on a codebase whose store hands
+# back `array<string, mixed>` rows reports the ARCHITECTURE, once per read — the
+# same true observation restated thousands of times. Left as a wall of red it
+# guarantees exactly one thing, that nobody reads any of it, which is how the
+# hundred findings that ARE defects get lost.
+#
+# So the mixed-typing debt is ledgered and the real class is not. Every finding
+# of the form "this comparison is always true", "this variable might not be
+# defined", "this ?-> can never be null", "this instanceof is guaranteed" was
+# FIXED first — 127 of them, which between them turned up a regex matching the
+# wrong thing, a phase gate comparing a literal against itself, a guard on money
+# boundaries that a docblock had quietly disproved, and two undefined variables.
+# That class is this codebase's oldest lesson wearing a static analyser: a check
+# that silently checks nothing is worse than a missing check. It must never
+# enter the ledger. When a new one appears `php tools/check.php` goes red the
+# same day, which is the entire point of not baselining it.
+#
+# GENERATE THE BASELINE ON THE MACHINE THAT HAS vendor/, NOT IN THE AUTHORING
+# SANDBOX. Packagist is unreachable there, so laravel/framework is absent and
+# ~2,900 findings are "class not found" for Illuminate classes that exist
+# perfectly well on a real install. A baseline generated without them would
+# carry 2,900 entries that match nothing on your machine, and
+# `reportUnmatchedIgnoredErrors: true` (correctly) turns every unmatched entry
+# into an error of its own. So:
+#
+#     vendor/bin/phpstan analyse --generate-baseline
+#
+# then read the diff before committing it. Entries should only ever leave.
+# Until that file exists this include is commented out and the run is red,
+# which is honest: nothing has been ledgered yet.
+# includes:
+#     - phpstan-baseline.neon
+
+# SmartPRS 3 — PHPStan
+#
+# FIRST EXERCISED AGAINST THIS TREE ON 8 SEPTEMBER 2026, and it immediately paid
+# for itself. Two configuration defects were fixed to make that run mean
+# anything:
+#
+#   1. `surface` and `public` were not in `paths` at all. Everything the
+#      analyser looked at was the pure, typed platform half — the easy half —
+#      and none of the forty classes and two front controllers that actually run
+#      when somebody opens the product. That is the identical mistake the four
+#      law gates made when they were rooted at `src/`, and it cost fifty
+#      violations the day they were re-pointed.
+#   2. tests/lib/laravel_schema_stub.php is excluded, because once vendor/
+#      exists its three Illuminate declarations collide with the real ones. See
+#      the excludePaths comment.
+#
+# The first full run found 127 findings of the always-true / always-false /
+# undefined-variable class, every one of which was fixed. See the ledger note at
+# the top of this file for what was ledgered instead and why.
+#
+# To send the findings somewhere they can be worked on:
+#
+#     vendor/bin/phpstan analyse --error-format=json > phpstan.json
+
+# DEPENDENCY-REQUIRING: uncomment once the packages are installed.
+# includes:
+#     - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: 9
+
+    paths:
+        - src
+        - database
+        - tests
+        # The gates and the dev tools are code too, and the gates are what
+        # enforce the seven laws. A checker that skips its own enforcement
+        # tooling is checking the easy half.
+        - tools
+        # THE CODE THAT ACTUALLY RUNS WHEN SOMEBODY OPENS THE PRODUCT, and it
+        # was not being analysed at all. `src/` is the platform: pure, typed,
+        # and the easiest half of this codebase to get right. `surface/` is the
+        # forty classes that read the database, decide what a screen shows and
+        # hand values to the engines — every runtime defect this project has
+        # found lived there, not in src/. A static analyser pointed away from
+        # the risk is the same defect as the four law gates that were rooted at
+        # `src/` and therefore scanned nothing that runs; that cost fifty
+        # violations the day they were re-pointed. Do not let this list drift
+        # back to the parts that were already safe.
+        - surface
+        - public
+
+    excludePaths:
+        analyseAndScan:
+            # Deliberate violations. tools/gates/self-test.php proves the gates
+            # catch them; PHPStan must never see them.
+            - tools/gates/fixtures/*
+
+            # THE ONE THAT MATTERS ON A MACHINE WITH vendor/ INSTALLED.
+            #
+            # tests/lib/laravel_schema_stub.php DECLARES Illuminate\Database\
+            # Migrations\Migration, Illuminate\Database\Schema\Blueprint and
+            # Illuminate\Support\Facades\Schema, so that the migrations can be
+            # compiled to DDL without the framework. Once `composer install` has
+            # run, those three classes exist twice — once here and once in
+            # vendor/ — and PHPStan reports every migration against whichever it
+            # resolved, plus a duplicate declaration for each. That is a large
+            # error count with a single cause, and none of it is a defect in the
+            # code being analysed.
+            #
+            # Excluded rather than deleted because the stub is what lets
+            # tools/db/migrate.php and the schema test run at all. In production
+            # the migrations use the REAL builder, which is what PHPStan should
+            # check them against, and excluding the stub is exactly what makes
+            # that happen.
+            - tests/lib/laravel_schema_stub.php
+
+    # Law 7 — money is exact. A float anywhere near money is a defect, and
+    # `float` is not an acceptable widening of `int` in this codebase.
+    checkExplicitMixed: true
+    checkImplicitMixed: true
+    treatPhpDocTypesAsCertain: true
+    reportUnmatchedIgnoredErrors: true
+    checkMissingCallableSignature: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    checkBenevolentUnionTypes: true
+
+    # Law 1 — no business literal. PHPStan cannot decide what "business meaning"
+    # is; tools/gates/checks/no-business-literal.php does that with the
+    # tokeniser. What PHPStan adds is the type-level half: a stringly-typed
+    # component code should be a value object, and level 9 surfaces that as mixed.
+
+    # The two findings kept ON PURPOSE, each argued at the line it sits on.
+    # These are `ignoreErrors` and not baseline entries because the difference
+    # matters: a baseline entry is debt somebody intends to pay, and these are
+    # decisions. Anything added here needs a comment saying why, or it is just a
+    # baseline with better manners.
+    ignoreErrors:
+        # A divide-by-zero guard on money. PHPStan proves the bucket count can
+        # never be 0; the guard stays anyway, because a redundant comparison
+        # costs one branch and a missing one costs a DivisionByZeroError on a
+        # payroll report. See the comment at the line.
+        -
+            message: '#Strict comparison using === between int<min, -1>\|int<1, max> and 0#'
+            path: surface/Reports.php
+        # A gate that cannot fire for TODAY'S register contents, and fires the
+        # day somebody adds a fourth direction — which is the only day it is
+        # needed. See the comment at the line.
+        -
+            message: '#Call to function in_array\(\) with arguments .both.\|.decreases.\|.increases.#'
+            path: tools/phase10/exit-gate.php

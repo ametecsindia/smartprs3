@@ -1,0 +1,180 @@
+{"modules": [
+ {
+  "key": "point-rules", "group": "Performance", "label": "Points Rules",
+  "description": "Define how an event awards or deducts points (negative = deduct). Rules do not fire instantly: once a month, Leaderboard → Auto-apply rules scans the month and writes the ledger. Which data feeds each event is config/points.json.",
+  "table": "point_rules", "columns": ["event", "points", "category", "employer_company_id", "note"], "search": ["event", "note"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "event": {"label": "Event", "required": true, "options": ["Late arrival", "Absent", "Perfect attendance", "On-time streak", "Award received", "Test passed", "Target achieved"], "help": "Late arrival: points × late days. Absent: points × absent days. Perfect attendance / On-time streak: once a month. Award received: × awards. Test passed: × tests passed. Target achieved: entered by hand on the ledger."},
+   "points": {"label": "Points (negative = deduct)", "required": true, "help": "A whole number. -2 deducts two points per occurrence."},
+   "category": {"label": "Category", "options": ["Positive", "Negative"]},
+   "employer_company_id": {"label": "Company", "empty": "ALL"},
+   "note": {"label": "Note"}
+  }
+ },
+ {
+  "key": "points", "group": "Performance", "label": "Points Ledger",
+  "description": "Every points entry — auto-applied rules show \"Auto:\" in the note, and one-off manual entries (a target achieved, a spot award) are added here. The Leaderboard ranks employees by the sum of these.",
+  "table": "points_ledger", "columns": ["date", "employee_id", "event", "category", "points", "note", "source_ref"], "search": ["event", "note", "source_ref"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "employee_id": {"label": "Employee", "required": true, "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+   "employer_company_id": {"label": "Company", "empty": "ALL"},
+   "event": {"label": "Event", "required": true},
+   "category": {"label": "Category", "options": ["Positive", "Negative"]},
+   "points": {"label": "Points", "required": true},
+   "date": {"label": "Date", "type": "date", "required": true},
+   "note": {"label": "Note"},
+   "source_ref": {"label": "Reference", "help": "Auto-applied rows carry auto:YYYY-MM; leave blank for a manual entry."}
+  }
+ },
+ {
+  "key": "awards", "group": "Performance", "label": "Awards & Rewards",
+  "description": "Recognition register: who received which award and when. An award dated in a month counts for the \"Award received\" points rule.",
+  "table": "awards", "columns": ["date", "employee_id", "award", "note"], "search": ["award", "note"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "employee_id": {"label": "Employee", "required": true, "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+   "employer_company_id": {"label": "Company", "empty": "ALL"},
+   "award": {"label": "Award", "required": true},
+   "date": {"label": "Date", "type": "date", "required": true},
+   "note": {"label": "Note"}
+  }
+ },
+ {
+  "key": "tests", "group": "Learning", "label": "Tests",
+  "description": "The assessments employees take. Questions live in the Test Questions register; the pass mark is a percent of total marks. Employees take a test from Performance → Tests.",
+  "table": "tests", "columns": ["name", "category", "target_type", "target", "pass_mark", "scheduled_on"], "search": ["name", "category"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "name": {"label": "Test Name", "required": true},
+   "category": {"label": "Category"},
+   "target_type": {"label": "Target Type", "options": ["All", "Department", "Designation", "Team", "Employee"]},
+   "target": {"label": "Target", "help": "The department / designation / team / employee code the test is for; blank for everybody."},
+   "questions": {"label": "Question count (shown)", "readonly": true, "help": "Counted from the Test Questions register."},
+   "pass_mark": {"label": "Pass Mark (%)", "required": true, "min": "0", "max": "100"},
+   "scheduled_on": {"label": "Scheduled On", "type": "date"},
+   "linked_program_id": {"label": "Training programme", "lookup": {"table": "training_programs", "value": "id", "show": ["name"]}, "empty": "— none —"}
+  }
+ },
+ {
+  "key": "test-questions", "group": "Learning", "label": "Test Questions",
+  "description": "The question bank: one row per MCQ with four options, the correct letter and its marks. Scoring is server-side from these rows.",
+  "table": "test_questions", "columns": ["test_id", "seq", "question", "correct", "marks"], "search": ["question"],
+  "permissions": {"view": "employee.update", "edit": "employee.update"},
+  "fields": {
+   "test_id": {"label": "Test", "required": true, "lookup": {"table": "tests", "value": "id", "show": ["name"]}},
+   "seq": {"label": "Order", "help": "1, 2, 3 … the order the employee sees them in."},
+   "question": {"label": "Question", "required": true, "type": "textarea"},
+   "opt_a": {"label": "Option A", "required": true},
+   "opt_b": {"label": "Option B", "required": true},
+   "opt_c": {"label": "Option C"},
+   "opt_d": {"label": "Option D"},
+   "correct": {"label": "Correct", "required": true, "options": ["A", "B", "C", "D"]},
+   "marks": {"label": "Marks", "min": "0", "help": "Blank counts as 1."}
+  }
+ },
+ {
+  "key": "test-attempts", "group": "Learning", "label": "Test Results",
+  "description": "Every attempt with its score: marks scored of total, percent, pass / fail. Written by the test-taking flow; edit only to correct a record.",
+  "table": "test_attempts", "columns": ["attempted_on", "employee_id", "test_id", "marks_scored", "total_marks", "score", "status"], "search": [],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "employee_id": {"label": "Employee", "required": true, "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+   "test_id": {"label": "Test", "required": true, "lookup": {"table": "tests", "value": "id", "show": ["name"]}},
+   "marks_scored": {"label": "Marks scored"},
+   "total_marks": {"label": "Total marks"},
+   "score": {"label": "Score (%)"},
+   "status": {"label": "Status", "options": ["In progress", "Passed", "Failed", "Abandoned"]},
+   "attempted_on": {"label": "Attempted On", "type": "date"},
+   "answers": {"label": "Answers", "readonly": true, "hidden": true},
+   "submitted_at": {"label": "Submitted at", "readonly": true}
+  }
+ },
+ {
+  "key": "training-programs", "group": "Learning", "label": "Training Programs",
+  "description": "The training catalogue: what is offered, how, whether it is mandatory and for how long a completion stays valid.",
+  "table": "training_programs", "columns": ["name", "category", "mode", "mandatory", "validity", "status"], "search": ["name", "category"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "name": {"label": "Program Name", "required": true},
+   "category": {"label": "Category"},
+   "mode": {"label": "Mode", "options": ["Online", "Classroom", "Field"]},
+   "mandatory": {"label": "Mandatory?", "type": "checkbox"},
+   "validity": {"label": "Validity", "help": "e.g. 12 months — how long a completion counts."},
+   "description": {"label": "Description / Objectives", "type": "textarea"},
+   "status": {"label": "Status", "options": ["Active", "Inactive"]}
+  }
+ },
+ {
+  "key": "training-records", "group": "Learning", "label": "Training Records",
+  "description": "Who was assigned and who completed which programme, with the score and when the completion expires.",
+  "table": "training_records", "columns": ["employee_id", "program_id", "status", "completed_on", "score", "expiry"], "search": [],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "employee_id": {"label": "Employee", "required": true, "lookup": {"table": "employees", "value": "id", "show": ["emp_code", "name"]}},
+   "program_id": {"label": "Program", "required": true, "lookup": {"table": "training_programs", "value": "id", "show": ["name"]}},
+   "status": {"label": "Status", "options": ["Assigned", "Completed", "Expired"]},
+   "completed_on": {"label": "Completed On", "type": "date"},
+   "score": {"label": "Score"},
+   "expiry": {"label": "Expiry", "type": "date"}
+  }
+ },
+ {
+  "key": "training-content", "group": "Learning", "label": "Training Content",
+  "description": "Subjects / modules under a programme, with hours and the content itself.",
+  "table": "training_subjects", "columns": ["program_id", "module", "subject", "hours"], "search": ["module", "subject"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "program_id": {"label": "Program", "required": true, "lookup": {"table": "training_programs", "value": "id", "show": ["name"]}},
+   "module": {"label": "Module"},
+   "subject": {"label": "Subject", "required": true},
+   "hours": {"label": "Hours", "min": "0"},
+   "content": {"label": "Content", "type": "textarea"}
+  }
+ },
+ {
+  "key": "kb", "group": "Learning", "label": "Knowledge Base",
+  "description": "Topics every employee can read: how to apply for leave, how the payslip is built, where to find a form. Roles is an optional list of roles the topic is for.",
+  "table": "kb_topics", "columns": ["sort", "category", "title", "icon"], "search": ["title", "body", "category"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "title": {"label": "Title", "required": true},
+   "category": {"label": "Category"},
+   "icon": {"label": "Icon", "help": "A Font Awesome name such as fa-book-open."},
+   "body": {"label": "Body", "type": "textarea", "required": true},
+   "roles": {"label": "Roles", "type": "json", "help": "Optional. A list looks like [\"administrator\",\"manager\"]. Blank = everybody."},
+   "sort": {"label": "Sort", "help": "Lower comes first."}
+  }
+ },
+ {
+  "key": "faqs", "group": "Learning", "label": "FAQs",
+  "description": "Frequently asked questions and their answers, grouped by category.",
+  "table": "faqs", "columns": ["category", "question"], "search": ["question", "answer", "category"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "category": {"label": "Category"},
+   "question": {"label": "Question", "required": true},
+   "answer": {"label": "Answer", "type": "textarea", "required": true}
+  }
+ },
+ {
+  "key": "policies", "group": "Learning", "label": "Policy Repository",
+  "description": "Board-approved recovery / collection policies, the code of conduct and SOPs — versioned, with owner, effective date, board-approval date and review-due. A revision is a new row; mark the old one superseded.",
+  "table": "policies", "columns": ["title", "category", "version", "owner", "effective_date", "review_due", "ack_required", "status"], "search": ["title", "summary", "owner"],
+  "permissions": {"view": "employee.view", "edit": "employee.update"},
+  "fields": {
+   "title": {"label": "Policy Title", "required": true},
+   "category": {"label": "Category", "options": ["Recovery_policy", "Code_of_conduct", "Sop", "Data_privacy", "Grievance", "Hr", "Other"]},
+   "version": {"label": "Version (e.g. v1.0)"},
+   "owner": {"label": "Policy Owner"},
+   "effective_date": {"label": "Effective Date", "type": "date"},
+   "board_approved_on": {"label": "Board Approved On", "type": "date"},
+   "review_due": {"label": "Next Review Due", "type": "date"},
+   "ack_required": {"label": "Acknowledgement Required", "type": "checkbox"},
+   "reference": {"label": "Document Link / Reference"},
+   "summary": {"label": "Summary", "type": "textarea"},
+   "status": {"label": "Status", "options": ["Active", "Superseded", "Draft"]}
+  }
+ }
+]}

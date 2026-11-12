@@ -1,0 +1,158 @@
+# SmartPRS 3 — CI
+#
+# Part IV §IV.10: every law in spine S1 has a mechanical gate, and building it is
+# Phase 1 work. The gate job below is the blocking one. It has no dependencies —
+# plain PHP 8.4 plus ext-tokenizer — so it runs on a bare checkout, in seconds,
+# and cannot be broken by a package that will not install.
+#
+# The steps marked DEPENDENCY-REQUIRING are written and configured but NOT YET
+# EXERCISED: `composer install` is not possible until the package repository is
+# reachable from the build environment. They are gated behind the existence of
+# composer.json so the pipeline stays green today and starts enforcing the moment
+# dependencies land — no edit needed, just a manifest.
+
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # BLOCKING, no dependencies. This is the immune system.
+  # ---------------------------------------------------------------------------
+  gates:
+    name: Enforcement gates (spine S1)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: tokenizer, pdo_mysql
+          coverage: none
+
+      - name: Prove the gates still work
+        run: php tools/gates/self-test.php
+
+      - name: Lint every PHP file
+        run: find src database tests tools -name '*.php' -print0 | xargs -0 -n1 -P4 php -l > /dev/null
+
+      - name: Run the gates
+        run: php tools/gates/gate.php --fix-hint
+
+      # The platform primitives (Money, Rational, Scope, EffectiveRange,
+      # ArtefactResolver, HashChain, CalculationTrace, TenantContext). Plain PHP,
+      # no Composer, so it belongs in the blocking job. The schema portion of the
+      # suite skips itself when no database is reachable — see the db-privilege
+      # job below, which has one.
+      - name: Platform primitive suite
+        run: php tests/run.php
+
+      - name: Gate report (JSON, for the build summary)
+        if: always()
+        run: php tools/gates/gate.php --format=json > gate-report.json || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-report
+          path: gate-report.json
+
+  # ---------------------------------------------------------------------------
+  # BLOCKING, needs a database. Law 2's runtime half: the application account
+  # must not be able to execute DDL even if some code tries.
+  # ---------------------------------------------------------------------------
+  db-privilege:
+    name: Database privilege gate (Law 2)
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: smartprs3
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql
+          coverage: none
+
+      - name: Provision the two accounts the deployment model requires
+        run: |
+          mysql -h127.0.0.1 -uroot -proot <<'SQL'
+          CREATE USER 'prs3_app'@'%' IDENTIFIED BY 'app';
+          CREATE USER 'prs3_migrate'@'%' IDENTIFIED BY 'migrate';
+          GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON smartprs3.* TO 'prs3_app'@'%';
+          GRANT ALL PRIVILEGES ON smartprs3.* TO 'prs3_migrate'@'%';
+          FLUSH PRIVILEGES;
+          SQL
+
+      - name: Assert the application account holds no DDL privilege
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: '3306'
+          DB_DATABASE: smartprs3
+          DB_USERNAME: prs3_app
+          DB_PASSWORD: app
+        run: php tools/gates/checks/db-privilege.php
+
+  # ---------------------------------------------------------------------------
+  # DEPENDENCY-REQUIRING — configured, reviewed, NOT YET EXERCISED.
+  # Skips itself until composer.json exists. Nothing here has ever run green;
+  # treat the first run as a change, not as a regression.
+  # ---------------------------------------------------------------------------
+  static-analysis:
+    name: PHPStan + Deptrac (not yet exercised)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Is there anything to install yet?
+        id: deps
+        run: |
+          if [ -f composer.json ]; then echo "ready=true" >> "$GITHUB_OUTPUT";
+          else echo "ready=false" >> "$GITHUB_OUTPUT";
+               echo "::notice::composer.json absent — PHPStan and Deptrac are configured (phpstan.neon, deptrac.yaml) but not yet exercised."; fi
+
+      - uses: shivammathur/setup-php@v2
+        if: steps.deps.outputs.ready == 'true'
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      # DEPENDENCY-REQUIRING
+      - name: composer install
+        if: steps.deps.outputs.ready == 'true'
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      # DEPENDENCY-REQUIRING — level 9, strict rules, over src/ (see phpstan.neon)
+      - name: PHPStan
+        if: steps.deps.outputs.ready == 'true'
+        run: vendor/bin/phpstan analyse --configuration=phpstan.neon --no-progress
+
+      # DEPENDENCY-REQUIRING — layer + module graph (see deptrac.yaml)
+      - name: Deptrac
+        if: steps.deps.outputs.ready == 'true'
+        run: vendor/bin/deptrac analyse --config-file=deptrac.yaml --report-uncovered
+
+      # DEPENDENCY-REQUIRING
+      - name: Tests
+        if: steps.deps.outputs.ready == 'true'
+        run: vendor/bin/phpunit --colors=never
+
+# NOTE: this file belongs at .github/workflows/ci.yml.
+# It is staged here because .github/workflows/ is write-protected to remote tools.
+# Move it: mkdir -p .github/workflows && mv tools/ci/ci.yml .github/workflows/ci.yml

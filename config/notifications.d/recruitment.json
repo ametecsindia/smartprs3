@@ -1,0 +1,32 @@
+{
+ "events": {
+  "recruitment.interview.scheduled": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "Interview: {candidate} — {round}, {when}",
+   "body": "You are on the panel. Candidate {candidate} ({position}, {requisition}) · {round} on {when} · {mode}. Mobile {mobile}, email {email}, experience {experience}. Panel: {panel}.",
+   "audience": "interview panel",
+   "audience_note": "Owner, 21 Oct 2026: every panelist picked when the round is scheduled, by employee code; the same details also go by email (Alert Email Drafts → Mail server) and pop up on screen at the scheduled time."
+  },
+  "recruitment.onboarding.submitted": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "Self-onboarding submitted: {name} ({temp_code})",
+   "body": "{name} ({temp_code}) has submitted their joining details and documents. Verify them on Self-Onboarding, then Approve & inject.",
+   "audience": "onboarding roles",
+   "audience_note": "config/recruitment.json onboarding_notify_roles."
+  },
+  "recruitment.bgv.opened": {
+   "channels": [
+    "in_app"
+   ],
+   "title": "Background verification to do: {code} {name}",
+   "body": "{code} {name} has joined. A background verification was opened with their uploaded documents beside each check — complete it on Background Verification.",
+   "audience": "onboarding roles",
+   "audience_note": "config/recruitment.json onboarding_notify_roles."
+  }
+ }
+}

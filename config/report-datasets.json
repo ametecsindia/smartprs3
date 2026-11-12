@@ -1,0 +1,151 @@
+{
+ "note": "REPORTS → Datasets: SmartPRS 2's 'preview any dataset and export it' — one table each, in the columns declared here, narrowed by the Organization Setup filters (through the employee the row belongs to) and, where `date_column` is set, by the period picker. `people_column` names how the table identifies its employee (id for the employees table, employee_id, or emp_code); rows outside the viewer's scope are never shown. `preview_rows` caps the screen; the export holds every row. Column labels are shown as declared; a column the table does not have shows blank rather than failing. `org` columns (company / branch / department / designation / team) are resolved through Organization Setup's registers. `source: register` reads the payroll register's runs (their per-employee rows and lines) instead of a table — payslips live there, not in a payslips table.",
+ "preview_rows": 200,
+ "datasets": [
+  {
+   "key": "employees",
+   "label": "Employees",
+   "table": "employees",
+   "permission": "employee.list",
+   "people_column": "id",
+   "columns": {
+    "emp_code": "CODE",
+    "name": "NAME",
+    "company": "COMPANY",
+    "branch": "BRANCH",
+    "department": "DEPARTMENT",
+    "designation": "DESIGNATION",
+    "team": "TEAM",
+    "type": "TYPE",
+    "doj": "DATE OF JOINING",
+    "status": "STATUS",
+    "mobile": "MOBILE",
+    "email": "EMAIL",
+    "pf_applicable": "PF",
+    "esi_applicable": "ESI",
+    "pt_state": "PT STATE"
+   }
+  },
+  {
+   "key": "payslips",
+   "label": "Payslips",
+   "table": "payroll_runs",
+   "permission": "payroll.view",
+   "people_column": "employee_id",
+   "date_column": "period",
+   "money": [
+    "gross",
+    "deductions",
+    "net"
+   ],
+   "columns": {
+    "period": "PERIOD",
+    "employee_id": "EMPLOYEE",
+    "status": "RUN STATUS",
+    "gross": "GROSS",
+    "deductions": "DEDUCTIONS",
+    "net": "NET",
+    "closed_at": "CLOSED"
+   },
+   "source": "register"
+  },
+  {
+   "key": "leaves",
+   "label": "Leave records",
+   "table": "leaves",
+   "permission": "leave.request.view",
+   "people_column": "employee_id",
+   "date_column": "from_date",
+   "columns": {
+    "employee_id": "EMPLOYEE",
+    "type_id": "TYPE",
+    "from_date": "FROM",
+    "to_date": "TO",
+    "days": "DAYS",
+    "status": "STATUS",
+    "reason": "REASON",
+    "decided_at": "DECIDED"
+   }
+  },
+  {
+   "key": "punches",
+   "label": "Attendance punches",
+   "table": "attendance_logs",
+   "permission": "attendance.report.view",
+   "people_column": "emp_code",
+   "date_column": "log_date",
+   "columns": {
+    "emp_code": "CODE",
+    "emp_name": "NAME",
+    "log_date": "DATE",
+    "punch_at": "PUNCH AT",
+    "direction": "IN / OUT",
+    "source": "SOURCE",
+    "device_sn": "DEVICE"
+   }
+  },
+  {
+   "key": "regularisations",
+   "label": "Attendance regularisations",
+   "table": "attendance_corrections",
+   "permission": "attendance.report.view",
+   "people_column": "employee_id",
+   "date_column": "log_date",
+   "columns": {
+    "emp_code": "CODE",
+    "emp_name": "NAME",
+    "log_date": "DATE",
+    "sub_type": "TYPE",
+    "req_in": "REQUESTED IN",
+    "req_out": "REQUESTED OUT",
+    "status": "STATUS",
+    "approver_name": "APPROVER",
+    "decided_at": "DECIDED"
+   }
+  },
+  {
+   "key": "loans",
+   "label": "Loans",
+   "table": "loans",
+   "permission": "payroll.view",
+   "people_column": "employee_id",
+   "money": [
+    "amount",
+    "emi",
+    "outstanding"
+   ],
+   "columns": {
+    "employee_id": "EMPLOYEE",
+    "amount": "AMOUNT",
+    "emi": "EMI",
+    "tenure": "TENURE",
+    "outstanding": "OUTSTANDING",
+    "status": "STATUS",
+    "start_month": "START"
+   }
+  },
+  {
+   "key": "advances",
+   "label": "Salary advances",
+   "table": "advances",
+   "permission": "payroll.view",
+   "people_column": "employee_id",
+   "money": [
+    "amount_requested",
+    "amount",
+    "per_month",
+    "balance"
+   ],
+   "columns": {
+    "employee_id": "EMPLOYEE",
+    "requested_on": "REQUESTED ON",
+    "amount_requested": "REQUESTED",
+    "amount": "SANCTIONED",
+    "tenure_months": "TENURE",
+    "per_month": "EMI",
+    "balance": "BALANCE",
+    "status": "STATUS"
+   }
+  }
+ ]
+}

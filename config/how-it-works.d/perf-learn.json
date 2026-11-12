@@ -1,0 +1,19 @@
+{"items": {
+  "performance": "One review per employee per period: self rating, the reporting manager's rating (from the employee record), HR finalises; the scale, periods and PRG bands are config/performance.json.",
+  "awards": "Recognition register; an award dated in a month counts for the 'Award received' points rule.",
+  "points-scores": "Employees ranked by net points from the ledger for a period; Auto-apply writes the month's rule-based rows once, from attendance, awards and passed tests.",
+  "points-ledger": "Every points row with its note — auto rows say 'Auto: event × count @ points = total', manual rows are typed here.",
+  "points-rules": "What each event is worth (negative deducts), per company or ALL; the amounts live only on these rows.",
+  "tests": "Employees take MCQ tests from the question bank and are scored on the server: marks ÷ total as a whole percent, compared exactly with the pass mark.",
+  "test-results": "Every attempt with marks, percent and pass / fail.",
+  "test-reports": "Pass rate per test and per department as an exact fraction with the working.",
+  "attrition": "Joiners and leavers per month from DOJ and exit date; rate = leavers ÷ average headcount, exact, with the working.",
+  "kb": "Topics every employee can read, by category and role.",
+  "faqs": "Questions and answers by category.",
+  "training-programs": "The training catalogue: mode, mandatory, validity.",
+  "training-records": "Who was assigned and who completed which programme, with score and expiry.",
+  "training-content": "Subjects and modules under a programme with hours and the material.",
+  "code-of-conduct": "The current version's text with a one-click acknowledgement per employee per version; HR sees who has and has not.",
+  "policies": "Versioned policy documents with owner, effective, board-approval and review-due dates.",
+  "helpdesk": "Employees raise tickets and see only their own; HR sets priority, assignee, status and a reply."
+}}

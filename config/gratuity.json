@@ -1,0 +1,36 @@
+{
+  "note": "Gratuity under the Code on Social Security, 2020 (Section 53), in force from 21-11-2025 (Ministry of Labour FAQs, 16-03-2026: gratuity on the revised definition of wages applies w.e.f. 21.11.2025). Every figure the Gratuity screen and the Full & Final use is HERE. Change the law here, not in PHP.",
+  "law": "Code on Social Security, 2020, s.53 (gratuity) with s.2(88) wages = Code on Wages, 2019, s.2(y)",
+  "eligibility_years": 5,
+  "eligibility_note": "Five years of CONTINUOUS service, counted in full years from the date of joining (no rounding for eligibility).",
+  "fixed_term": {
+    "employment_types": ["Fixed Term"],
+    "eligibility_years": 1,
+    "note": "Fixed-term employees: gratuity after one year of service under the contract, proportionately (s.53(1) proviso)."
+  },
+  "no_minimum_service_exit_reasons": ["Death", "Disablement"],
+  "no_minimum_service_note": "Death, or disablement due to accident or disease: no minimum service (s.53(1) proviso).",
+  "count_240_days_in_final_year": false,
+  "count_240_days_note": "Off = the Code's text (five completed years). On = treat 4 years + 240 days in the fifth year as five years (s.2A continuous service as read by several High Courts). A legal decision for the employer, not a default.",
+  "part_year_more_than_months": 6,
+  "part_year_note": "For the amount: every completed year, and any part of a year IN EXCESS OF six months, counts as a year. Exactly six months does not.",
+  "days_factor": {"numerator": 15, "denominator": 26},
+  "days_factor_note": "15 days' wages per counted year; a monthly-rated wage is divided by 26.",
+  "statutory_cap": "2000000.00",
+  "statutory_cap_note": "Maximum notified by the Central Government (Rs 20 lakh). Change here when a new notification raises it.",
+  "wage_components": ["BASIC", "DA", "RETAINING_ALLOWANCE"],
+  "wage_components_note": "Wages = basic pay + dearness allowance + retaining allowance (Code on Wages s.2(y)).",
+  "fifty_percent_rule": {
+    "from": "2025-11-21",
+    "percent": 50,
+    "note": "If the excluded items (HRA, conveyance, special allowance, overtime, commission, etc.) exceed 50% of total remuneration, the excess is added back to wages (s.2(y) first proviso)."
+  },
+  "not_remuneration": ["REIMBURSEMENT", "LEAVE_ENCASHMENT", "DRA_REFUND", "PCC_REFUND", "GRATUITY_PAYOUT", "BONUS", "INCENTIVE"],
+  "not_remuneration_note": "Lines that are not remuneration for the 50% test: reimbursements, refunds, encashment, and annual performance-based incentives/bonus (Labour Codes FAQ 4).",
+  "rate_not_amount": true,
+  "rate_note": "Wages LAST DRAWN means the monthly RATE: a month with loss-of-pay days is scaled back up to the full month (period days / payable days).",
+  "payout_component": "GRATUITY_PAYOUT",
+  "payment_due_days": 30,
+  "basic_flag": "pf_base",
+  "basic_flag_note": "Used only when the employee has no payroll run yet: the components carrying this flag stand in for wages."
+}
