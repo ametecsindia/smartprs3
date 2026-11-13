@@ -727,3 +727,13 @@ html[data-mode="dark"] .dash-kpis .kpi.orange{--k:#818CF8}html[data-mode="dark"]
 /* each of the five tiles its own colour (Active and Present were both green; On leave blue like Present) */
 .dash-kpis .kpi.dk:nth-child(1){--k:#7C3AED}.dash-kpis .kpi.dk:nth-child(2){--k:#059669}.dash-kpis .kpi.dk:nth-child(3){--k:#2563EB}
 .dash-kpis .kpi.dk:nth-child(4){--k:#D97706}.dash-kpis .kpi.dk:nth-child(5){--k:#E11D48}.dash-kpis .kpi.dk:nth-child(6){--k:#0891B2}
+
+/* COMPACT DASHBOARD TOP CARDS (owner, 13 Nov 2026: "taking more space unnecessarily"). Same colours, icons, labels
+   and figures — only the size: smaller padding, icon and number, the footer line tighter. */
+.dash-kpis{gap:12px}
+.dash-kpis .kpi.dk{gap:6px;padding:12px 14px 9px;min-height:0}
+.dash-kpis .dk-top{gap:10px}
+.dash-kpis .dk-ic{width:32px;height:32px;border-radius:9px;font-size:14px}
+.dash-kpis .dk-label{font-size:12px}
+.dash-kpis .dk-val{font-size:28px}
+.dash-kpis .dk-foot{padding-top:6px;font-size:12px;line-height:1.3}
