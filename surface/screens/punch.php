@@ -122,7 +122,7 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
     <div style="flex:0"><button class="go punch-main" type="submit" style="background:var(--<?= $next === 'in' ? 'green' : 'red' ?>)"><i class="fas fa-fingerprint"></i> Punch <?= strtoupper($next) ?></button></div>
     <div class="note" id="punch-gps"><?= $fence === null
         ? 'Your location is asked for when you press the button and kept with the punch. No geo-fence is set for you.'
-        : '<b>Geo-fence on:</b> punch-in is allowed only within ' . e(rtrim(rtrim(number_format($fence['radius_km'] + $fence['tolerance_km'], 1, '.', ''), '0'), '.')) . ' km of ' . e($fence['label']) . '. Allow location when the browser asks.' ?></div>
+        : '<b>Geo-fence on:</b> Punch IN and OUT are allowed only within ' . e(rtrim(rtrim(number_format($fence['radius_km'] + $fence['tolerance_km'], 1, '.', ''), '0'), '.')) . ' km of ' . e($fence['label']) . '. Allow location when the browser asks.' ?></div>
   </form>
 <?php endif; ?>
   <div class="row punch-stats" style="margin-top:14px">

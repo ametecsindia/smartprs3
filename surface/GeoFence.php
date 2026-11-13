@@ -66,7 +66,7 @@ final class GeoFence
         $allowed = $fence['radius_km'] + $fence['tolerance_km'];
 
         if (!is_numeric($lat) || !is_numeric($lng)) {
-            return ['ok' => false, 'why' => 'Your location is needed to punch in: you may punch within ' . self::km($allowed)
+            return ['ok' => false, 'why' => 'Your location is needed to punch: you may punch within ' . self::km($allowed)
                 . ' of ' . $fence['label'] . '. Allow location for this site in your browser and try again.'];
         }
 
@@ -74,7 +74,7 @@ final class GeoFence
 
         return $d <= $allowed
             ? ['ok' => true, 'distance_km' => $d, 'why' => 'Inside your geo-fence (' . self::km($d) . ' from ' . $fence['label'] . ').']
-            : ['ok' => false, 'distance_km' => $d, 'why' => 'You are ' . self::km($d) . ' from ' . $fence['label'] . '; punch-in is allowed only within '
+            : ['ok' => false, 'distance_km' => $d, 'why' => 'You are ' . self::km($d) . ' from ' . $fence['label'] . '; punching is allowed only within '
                 . self::km($allowed) . '. Move inside the area, or ask HR to correct your Geo-Fence Rule.'];
     }
 

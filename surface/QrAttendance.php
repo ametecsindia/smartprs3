@@ -71,6 +71,13 @@ final class QrAttendance
     public function modeFor(array $employee): string
     {
         $source = $this->sourceFor((string) ($employee['employer_company_id'] ?? ''));
+
+        // NO GATE, NO QR (owner, 13 Nov 2026): in a QR company an employee whose branch has no active gate — a field agent —
+        // uses the regular Punch IN / OUT, judged by their own geo-fence. Punch is never simply unavailable.
+        if ($source === self::SOURCE && !$this->gatedBranch((string) ($employee['branch_id'] ?? ''))) {
+            return 'standard';
+        }
+
         $rule = (array) ($this->config['office_qr'] ?? []);
         $type = trim((string) ($employee[(string) ($rule['field'] ?? 'type')] ?? ''));
 
@@ -78,13 +85,19 @@ final class QrAttendance
             return $source;
         }
 
-        foreach ($this->gates() as $g) {
-            if ((bool) ($g['active'] ?? true) && (string) ($g['branch_id'] ?? '') !== '' && (string) $g['branch_id'] === (string) ($employee['branch_id'] ?? '')) {
-                return self::SOURCE;
+        return $this->gatedBranch((string) ($employee['branch_id'] ?? '')) ? self::SOURCE : $source;
+    }
+
+    /** Does this branch have an active QR gate? */
+    public function gatedBranch(string $branchId): bool
+    {
+        foreach ($branchId === '' ? [] : $this->gates() as $g) {
+            if ((bool) ($g['active'] ?? true) && (string) ($g['branch_id'] ?? '') === $branchId) {
+                return true;
             }
         }
 
-        return $source;
+        return false;
     }
 
     /** A company whose branches have gates: a QR company, or a Standard one whose Office staff punch by QR (office_qr). */

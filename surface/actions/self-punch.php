@@ -84,14 +84,17 @@ if ($qrSource === 'qr') {
         . (isset($qrCheck['distance_m']) ? '|' . $qrCheck['distance_m'] . 'm' : '') . (($qrCheck['exempt'] ?? false) ? '|geofence-exception' : '');
 }
 
-// THE GEO-FENCE DECIDES PUNCH-IN (owner, 12 Oct): inside the person's fence, or refused with the
-// distance. Nobody fenced = no check. Punch-out is recorded wherever it happens, with its location.
-if ($direction === 'in' && $punchSource !== SmartPRS\Surface\QrAttendance::SOURCE) {
+// THE GEO-FENCE DECIDES THE REGULAR PUNCH, IN AND OUT (owner, 12 Oct; 13 Nov 2026: "Punch IN or Punch OUT within that
+// geofence"): inside the person's fence, or refused with the distance. Nobody fenced = no check. A geo-fence exception
+// (Time & Attendance → QR Attendance → Exceptions, for the person at their branch) lets them punch from anywhere.
+$fenceExempt = $qrAtt->geofenceExempt((string) $ownRow['id'], (string) ($ownRow['branch_id'] ?? ''), date('Y-m-d'));
+
+if ($punchSource !== SmartPRS\Surface\QrAttendance::SOURCE && !$fenceExempt) {
     $fenceCheck = (new SmartPRS\Surface\GeoFence($store))->check($ownRow, $lat, $lng);
 
     if (!$fenceCheck['ok']) {
-        $audit('attendance.punch.refused_geofence', 'punch', $code, null, ['at' => $now, 'gps' => $reference], $fenceCheck['why']);
-        $_SESSION['flash_problem'] = 'Punch-in refused. ' . $fenceCheck['why'];
+        $audit('attendance.punch.refused_geofence', 'punch', $code, null, ['at' => $now, 'direction' => $direction, 'gps' => $reference], $fenceCheck['why']);
+        $_SESSION['flash_problem'] = 'Punch ' . strtoupper($direction) . ' refused. ' . $fenceCheck['why'];
         header('Location: ?r=punch');
         exit;
     }
@@ -101,7 +104,8 @@ try {
     $attendance->record($code, $now, $direction, $punchSource, $reference);
     $audit('attendance.punch.recorded', 'punch', $code, null,
         ['at' => $now, 'direction' => $direction, 'source' => $punchSource, 'gps' => $reference], $punchSource === 'web' ? 'Self punch from the web app' : 'QR punch at ' . $qrCheck['gate']['name']);
-    $_SESSION['flash_notice'] = 'Punched ' . strtoupper($direction) . ' at ' . substr($now, 11, 5) . ($punchSource !== 'web' ? ' — ' . $qrCheck['why'] : ($reference === null ? ' (no location)' : ' with location'));
+    $_SESSION['flash_notice'] = 'Punched ' . strtoupper($direction) . ' at ' . substr($now, 11, 5) . ($punchSource !== 'web' ? ' — ' . $qrCheck['why']
+        : ($fenceExempt ? ' (geo-fence exception)' : ($reference === null ? ' (no location)' : ' with location')));
 
     if ($offWhy !== null) {
         $offReason = 'Worked on ' . ($offWhy === 'leave' ? 'a day of approved leave' : 'a ' . $offWhy) . ' — punched ' . $direction . ($punchSource === 'web' ? ' from the web app' : ' by QR at ' . $qrCheck['gate']['name']);
