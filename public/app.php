@@ -32421,7 +32421,9 @@ document.addEventListener('submit', function (ev) {
 /* TABLE HEADERS STAY IN VIEW (owner, 29 Oct 2026: "the table's header should be fixed while scrolling the data … across the
    application"). A table taller than the screen scrolls inside its own box and its header row stays on top; the column
    colours are the th's own, so nothing shows through. Printing lets the table run its full length. */
-.th-fixed{max-height:calc(100vh - var(--header-h, 62px) - 24px);overflow:auto}
+/* 13 Nov 2026 ("the header scrolls away"): the box itself also stays under the top bar while its card is on screen, so
+   scrolling the page past the table's top never carries the header row off screen. */
+.th-fixed{max-height:calc(100vh - var(--header-h, 62px) - 84px);overflow:auto;position:sticky;top:calc(var(--header-h, 62px) + var(--tiles-h, 0px) + 8px)}
 .th-fixed > table > thead th{position:sticky;top:var(--th-top, 0px);z-index:3;box-shadow:inset 0 -1px 0 var(--border, #e2e8f0)}
 @media print{.th-fixed{max-height:none !important;overflow:visible !important}.th-fixed > table > thead th{position:static !important}}
 </style>
@@ -32430,7 +32432,7 @@ document.addEventListener('submit', function (ev) {
 // screen gets a scrolling box (its own .table-wrap when it has one) and a sticky header. A table inside another table,
 // a payslip, or one marked .no-fixed-head is left as it is. Re-checked when rows arrive (filters, tabs, Load buttons).
 (function () {
-  var room = function () { return window.innerHeight - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 62) - (window.__tilesH || 0) - 24; };
+  var room = function () { return window.innerHeight - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 62) - (window.__tilesH || 0) - 84; }; // 84: the gap under the top bar + the card's own padding, so the box fits whole even at the card's end
   var fix = function (t) {
     if (!t.tHead || t.closest('.no-fixed-head, .payslip, .payslip-table') || (t.parentElement && t.parentElement.closest('table'))) { return; }
     var box = t.parentElement;
@@ -32440,6 +32442,11 @@ document.addEventListener('submit', function (ev) {
         box = document.createElement('div'); box.className = 'table-wrap'; t.parentNode.insertBefore(box, t); box.appendChild(t);
       }
       box.classList.add('th-fixed');
+      // A box that sticks needs no clipping parent between it and the page (overflow:hidden would pin it to that parent).
+      for (var p = box.parentElement; p && p !== document.body; p = p.parentElement) {
+        if (getComputedStyle(p).overflowY === 'hidden') { p.style.overflow = 'clip'; }
+      }
+      document.documentElement.style.setProperty('--tiles-h', (window.__tilesH || 0) + 'px');
     }
     // THE BOX FITS THE SCREEN even under the Text size zoom (a zoomed page measures 100vh in zoomed pixels).
     var z = box.offsetHeight ? box.getBoundingClientRect().height / box.offsetHeight : 1;
