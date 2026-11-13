@@ -19,6 +19,8 @@ $fence = $ownRow === null ? null : (new SmartPRS\Surface\GeoFence($store))->fenc
 // THE COMPANY'S ATTENDANCE SOURCE (owner, 9 Nov 2026) — Time & Attendance → QR Attendance.
 $qrSource = $ownRow === null ? 'standard' : SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->modeFor($ownRow); // Office staff: QR by default (12 Nov 2026)
 $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
+// FIELD STAFF (owner, 13 Nov 2026): the normal Punch IN / OUT, judged by their geo-fence, beside the company's source.
+$regular = $ownRow !== null && SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->regularPunch($ownRow, $fence !== null, $inApp, date('Y-m-d'));
 ?>
 <style>
   /* THE PUNCH SCREEN IN THE APP (owner, 12 Nov 2026): one full-width punch button, the camera full width, today's figures as tiles. */
@@ -50,8 +52,10 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
   <h2><?= e($code) ?> <span class="note"><?= e((string) ($ownRow['name'] ?? '')) ?></span></h2>
   <div class="punch-status punch-status-<?= $lastPunch === null ? 'none' : (string) $lastPunch['direction'] ?>"><i class="fas <?= $lastPunch === null ? 'fa-circle-minus' : ((string) $lastPunch['direction'] === 'in' ? 'fa-circle-check' : 'fa-circle-stop') ?>"></i>
     <span><?= $lastPunch === null ? 'Not punched in yet today' : ((string) $lastPunch['direction'] === 'in' ? 'Punched IN' : 'Punched OUT') . ' at ' . e(substr((string) $lastPunch['at'], 11, 5)) ?></span></div>
-<?php if ($qrSource === 'smartept'): ?>
+<?php if ($qrSource === 'smartept' && !$regular): ?>
   <div class="note" style="font-size:14px"><i class="fas fa-desktop"></i> Your company records attendance through <b>SmartEPT</b>. Punch in SmartEPT; the punch reaches SmartPRS3 by itself and shows here.</div>
+<?php elseif ($qrSource === 'biometric' && !$regular): ?>
+  <div class="note" style="font-size:14px"><i class="fas fa-fingerprint"></i> Your company records attendance on the <b>biometric device</b>. Punch on the device at your office; it reaches SmartPRS3 by itself and shows here.</div>
 <?php elseif ($qrSource === 'qr' && !$inApp): ?>
   <div class="note" style="font-size:14px"><i class="fas fa-qrcode"></i> Your company uses <b>QR Attendance</b>. Open the SmartPRS3 app on your approved phone → Punch → <b>Scan QR</b> at your office gate.</div>
 <?php elseif ($qrSource === 'qr'): ?>
@@ -114,7 +118,9 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
     if (/[?&]scan=1/.test(location.search)) { document.getElementById('qr-start').click(); }
   })();
   </script>
-<?php else: ?>
+<?php endif; ?>
+<?php if ($regular): ?>
+  <?= $qrSource !== 'standard' ? '<div class="note" style="margin:14px 0 4px;font-weight:600">Field punch — by your geo-fence</div>' : '' ?>
   <form method="post" id="self-punch" class="row" style="align-items:center">
     <input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
     <input type="hidden" name="action" value="self-punch">

@@ -88,6 +88,17 @@ final class QrAttendance
         return $this->gatedBranch((string) ($employee['branch_id'] ?? '')) ? self::SOURCE : $source;
     }
 
+    /**
+     * MAY THIS PERSON USE THE NORMAL PUNCH IN / OUT? (owner, 13 Nov 2026) — always where the company punches the standard
+     * way; in the app also for field staff — anyone with a Geo-Fence Rule ($fenced) or a geo-fence exception — whatever
+     * the company's source. The fence (or the exception) is what judges that punch; office staff keep QR / device.
+     */
+    public function regularPunch(array $employee, bool $fenced, bool $inApp, string $date): bool
+    {
+        return $this->modeFor($employee) === 'standard'
+            || ($inApp && ($fenced || $this->geofenceExempt((string) ($employee['id'] ?? ''), (string) ($employee['branch_id'] ?? ''), $date)));
+    }
+
     /** Does this branch have an active QR gate? */
     public function gatedBranch(string $branchId): bool
     {

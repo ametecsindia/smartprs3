@@ -29,6 +29,10 @@ $code = SmartPRS\Surface\Employment::code($ownRow);
 // from SmartEPT only, so no punch here; QR Attendance = only a scan of the gate QR in the SmartPRS3 app counts; Standard = as before.
 $qrAtt = SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..');
 $qrSource = $qrAtt->modeFor($ownRow); // Office staff: QR by default (owner, 12 Nov 2026)
+// FIELD STAFF (owner, 13 Nov 2026): a normal Punch IN / OUT from the app, judged by their geo-fence, whatever the source.
+if (post('qr') === '' && $qrAtt->regularPunch($ownRow, (new SmartPRS\Surface\GeoFence($store))->fenceFor($ownRow) !== null, ($_COOKIE['sprs_app_device'] ?? '') !== '', date('Y-m-d'))) {
+    $qrSource = 'standard';
+}
 
 if ($qrSource === 'smartept' || $qrSource === 'biometric') {
     // Biometric (owner, 12 Nov 2026): attendance comes from the company's biometric device only — one source per company.
