@@ -121,7 +121,7 @@ final class Session
             return ['ok' => false, 'why' => 'That enrolment token is not valid.'];
         }
 
-        // Twelve since go-live on smartprs.com (12 Nov 2026); it was eight for local development only.
+        // Eight, permanently (owner) — see PASSWORD_FLOOR.
         if (strlen($password) < self::PASSWORD_FLOOR) {
             return ['ok' => false, 'why' => 'The password must be at least ' . self::PASSWORD_FLOOR
                 . ' characters. The floor is length rather than a symbol rule: a long passphrase '
@@ -165,13 +165,20 @@ final class Session
     /** @return array{ok: bool, why: string} */
     public function signIn(string $email, string $password, ?string $tenantId = null): array
     {
-        $user = null;
+        // EVERY LOGIN WITH THIS EMAIL (owner, 13 Nov 2026: a registered employee was refused after every reset). The same
+        // email can exist in more than one tenant; taking the last row whatever its tenant checked the right password
+        // against another company's login. At a company link (/c/<slug>) only that company's logins are candidates;
+        // elsewhere the login the password belongs to is the one signed in.
+        $candidates = [];
 
         foreach ($this->store->all(self::COLLECTION) as $row) {
-            if (strcasecmp((string) $row['email'], $email) === 0) {
-                $user = $row;
+            if (strcasecmp(trim((string) ($row['email'] ?? '')), trim($email)) === 0
+                && ($tenantId === null || (string) ($row['tenant_id'] ?? '') === $tenantId)) {
+                $candidates[] = $row;
             }
         }
+
+        $user = $candidates[0] ?? null;
 
         // Counted BEFORE the answer. Lockout applied after a successful verify
         // never fires on the attack it exists for.
@@ -204,7 +211,15 @@ final class Session
 
         // The verify runs even when there is no such user, so the two paths cost
         // the same. A faster "no such user" is an account enumeration oracle.
-        $verified = $this->hasher->verify($password, $user['password'] ?? $user['password_hash'] ?? null);
+        $verified = $candidates === [] ? $this->hasher->verify($password, null) : false;
+
+        foreach ($candidates as $candidate) {
+            if ($this->hasher->verify($password, $candidate['password'] ?? $candidate['password_hash'] ?? null)) {
+                $user = $candidate;
+                $verified = true;
+                break;
+            }
+        }
 
         // A DISABLED ACCOUNT IS REFUSED WITH THE SAME SENTENCE as a wrong password:
         // "this login was disabled" told to whoever is typing is a fact about the account.
