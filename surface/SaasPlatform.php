@@ -84,6 +84,42 @@ final class SaasPlatform
         return $base->plus(Amount::of($plan['per_user_price'] ?? '0')->multipliedBy($extra));
     }
 
+    /**
+     * One `plans` row per price-list package (config/landing.json "pricing" → cloud.packages, as edited), matched by
+     * name: price, extra-employee rate and employees included follow the price list; modules and status stay.
+     *
+     * @param list<array<string, mixed>> $packages
+     */
+    public function syncPackages(array $packages): void
+    {
+        $byName = [];
+
+        foreach ($this->platform->all('plans') as $r) {
+            if (strtolower((string) ($r['status'] ?? '')) !== 'withdrawn') {
+                $byName[strtolower((string) ($r['name'] ?? ''))] ??= $r;
+            }
+        }
+
+        foreach ($packages as $p) {
+            $name = trim((string) ($p['name'] ?? ''));
+
+            if ($name === '') {
+                continue;
+            }
+
+            $row = ['name' => $name, 'base_price' => Amount::of((string) ($p['monthly'] ?? '0'))->toDecimalString(),
+                'per_user_price' => Amount::of((string) (($p['extra'] ?? '') === '' ? '0' : $p['extra']))->toDecimalString(), 'seat_max' => (int) ($p['employees'] ?? 0)];
+            $have = $byName[strtolower($name)] ?? null;
+
+            if ($have === null) {
+                $this->platform->put('plans', $row + ['billing_cycle' => 'monthly', 'status' => 'offered', 'features' => (string) json_encode(['modules' => []])]);
+            } elseif (!Amount::same($have['base_price'] ?? '0', $row['base_price']) || !Amount::same($have['per_user_price'] ?? '0', $row['per_user_price'])
+                || (int) ($have['seat_max'] ?? 0) !== $row['seat_max']) {
+                $this->platform->put('plans', ['id' => $have['id']] + $row);
+            }
+        }
+    }
+
     /** Months a billing cycle bills for, from config; an unknown cycle is one month. */
     public function months(string $cycle): int
     {

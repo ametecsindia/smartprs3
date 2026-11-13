@@ -17,10 +17,56 @@ $editing = isset($_GET['edit']) ? $platform->find('plans', (string) $_GET['edit'
 $v = static fn (string $k): string => (string) ($editing[$k] ?? '');
 $on = $editing === null ? [] : SmartPRS\Surface\SaasPlatform::planModules($editing);
 $money = static fn (mixed $s): string => SmartPRS\Surface\Amount::of($s)->format();
+// THE PRICE LIST (owner, 13 Nov 2026): the SmartPRS 3.0 prices the website, sign-up and renewals charge —
+// config/landing.json "pricing" as edited — shown and edited here, as SmartPRS 2's Plans & Pricing did.
+$plLc = new SmartPRS\Surface\LandingContent(dirname(__DIR__, 2) . '/config/landing.json', new SmartPRS\Surface\PlatformSettings($platform));
+$pr = (array) ($plLc->content()['pricing'] ?? []);
+$pkgs = array_values((array) ($pr['cloud']['packages'] ?? []));
+// ponytail: plan rows follow the price list on open, so the list is never blank; same upsert sign-up already does.
+$saas->syncPackages($pkgs);
+$rows = $platform->all('plans');
+usort($rows, static fn (array $a, array $b): int => (int) ($a['seat_max'] ?? 0) <=> (int) ($b['seat_max'] ?? 0));
+$pcy = array_values((array) ($pr['cloud']['cycles'] ?? []));
+$n = static fn (mixed $x): string => e((string) $x);
+$annualOff = 0;
+foreach ($pcy as $c) { (int) ($c['months'] ?? 0) === 12 && $annualOff = (int) ($c['discount'] ?? 0); }
 ?>
 <div class="page-header"><div><h2>Plans &amp; Pricing</h2>
-  <p><?= count($rows) ?> plan(s). A plan is the public offer: what it costs per month for the employees included, what each extra employee costs, and which modules it unlocks. Annual and other cycles bill the monthly price × months from config/plans.json.</p></div>
+  <p><?= count($rows) ?> plan(s). Edit the price list below; the plans follow it. Use Edit on a plan to choose the modules it unlocks.</p></div>
   <div><a class="btn btn-primary" href="?r=plans&edit=new#form"><i class="fas fa-plus"></i> New plan</a></div></div>
+
+<div class="card"><h3 style="margin-top:0">Price list <span class="note" style="font-weight:400;font-size:13px">— what smartprs.com, sign-up and renewals charge. Save publishes at once. GST extra.</span></h3>
+<form method="post"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="plan"><input type="hidden" name="op" value="pricing">
+  <b>Cloud plans</b> <span class="note">— price per month includes the employees shown; above the largest plan the website says <?= $n($pr['cloud']['above_text'] ?? 'Contact Sales') ?>. Leave the last row blank, or fill it to add a plan.</span>
+  <div class="table-wrap"><table><thead><tr><th>Plan name</th><th>Employees included</th><th>₹ per month</th><th>Extra employee ₹/month</th><th>Highlight on website</th></tr></thead><tbody>
+<?php foreach (array_merge($pkgs, [[]]) as $i => $p): ?>
+    <tr><td><input name="pkg[<?= $i ?>][name]" value="<?= $n($p['name'] ?? '') ?>"></td>
+      <td><input name="pkg[<?= $i ?>][employees]" inputmode="numeric" pattern="\d+" value="<?= $n($p['employees'] ?? '') ?>"></td>
+      <td><input name="pkg[<?= $i ?>][monthly]" inputmode="numeric" pattern="\d+" value="<?= $n($p['monthly'] ?? '') ?>"></td>
+      <td><input name="pkg[<?= $i ?>][extra]" inputmode="numeric" pattern="\d+" value="<?= $n($p['extra'] ?? '') ?>"></td>
+      <td><input type="radio" name="highlight" value="<?= $i ?>" style="width:auto"<?= !empty($p['highlight']) ? ' checked' : '' ?>></td></tr>
+<?php endforeach; ?>
+  </tbody></table></div>
+  <div class="row" style="flex-wrap:wrap;gap:10px;margin-top:10px">
+    <div><label>Each extra company ₹/month</label><input name="company_fee" inputmode="numeric" pattern="\d+" required value="<?= $n($pr['cloud']['company_fee'] ?? 0) ?>"></div>
+  </div>
+  <b style="display:block;margin-top:14px">Advance payment periods</b>
+  <div class="table-wrap"><table><thead><tr><th>Label</th><th>Months</th><th>Discount %</th></tr></thead><tbody>
+<?php foreach (array_merge($pcy, [[]]) as $i => $c): ?>
+    <tr><td><input name="cyc[<?= $i ?>][label]" value="<?= $n($c['label'] ?? '') ?>"></td>
+      <td><input name="cyc[<?= $i ?>][months]" inputmode="numeric" pattern="\d+" value="<?= $n($c['months'] ?? '') ?>"></td>
+      <td><input name="cyc[<?= $i ?>][discount]" inputmode="numeric" pattern="\d+" value="<?= $n($c['discount'] ?? '') ?>"></td></tr>
+<?php endforeach; ?>
+  </tbody></table></div>
+  <div class="row" style="flex-wrap:wrap;gap:10px;margin-top:14px">
+    <div><label>On-premises lifetime licence ₹ (one time)</label><input name="licence" inputmode="numeric" pattern="\d+" required value="<?= $n($pr['onprem']['licence'] ?? 0) ?>"></div>
+    <div><label>AMC % of licence per year</label><input name="amc_percent" inputmode="numeric" pattern="\d+" required value="<?= $n($pr['onprem']['amc_percent'] ?? 0) ?>"></div>
+    <div><label>Installation ₹ (on-premises)</label><input name="installation" inputmode="numeric" pattern="\d+" required value="<?= $n($pr['onprem']['installation'] ?? 0) ?>"></div>
+    <div><label>Setup &amp; onboarding ₹ (minimum)</label><input name="ob_base" inputmode="numeric" pattern="\d+" required value="<?= $n($pr['onboarding']['base'] ?? 0) ?>"></div>
+    <div><label>+ ₹ per employee</label><input name="ob_per" inputmode="numeric" pattern="\d+" required value="<?= $n($pr['onboarding']['per_employee'] ?? 0) ?>"></div>
+  </div>
+  <p style="margin:12px 0 0"><button class="go" type="submit"><i class="fas fa-save"></i> Save prices</button> <a class="btn btn-outline" href="landing.php#pricing" target="_blank" rel="noopener">View on website</a></p>
+</form></div>
 
 <?php if (isset($_GET['edit'])): ?>
 <div class="card" id="form"><h3 style="margin-top:0"><?= $editing === null ? 'New plan' : 'Edit ' . e($v('name')) ?></h3>
@@ -55,7 +101,7 @@ $money = static fn (mixed $s): string => SmartPRS\Surface\Amount::of($s)->format
   <tr>
     <td><b><?= e((string) $p['name']) ?></b><div class="note" style="font-size:11px">default cycle: <?= e((string) ($p['billing_cycle'] ?? '') ?: '—') ?></div></td>
     <td><?= e($money($p['base_price'] ?? '0')) ?></td>
-    <td><?= e(SmartPRS\Surface\Amount::of($p['base_price'] ?? '0')->multipliedBy($saas->months('annual'))->format()) ?> <span class="note" style="font-size:11px">× <?= $saas->months('annual') ?></span></td>
+    <td><?= e(SmartPRS\Surface\Amount::of($p['base_price'] ?? '0')->multipliedBy(12 * (100 - $annualOff))->dividedBy(100, SmartPRS\Platform\Support\RoundingMode::HalfUp)->format()) ?> <span class="note" style="font-size:11px">× 12<?= $annualOff > 0 ? ' − ' . $annualOff . '%' : '' ?></span></td>
     <td><?= e($money($p['per_user_price'] ?? '0')) ?></td>
     <td><?= (int) ($p['seat_max'] ?? 0) > 0 ? (int) $p['seat_max'] : 'Unlimited' ?></td>
     <td class="note" style="max-width:320px;white-space:normal"><?= $mods === [] ? '—' : e(count($mods) . ' module(s): ' . implode(', ', $mods)) ?></td>
