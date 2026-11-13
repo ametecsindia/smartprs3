@@ -14917,7 +14917,7 @@ window.acctMenuToggle = function (ev) {
 <?php elseif ($route === 'platform-denied'): ?>
   <div class="page-header"><div><h2>SaaS Platform</h2><p>Super Admin only</p></div></div>
   <div class="card"><div class="problem" style="margin:0">This screen belongs to the platform's Super Admin, not to a company account. Sign in with the platform account to manage tenants, plans and subscriptions.</div></div>
-<?php elseif (preg_match('/^[a-z0-9-]{1,60}$/', $route) === 1 && !in_array($route, ['calc-logic', 'helpdesk', 'code-of-conduct', 'tests', 'pf-esi', 'plans', 'subscriptions', 'invoices', 'payments', 'branding', ...(($_COOKIE['sprs_app_device'] ?? '') === '' ? ['punch'] : []), 'loan-schedule', 'commission-calc'], true) && is_file(__DIR__ . '/../surface/screens/' . $route . '.php')): ?>
+<?php elseif (preg_match('/^[a-z0-9-]{1,60}$/', $route) === 1 && !in_array($route, ['calc-logic', 'helpdesk', 'code-of-conduct', 'tests', 'pf-esi', 'branding', ...(($_COOKIE['sprs_app_device'] ?? '') === '' ? ['punch'] : []), 'loan-schedule', 'commission-calc'], true) && is_file(__DIR__ . '/../surface/screens/' . $route . '.php')): ?>
 <?php // ponytail: hidden screen files (no menu entry, owner asked to hide) fall through to "unknown page"; delete the file later to drop it for good ?>
 <?php // A SCREEN FILE: surface/screens/<route>.php, rendered inside this layout with
       // this scope. It checks its own permission at the top and prints the denial
