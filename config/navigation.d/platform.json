@@ -27,28 +27,28 @@
    "label": "Plans & Pricing",
    "icon": "fa-tags",
    "permission": "tenant.settings.update",
-   "module": "plans"
+   "route": "plans"
   },
   {
    "key": "subscriptions",
    "label": "Subscriptions",
    "icon": "fa-arrows-rotate",
    "permission": "tenant.settings.update",
-   "module": "subscriptions"
+   "route": "subscriptions"
   },
   {
    "key": "invoices",
    "label": "Invoices",
    "icon": "fa-file-invoice-dollar",
    "permission": "tenant.settings.update",
-   "module": "invoices"
+   "route": "invoices"
   },
   {
    "key": "payments",
    "label": "Payments",
    "icon": "fa-money-bill-transfer",
    "permission": "tenant.settings.update",
-   "module": "payments"
+   "route": "payments"
   },
   {
    "key": "gateways",

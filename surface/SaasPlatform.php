@@ -307,6 +307,43 @@ final class SaasPlatform
      * @param array<string, mixed> $invoice
      * @param list<array<string, mixed>> $payments
      */
+    /**
+     * A CLOUD INVOICE AS A .pdf (owner, 13 Nov 2026: PDF and email "for subscriber of cloud as well") — the same
+     * GST split the invoice was raised with; written by TablePdf, no library.
+     *
+     * @param list<array<string, mixed>> $payments
+     */
+    public function invoicePdf(array $invoice, array $tenant, array $payments, string $planName = ''): string
+    {
+        $taxable = Amount::of($invoice['amount'] ?? '0');
+        $tax = $this->tax($taxable, (string) ($tenant['state'] ?? ''));
+        $total = $taxable->plus(Amount::of($invoice['tax'] ?? '0'));
+        $balance = self::balance($invoice, $payments);
+        $dmy = static fn (string $d): string => $d === '' ? '—' : date('d-m-Y', (int) strtotime($d));
+        $seller = (array) ($this->gst['seller'] ?? []);
+        $rows = [['SmartPRS cloud subscription' . ($planName !== '' ? ' — ' . $planName : '') . ', ' . $dmy((string) ($invoice['period_from'] ?? ''))
+            . ' to ' . $dmy((string) ($invoice['period_to'] ?? '')) . ' (SAC 998315)', $taxable->format()]];
+
+        if ($tax['mode'] === 'CGST+SGST') {
+            $half = Amount::of($invoice['tax'] ?? '0')->dividedBy(2, RoundingMode::HalfUp);
+            $rows[] = ['CGST ' . ($tax['rate'] / 2) . '%', $half->format()];
+            $rows[] = ['SGST ' . ($tax['rate'] / 2) . '%', Amount::of($invoice['tax'] ?? '0')->minus($half)->format()];
+        } else {
+            $rows[] = ['IGST ' . $tax['rate'] . '%', Amount::of($invoice['tax'] ?? '0')->format()];
+        }
+
+        array_push($rows, ['TOTAL', $total->format()], ['Paid', $total->minus($balance)->format()],
+            ['BALANCE DUE' . (trim((string) ($invoice['due_on'] ?? '')) !== '' ? ' (by ' . $dmy((string) $invoice['due_on']) . ')' : ''), $balance->format()]);
+        trim((string) ($invoice['notes'] ?? '')) === '' || $rows[] = [(string) $invoice['notes'], ''];
+        $rows[] = ['Computer-generated invoice.', ''];
+
+        return TablePdf::render('TAX INVOICE ' . (string) ($invoice['number'] ?? '') . '  ·  ' . $dmy((string) ($invoice['issued_on'] ?? '')),
+            trim((string) ($seller['name'] ?? '')) . (trim((string) ($seller['gstin'] ?? '')) !== '' ? ' (GSTIN ' . $seller['gstin'] . ')' : '')
+            . '   |   Bill to: ' . (string) ($tenant['name'] ?? '') . (trim((string) ($tenant['state'] ?? '')) !== '' ? ', ' . $tenant['state'] : '')
+            . (trim((string) ($tenant['gstin'] ?? '')) !== '' ? ' (GSTIN ' . $tenant['gstin'] . ')' : ''),
+            ['Description', 'Amount'], $rows, [1]);
+    }
+
     public static function balance(array $invoice, array $payments): Money
     {
         $due = Amount::of($invoice['amount'] ?? '0')->plus(Amount::of($invoice['tax'] ?? '0'));

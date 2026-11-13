@@ -63,6 +63,40 @@ if ($op === 'save') {
     $audit('invoice.paid', 'invoices', $id, ['status' => $before['status']], ['status' => 'paid', 'payment_id' => $paid['id']],
         $method . ' ' . trim(post('reference')));
     $_SESSION['flash_notice'] = 'Invoice ' . (string) $before['number'] . ' marked paid; payment of ' . $balance->format() . ' recorded.';
+} elseif (($op === 'pdf' || $op === 'email') && $before !== null) {
+    // PDF AND EMAIL (owner, 13 Nov 2026): the invoice as a PDF, downloaded or emailed to the tenant's administrator.
+    $tenant = (array) $platform->find('tenants', (string) $before['tenant_id']);
+    $sub = $platform->find('subscriptions', (string) ($before['subscription_id'] ?? ''));
+    $plan = $sub === null ? null : $platform->find('plans', (string) ($sub['plan_id'] ?? ''));
+    $pdf = $saas->invoicePdf($before, $tenant, $platform->all('payments'), (string) ($plan['name'] ?? ''));
+    $file = preg_replace('/[^A-Za-z0-9._-]/', '-', (string) $before['number']) . '.pdf';
+
+    if ($op === 'pdf') {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        echo $pdf;
+        exit;
+    }
+
+    $to = trim(post('to'));
+
+    if (filter_var($to, FILTER_VALIDATE_EMAIL) === false) {
+        $_SESSION['flash_problem'] = 'Give the email address to send invoice ' . (string) $before['number'] . ' to.';
+    } else {
+        $total = SmartPRS\Surface\Amount::of($before['amount'] ?? '0')->plus(SmartPRS\Surface\Amount::of($before['tax'] ?? '0'));
+        $balance = SmartPRS\Surface\SaasPlatform::balance($before, $platform->all('payments'));
+        $r = (new SmartPRS\Surface\PlatformMail(new SmartPRS\Surface\PlatformSettings($platform), dirname(__DIR__, 2) . '/.env'))->send([$to],
+            'SmartPRS invoice ' . (string) $before['number'] . ' — ' . (string) ($tenant['name'] ?? ''),
+            'Dear ' . (string) ($tenant['name'] ?? 'customer') . ",\n\nPlease find attached your SmartPRS tax invoice " . (string) $before['number'] . '.'
+            . "\n\nTotal: " . $total->format() . "\nBalance due: " . $balance->format() . ((string) ($before['due_on'] ?? '') !== '' ? ' by ' . date('d-m-Y', (int) strtotime((string) $before['due_on'])) : '')
+            . "\n\nYou can also see it under My Subscription in SmartPRS.\n\nThank you,\nSmartPRS", [], [[$file, $pdf]]);
+        $r['ok'] && $audit('invoice.emailed', 'invoices', $id, null, ['to' => $to], 'invoice PDF emailed');
+        $_SESSION[$r['ok'] ? 'flash_notice' : 'flash_problem'] = $r['ok'] ? 'Invoice ' . (string) $before['number'] . ' (PDF) emailed to ' . $to . '.' : 'Not emailed: ' . $r['why'];
+    }
 } elseif ($op === 'cancel' && $before !== null) {
     $platform->put('invoices', ['id' => $id, 'status' => 'cancelled']);
     $audit('invoice.cancelled', 'invoices', $id, ['status' => $before['status']], ['status' => 'cancelled'], 'cancelled by platform staff');

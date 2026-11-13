@@ -241,7 +241,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             'Payment received with thanks, ' . (string) $s['admin_name'] . '! Your SmartPRS workspace for ' . (string) $s['company'] . ' is ready. Set your password with the link below (valid 72 hours), then sign in at your company address.',
             ['Invoice' => (string) $made['invoice']['number'], 'Total paid' => Signup::rupees((int) round(100 * ((float) $s['amount'] + (float) $s['tax']))),
                 'Payment reference' => $v('razorpay_payment_id'), 'Sign-in' => $base . '/c/' . $made['slug'], 'Login email' => (string) $s['admin_email'],
-                'Set your password' => $base . '/' . $setLink]);
+                'Set your password' => $base . '/' . $setLink],
+            // THE GST INVOICE ATTACHED (owner, 13 Nov 2026: PDF for cloud subscribers — SmartPRS 2 emailed its tax invoice).
+            [[preg_replace('/[^A-Za-z0-9._-]/', '-', (string) $made['invoice']['number']) . '.pdf',
+                (new SmartPRS\Surface\SaasPlatform($platform, __DIR__ . '/../config'))->invoicePdf($made['invoice'],
+                    (array) $platform->find('tenants', (string) $made['tenant_id']), $platform->all('payments'), (string) ($platform->find('plans', (string) $s['plan_id'])['name'] ?? ''))]]);
         $json(200, ['ok' => true, 'message' => 'Payment received and your workspace is ready! Create your password in the next step — then sign in at /c/' . $made['slug'] . ' with ' . (string) $s['admin_email'] . '.',
             'redirect' => $setLink]);
     }

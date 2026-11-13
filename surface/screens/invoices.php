@@ -22,6 +22,10 @@ $today = date('Y-m-d');
 $open = (array) $declared['invoice_open'];
 $next = $saas->invoiceNumber(count($rows) + 1, $today);
 $Amt = SmartPRS\Surface\Amount::class;
+// Each tenant's administrator email, the default "send to" for its invoices.
+$adminMail = [];
+foreach ($platform->all('users') as $u) { if ((string) ($u['role'] ?? $u['status'] ?? '') === 'administrator' && !isset($adminMail[(string) ($u['tenant_id'] ?? '')])) { $adminMail[(string) ($u['tenant_id'] ?? '')] = (string) ($u['email'] ?? ''); } }
+$hidI = static fn (string $op, string $iid): string => '<input type="hidden" name="csrf" value="' . e($session->token()) . '"><input type="hidden" name="action" value="invoice"><input type="hidden" name="op" value="' . $op . '"><input type="hidden" name="id" value="' . e($iid) . '">';
 ?>
 <div class="page-header"><div><h2>Invoices</h2>
   <p><?= count($rows) ?> invoice(s), newest first. GST at <?= (int) $gst['rate_percent'] ?>% — CGST+SGST for tenants in state <?= e((string) $gst['home_state_code']) ?>, IGST for every other state — computed when the invoice is raised, from the tenant's state on the Tenants screen.</p></div>
@@ -64,6 +68,14 @@ $Amt = SmartPRS\Surface\Amount::class;
     <td class="note"><?= e((string) ($i['issued_on'] ?? '')) ?><div style="font-size:11px;<?= $overdue ? 'color:#dc2626;font-weight:700' : '' ?>">due <?= e((string) ($i['due_on'] ?? '') ?: '—') ?></div></td>
     <td><span class="badge badge-<?= $st === 'paid' ? 'green' : ($overdue || $st === 'overdue' ? 'red' : ($st === 'cancelled' ? 'gray' : 'amber')) ?>"><?= e($overdue && $st !== 'overdue' ? 'overdue' : $st) ?></span><?php if ((string) ($i['paid_on'] ?? '') !== ''): ?><div class="note" style="font-size:11px">paid <?= e((string) $i['paid_on']) ?></div><?php endif; ?></td>
     <td style="white-space:nowrap">
+      <form method="post" style="display:inline"><?= $hidI('pdf', (string) $i['id']) ?><button class="btn btn-sm btn-outline" type="submit" title="Download the invoice as a PDF"><i class="fas fa-file-pdf"></i> PDF</button></form>
+      <button class="btn btn-sm btn-outline" type="button" onclick="this.nextElementSibling.showModal()" title="Email the PDF invoice"><i class="fas fa-envelope"></i> Email</button>
+      <dialog class="help-dlg" style="width:min(420px,94vw);height:fit-content;padding:20px 22px;white-space:normal">
+        <h3 style="margin:0 0 10px">Email invoice <?= e((string) ($i['number'] ?? '')) ?></h3>
+        <form method="post"><?= $hidI('email', (string) $i['id']) ?><label>Send the PDF to</label>
+          <input type="email" name="to" required value="<?= e($adminMail[(string) ($i['tenant_id'] ?? '')] ?? '') ?>" style="width:100%">
+          <p style="margin:12px 0 0"><button class="go" type="submit"><i class="fas fa-paper-plane"></i> Send</button> <button class="btn btn-outline" type="button" onclick="this.closest('dialog').close()">Close</button></p></form>
+      </dialog>
 <?php if (in_array($st, $open, true)): ?>
       <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="invoice"><input type="hidden" name="op" value="mark-paid"><input type="hidden" name="id" value="<?= e((string) $i['id']) ?>">
         <select name="method" style="width:auto"><?php foreach ((array) $declared['payment_methods'] as $m): ?><option><?= e($m) ?></option><?php endforeach; ?></select>

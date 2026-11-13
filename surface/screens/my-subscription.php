@@ -34,5 +34,22 @@ $badge = static fn (?int $days): string => $days === null ? 'gray' : ($days < 0 
 </div>
 <?php endif; ?>
 
+<?php // YOUR INVOICES (owner, 13 Nov 2026: PDF for cloud subscribers too) — this organisation's own, newest first.
+$myInv = liveRows($store, 'invoices');
+usort($myInv, static fn (array $a, array $b): int => strcmp((string) ($b['issued_on'] ?? ''), (string) ($a['issued_on'] ?? '')));
+$myPay = liveRows($store, 'payments'); ?>
+<div class="card" style="padding:0;margin-bottom:12px"><div class="card-header" style="padding:14px 16px 0"><h3 style="font-size:15px;margin:0">Invoices</h3></div>
+  <div class="table-wrap"><table><thead><tr><th>Number</th><th>Issued</th><th>Period</th><th style="text-align:right">Total</th><th style="text-align:right">Balance</th><th>Status</th><th></th></tr></thead><tbody>
+<?php if ($myInv === []): ?><tr><td colspan="7" class="note">No invoices yet.</td></tr><?php endif; ?>
+<?php foreach ($myInv as $mi): $miTotal = SmartPRS\Surface\Amount::of($mi['amount'] ?? '0')->plus(SmartPRS\Surface\Amount::of($mi['tax'] ?? '0')); ?>
+    <tr><td><code><?= e((string) ($mi['number'] ?? '')) ?></code></td><td><?= e(SmartPRS\Surface\Dates::dmy((string) ($mi['issued_on'] ?? ''))) ?></td>
+      <td class="note"><?= e(SmartPRS\Surface\Dates::dmy((string) ($mi['period_from'] ?? '')) . ' → ' . SmartPRS\Surface\Dates::dmy((string) ($mi['period_to'] ?? ''))) ?></td>
+      <td style="text-align:right"><?= e($miTotal->format()) ?></td><td style="text-align:right"><?= e(SmartPRS\Surface\SaasPlatform::balance($mi, $myPay)->format()) ?></td>
+      <td><span class="badge badge-<?= (string) ($mi['status'] ?? '') === 'paid' ? 'green' : ((string) ($mi['status'] ?? '') === 'cancelled' ? 'gray' : 'amber') ?>"><?= e((string) ($mi['status'] ?? '')) ?></span></td>
+      <td><form method="post" style="margin:0"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="my-invoice"><input type="hidden" name="id" value="<?= e((string) $mi['id']) ?>">
+        <button class="btn btn-sm btn-outline" type="submit"><i class="fas fa-file-pdf"></i> PDF</button></form></td></tr>
+<?php endforeach; ?>
+  </tbody></table></div></div>
+
 <p class="note">To change plan or seats, contact the vendor; the change lands here as a new subscription row, the old one kept.
   SmartPRS 2's subscription alerts table has no tenant column, so it is not shown here.</p>
