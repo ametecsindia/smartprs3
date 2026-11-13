@@ -56,6 +56,12 @@ $graceDays = (int) ($saas->declared()['subscription_grace_days'] ?? 7);
       <div><label>Admin password</label><input name="admin_password" type="password" minlength="<?= SmartPRS\Surface\Session::PASSWORD_FLOOR ?>" autocomplete="new-password" placeholder="<?= SmartPRS\Surface\Session::PASSWORD_FLOOR ?>+ characters"></div>
       <div style="flex-basis:100%" class="note">On Save, the administrator login is created with this password. Nothing is emailed; give the client the sign-in link, email and password yourself.</div>
 <?php endif; ?>
+<?php if ($editing === null): ?>
+      <div style="flex-basis:100%;border-top:1px solid var(--border);padding-top:8px"><b>Licence</b> <span class="note">— required; change it later with Licence on the tenant's row</span></div>
+      <div><label>Seats (users)</label><input type="number" name="lic_seats" min="1" required style="width:100px"></div>
+      <div><label>Companies</label><input type="number" name="lic_companies" min="1" value="1" required style="width:100px"></div>
+      <div><label>Valid until</label><input type="date" name="lic_valid_until" required value="<?= e(date('Y-m-d', strtotime('+1 year'))) ?>"></div>
+<?php endif; ?>
       <div><label>Onboarded on</label><input type="date" name="onboarded_on" value="<?= e($v('onboarded_on')) ?>"></div>
       <div><label>Status</label><select name="status_code"><?php foreach ($statuses as $s): ?><option<?= $s === ($v('status_code') ?: 'active') ? ' selected' : '' ?>><?= e($s) ?></option><?php endforeach; ?></select></div>
     </div>
@@ -69,7 +75,7 @@ $graceDays = (int) ($saas->declared()['subscription_grace_days'] ?? 7);
 <?php foreach ($rows as $t): $st = (string) ($t['status_code'] ?? ''); $sub = $t['subscription']; ?>
   <tr>
     <td><code><?= e((string) $t['code']) ?></code></td>
-    <td><b><?= e((string) $t['name']) ?></b><?php if (trim((string) ($t['custom_domain'] ?? '')) !== ''): ?><div class="note" style="font-size:11px"><?= e((string) $t['custom_domain']) ?></div><?php endif; ?><?php if (($tLink = $signInLink($t)) !== ''): ?><div style="font-size:12px"><a href="<?= e($tLink) ?>" target="_blank" rel="noopener"><?= e($tLink) ?></a></div><?php endif; ?></td>
+    <td><b><?= e((string) $t['name']) ?></b><?php if (($subsOf[(string) $t['id']] ?? []) === []): ?> <span class="badge badge-red" title="No seats or validity set — click Licence">No licence</span><?php endif; ?><?php if (trim((string) ($t['custom_domain'] ?? '')) !== ''): ?><div class="note" style="font-size:11px"><?= e((string) $t['custom_domain']) ?></div><?php endif; ?><?php if (($tLink = $signInLink($t)) !== ''): ?><div style="font-size:12px"><a href="<?= e($tLink) ?>" target="_blank" rel="noopener"><?= e($tLink) ?></a></div><?php endif; ?></td>
     <td><?= ($adminsOf[(string) $t['id']] ?? []) === [] ? '<span class="badge badge-amber">none yet</span>' : e(implode(', ', $adminsOf[(string) $t['id']])) ?></td>
     <td><?= e((string) $t['plan'] ?: '—') ?></td>
     <td><?= (int) $t['employees'] ?> / <?= $sub === null ? '<span class="note">no limit</span>' : (int) ($sub['seats'] ?? 0) ?></td>

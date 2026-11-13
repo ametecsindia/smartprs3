@@ -50,6 +50,17 @@ if ($op === 'save') {
         $row['id'] = $id;
     }
 
+    // NO TENANT WITHOUT A LICENCE (owner, 13 Nov 2026 — "a real bug"): a new tenant is saved together with its
+    // seats, companies and valid-until date; before this, a tenant could go live with no limit at all.
+    $licSeats = (int) post('lic_seats');
+    $licUntil = post('lic_valid_until');
+
+    if ($before === null && ($licSeats < 1 || preg_match('/^\d{4}-\d{2}-\d{2}$/', $licUntil) !== 1)) {
+        $_SESSION['flash_problem'] = 'A new tenant needs its licence: seats (at least 1) and a valid-until date.';
+        header('Location: ?r=tenants&edit=new#form');
+        exit;
+    }
+
     $adminEmail = strtolower(trim(post('admin_email')));
     $provision = $adminEmail !== '' && $adminsOf($id) === [];
 
@@ -78,6 +89,14 @@ if ($op === 'save') {
     $saved = $platform->put('tenants', $row);
     $audit($before === null ? 'tenant.created' : 'tenant.updated', 'tenants', (string) $saved['id'], $before, $row, 'platform staff');
     $_SESSION['flash_notice'] = 'Tenant ' . $row['name'] . ' saved.';
+
+    if ($before === null) {
+        $lic = ['tenant_id' => (string) $saved['id'], 'plan_id' => null, 'seats' => $licSeats, 'companies' => max(1, (int) post('lic_companies')),
+            'cycle' => 'monthly', 'amount' => '0', 'current_period_end' => $licUntil, 'next_renewal' => $licUntil, 'status' => 'active'];
+        $licRow = $platform->put('subscriptions', $lic);
+        $audit('subscription.created', 'subscriptions', (string) $licRow['id'], null, $lic, 'licence given with the new tenant');
+        $_SESSION['flash_notice'] .= " Licence: {$licSeats} seat(s), " . $lic['companies'] . ' company(ies), valid until ' . date('d-m-Y', (int) strtotime($licUntil)) . '.';
+    }
 
     // PROVISION (SmartPRS 2 provisionTenantRecord): the master company and the first administrator,
     // whose one-time password is shown once here — they change it from their own profile.
