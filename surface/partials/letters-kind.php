@@ -6,9 +6,9 @@
  * issuing stay on the shared Letters screen (?r=letters&e=…&t=<kind>) — this is
  * SmartPRS 2's per-kind sub-menu over the one engine, not a second engine.
  */
-if (!$may('employee.letters.view')): ?>
+if (!$may('employee.letters.view') || !$may('employee.update')): ?>
 <div class="page-header"><div><h2>Letters</h2></div></div>
-<div class="card"><div class="problem" style="margin:0">Denied: <?= e($access->decide((string) $session->user()['role'], 'employee.letters.view')->summary) ?></div></div>
+<div class="card"><div class="problem" style="margin:0">Denied: <?= e($access->decide((string) $session->user()['role'], $may('employee.letters.view') ? 'employee.update' : 'employee.letters.view')->summary) ?></div></div>
 <?php return; endif; ?>
 <?php
 $kind = (string) ($kind ?? '');

@@ -250,7 +250,7 @@ final class Authorisation
             'employee.directory.view', 'employee.probation.view', 'employee.team.view',
             'employee.transfer.view', 'employee.idcard.view',
             'attendance.day.view', 'attendance.day.view.history', 'attendance.punch.view',
-            'attendance.report.view', 'ess.attendance.punch',
+            'attendance.report.view', 'ess.attendance.punch', 'ess.profile.view',
             'leave.request.view', 'leave.request.submit', 'leave.request.decide',
             'leave.balance.view', 'leave.balance.view_others',
         ];

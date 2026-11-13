@@ -1,13 +1,19 @@
 {
- "note": "Shipped defaults for roles set up under Organization Setup → Role/Designation Setup, before anybody saves Roles & Permissions for them (what is ticked there always wins). every_role: self-service every employee needs — own leave (row reach stays their own line) and punching their own attendance in / out — owner, 13 Nov 2026: Punch is in every employee's app. not_by_default: a menu permission left off for the roles named (matched ignoring case, spaces and punctuation) — owner, 6 Nov 2026: AI Assistant not for the Employee profile. preset: roles nobody has set up yet start with Company Admin's full access ('full') or the reporting manager's ('manager') — owner, 6 Nov 2026.",
+ "note": "Shipped defaults for roles set up under Organization Setup → Role/Designation Setup, before anybody saves Roles & Permissions for them (what is ticked there always wins). every_role: self-service every employee needs — own leave (row reach stays their own line) and punching their own attendance in / out — owner, 13 Nov 2026: Punch is in every employee's app. not_by_default: a menu permission left off for the roles named (matched ignoring case, spaces and punctuation) — owner, 6 Nov 2026: AI Assistant not for the Employee profile; 13 Nov 2026: Self-Onboarding (inviting candidates) is HR's, not an employee's. preset: roles nobody has set up yet start with Company Admin's full access ('full') or the reporting manager's ('manager') — owner, 6 Nov 2026.",
  "every_role": [
   "leave.request.view",
   "leave.request.submit",
   "leave.balance.view",
-  "ess.attendance.punch"
+  "ess.attendance.punch",
+  "ess.profile.view"
  ],
  "not_by_default": {
   "assistant.view": [
+   "Employee/Agent",
+   "Employee",
+   "Agent"
+  ],
+  "onboarding.self.view": [
    "Employee/Agent",
    "Employee",
    "Agent"

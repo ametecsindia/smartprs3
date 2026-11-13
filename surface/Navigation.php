@@ -179,7 +179,9 @@ final class Navigation
 
                 $items[] = $item + [
                     // MARKED, not removed. The screen refuses; the menu says why.
-                    'allowed' => $permission === '' || $may($permission),
+                    // ALSO (owner, 13 Nov 2026): a screen that also needs these codes — HR letters need issuing rights, not just View.
+                    'allowed' => ($permission === '' || $may($permission))
+                        && array_reduce((array) ($item['also'] ?? []), static fn (bool $c, $p): bool => $c && $may((string) $p), true),
                     'count' => $badge === '' ? null : ($badges[$badge] ?? null),
                     // A MODULE ITEM opens the module engine's screen. It is one
                     // sidebar entry like any other; only where it points differs.

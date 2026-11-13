@@ -1,4 +1,4 @@
-<?php declare(strict_types=1); if (!$may('employee.letters.view') || !$scope->seesEveryone($may('employee.list'))): ?>
+<?php declare(strict_types=1); if (!$may('employee.letters.view') || !$may('employee.update') || !$scope->seesEveryone($may('employee.list'))): ?>
 <div class="page-header"><div><h2>NDA Sign-off Report</h2></div></div>
 <div class="card"><div class="problem" style="margin:0">Denied: this report is for Admin and HR Admins. <?= e($access->decide((string) $session->user()['role'], 'employee.letters.view')->summary) ?></div></div>
 <?php return; endif; ?>

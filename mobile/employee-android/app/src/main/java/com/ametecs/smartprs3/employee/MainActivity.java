@@ -644,7 +644,10 @@ public class MainActivity extends Activity {
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
-        s.setUserAgentString(s.getUserAgentString() + " SmartPRS3-Mobile/1.5");
+        // The app's own version (build.gradle versionName) — shown under Sign out on Profile (owner, 13 Nov 2026).
+        String appVer = "?";
+        try { appVer = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception e) { /* tolerated: the label then reads "?" */ }
+        s.setUserAgentString(s.getUserAgentString() + " SmartPRS3-Mobile/" + appVer);
 
         final String host = Uri.parse(base()).getHost();
         web.setWebViewClient(new WebViewClient() {

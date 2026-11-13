@@ -98,24 +98,31 @@ if ($amCoLogo === '' && ($amOwn = $scope->own()) !== null) {
   body.in-app .topbar { position:fixed !important; top:0; left:0; right:0; z-index:8000; background:var(--card,#fff); box-shadow:0 2px 10px rgba(15,23,42,.06); }
   body.in-app .main-wrap { padding-top:var(--app-head,60px); }
   .app-marks { order:-1; }
-  /* ONE TYPE SCALE ON EVERY APP SCREEN (owner, 12 Nov 2026: "professionally formatted with universal font size").
-     Body 14px, titles 17px, sections 15px, table / small text 13px, badges 11.5px — inline sizes on screens follow it. */
-  body.in-app { font-size:14px; line-height:1.45; }
+  /* ONE COMPACT TYPE SCALE ON EVERY APP SCREEN (owner, 12 + 13 Nov 2026: "all the text looks large … titles going to 2 rows").
+     Body 13px, screen title 15px, sections 14px, labels / tables 12px, badges 10.5px — phone-app sizes, not website sizes;
+     inline sizes on screens follow it, and a title never breaks inside a word. */
+  body.in-app { font-size:13px; line-height:1.4; }
   body.in-app .content, body.in-app .content p, body.in-app .content li, body.in-app .content div, body.in-app .content span,
-  body.in-app .content label, body.in-app .content b, body.in-app .content strong { font-size:14px; }
-  body.in-app .content [style*="font-size"]:not(i):not(.fas):not(.far):not(.fab) { font-size:14px !important; }
-  body.in-app .content h1, body.in-app .content h2, body.in-app .content .page-header h2 { font-size:17px !important; font-weight:700; line-height:1.3; }
-  body.in-app .content h3, body.in-app .content h4, body.in-app .content legend { font-size:15px !important; font-weight:700; }
-  body.in-app .content label { font-weight:600; color:var(--text2,#334155); }
+  body.in-app .content label, body.in-app .content b, body.in-app .content strong { font-size:13px; }
+  body.in-app .content [style*="font-size"]:not(i):not(.fas):not(.far):not(.fab) { font-size:13px !important; }
+  body.in-app .content h1, body.in-app .content h2, body.in-app .content .page-header h2 { font-size:15px !important; font-weight:700; line-height:1.3; margin-bottom:6px; }
+  body.in-app .content h3, body.in-app .content h4, body.in-app .content legend { font-size:14px !important; font-weight:700; }
+  body.in-app .content h1, body.in-app .content h2, body.in-app .content h3, body.in-app .content h4 { overflow-wrap:normal; word-break:normal; hyphens:none; }
+  body.in-app .content label { font-size:12px !important; font-weight:600; color:var(--text2,#334155); margin-bottom:2px; }
   body.in-app .content input, body.in-app .content select, body.in-app .content textarea,
-  body.in-app .content button, body.in-app .content .btn, body.in-app .content .go { font-size:14px !important; }
-  body.in-app .content input:not([type=checkbox]):not([type=radio]):not([type=file]), body.in-app .content select { min-height:42px; }
-  body.in-app .content .btn, body.in-app .content .go, body.in-app .content button { min-height:40px; border-radius:10px; }
+  body.in-app .content button, body.in-app .content .btn, body.in-app .content .go { font-size:13px !important; }
+  body.in-app .content input:not([type=checkbox]):not([type=radio]):not([type=file]), body.in-app .content select { min-height:36px; padding-top:6px; padding-bottom:6px; }
+  body.in-app .content .btn, body.in-app .content .go, body.in-app .content button { min-height:34px; border-radius:9px; padding-top:6px; padding-bottom:6px; }
   body.in-app .content table, body.in-app .content th, body.in-app .content td,
-  body.in-app .content small, body.in-app .content .note, body.in-app .content .fmt-hint { font-size:13px !important; }
-  body.in-app .content .badge { font-size:11.5px !important; }
-  body.in-app .content .dk-val, body.in-app .content .stat-card h3 { font-size:20px !important; }
-  body.in-app .content .dk-label { font-size:11px !important; }
+  body.in-app .content small, body.in-app .content .note, body.in-app .content .fmt-hint { font-size:12px !important; }
+  body.in-app .content th { white-space:nowrap; }
+  body.in-app .content .badge { font-size:10.5px !important; }
+  body.in-app .content .card { padding:12px !important; margin-bottom:10px !important; }
+  body.in-app .content .dk-val, body.in-app .content .stat-card h3 { font-size:18px !important; }
+  body.in-app .content .dk-label { font-size:10.5px !important; }
+  body.in-app .topbar .page-title { font-size:13px !important; }
+  .app-tabs a { font-size:10px !important; }
+  .app-tabs a i { font-size:17px !important; }
 </style>
 <nav class="app-tabs" aria-label="App">
 <?php foreach ($amTabs as [$amR, $amI, $amL]): ?>
@@ -136,6 +143,15 @@ if ($amCoLogo === '' && ($amOwn = $scope->own()) !== null) {
 <script>
 (function () {
   var b = document.body;
+<?php if (!$may('employee.list')): ?>
+  // SELF-ONLY LOGINS SEE NO ORGANISATION FILTERS (owner, 13 Nov 2026: an employee's screens are about their own data):
+  // the Company / Branch / … / Employee pickers go; a period, if the screen has one, and Show stay.
+  [].forEach.call(document.querySelectorAll('form.org-filter'), function (f) {
+    [].forEach.call(f.children, function (d) { if (d.querySelector && d.querySelector('[name^="f_"], .emp-multi, [name="sel"]')) { d.style.display = 'none'; } });
+    var left = [].filter.call(f.querySelectorAll('select, input:not([type=hidden])'), function (i) { return i.offsetParent !== null; });
+    if (left.length === 0) { f.style.display = 'none'; }
+  });
+<?php endif; ?>
   // THE BOTTOM BAR STAYS ON SCREEN WHILE SCROLLING (owner, 6 Nov 2026): it hangs off <body> itself, so no page wrapper
   // (an animated or scrolling container) can carry it away.
   var tabs = document.querySelector('.app-tabs');

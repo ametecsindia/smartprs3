@@ -11995,6 +11995,7 @@ $pageTitle = match ($route) {
     'configure-menu' => 'Menu',
     'payslip' => 'Payslip',
     'account-settings' => 'My Space',
+    'punch' => 'Punch',
     'leave-team' => 'Team leave',
     'on-leave-today' => 'On leave today',
     'request' => 'Request',

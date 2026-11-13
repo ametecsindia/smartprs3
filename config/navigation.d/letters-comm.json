@@ -7,56 +7,63 @@
     "route": "letters-offer",
     "label": "Offer Letters",
     "icon": "fa-file-signature",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    },
    {
     "key": "letters-increment",
     "route": "letters-increment",
     "label": "Increment Letters",
     "icon": "fa-file-arrow-up",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    },
    {
     "key": "letters-warning",
     "route": "letters-warning",
     "label": "Warning Letters",
     "icon": "fa-triangle-exclamation",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    },
    {
     "key": "letters-relieving",
     "route": "letters-relieving",
     "label": "Relieving Letters",
     "icon": "fa-file-export",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    },
    {
     "key": "letters-nda",
     "route": "letters-nda",
     "label": "NDA / Confidentiality",
     "icon": "fa-user-shield",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    },
    {
     "key": "letters-mine",
     "route": "letters-mine",
     "label": "My Letters",
     "icon": "fa-envelope-open-text",
-    "permission": "employee.view"
+    "permission": "ess.profile.view"
    },
    {
     "key": "letter-signoff",
     "route": "letter-signoff",
     "label": "NDA Sign-off Report",
     "icon": "fa-signature",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    },
    {
     "key": "letters-templates",
     "route": "letters-templates",
     "label": "Letter Templates",
     "icon": "fa-file-lines",
-    "permission": "employee.letters.view"
+    "permission": "employee.letters.view",
+    "also": ["employee.update"]
    }
   ]
  },

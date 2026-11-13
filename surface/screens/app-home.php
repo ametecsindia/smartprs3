@@ -17,16 +17,16 @@ $ahName = trim((string) ($acctName ?? '')) ?: explode('@', (string) ($session->u
 $ahHour = (int) date('G');
 ?>
 <style>
-  .ah-hello{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#1F3A5F));color:#fff;border-radius:16px;padding:18px 18px 16px;margin:4px 0 16px}
-  .ah-hello h2{margin:0;font-size:19px;color:#fff}
-  .ah-hello p{margin:4px 0 0;opacity:.9;font-size:13px}
-  .ah-sec{margin:0 0 18px}
-  .ah-sec h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin:0 4px 8px;display:flex;gap:6px;align-items:center}
-  .ah-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-  .ah-tile{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--text1);padding:10px 4px 8px;border-radius:14px;background:var(--card);border:1px solid var(--border);position:relative;min-height:84px}
+  .ah-hello{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#1F3A5F));color:#fff;border-radius:14px;padding:12px 14px;margin:2px 0 12px}
+  .ah-hello h2{margin:0;font-size:15px !important;color:#fff}
+  .ah-hello p{margin:2px 0 0;opacity:.9;font-size:12px !important;display:block !important}
+  .ah-sec{margin:0 0 14px}
+  .ah-sec h3{font-size:11px !important;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin:0 4px 8px;display:flex;gap:6px;align-items:center}
+  .ah-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .ah-tile{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--text1);padding:8px 2px 6px;border-radius:12px;background:var(--card);border:1px solid var(--border);position:relative;min-height:74px}
   .ah-tile:active{transform:scale(.96)}
-  .ah-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:18px;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
-  .ah-tile span{font-size:11.5px;line-height:1.25;text-align:center;overflow-wrap:anywhere}
+  .ah-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:16px;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+  .ah-tile > span:last-of-type{font-size:10.5px !important;line-height:1.2;text-align:center;overflow-wrap:normal;word-break:normal;hyphens:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;padding:0 2px}
   .ah-tile b{position:absolute;top:4px;right:6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#dc2626;color:#fff;font-size:10px;line-height:18px}
   @media (min-width:600px){.ah-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
 </style>
@@ -43,11 +43,11 @@ if ($ahEmp !== null):
 <a class="ah-punch" href="?r=punch<?= $ahSrc === 'qr' ? '&amp;scan=1' : '' ?>"><i class="fas <?= $ahSrc === 'qr' ? 'fa-qrcode' : 'fa-fingerprint' ?>"></i><span><b><?= $ahSrc === 'qr' ? 'Scan QR to Punch IN / OUT' : 'Punch IN / OUT' ?></b><small><?= $ahSrc === 'qr' ? 'Opens the camera — scan the QR at your office gate' : 'Records your punch with your location' ?></small></span><i class="fas fa-chevron-right"></i></a>
 <?php endif; endif; ?>
 <style>
-  .ah-punch{display:flex;align-items:center;gap:14px;text-decoration:none;background:#16a34a;color:#fff;border-radius:16px;padding:16px 16px;margin:0 0 16px;box-shadow:0 6px 16px rgba(22,163,74,.25)}
-  .ah-punch > i:first-child{font-size:26px;width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center}
+  .ah-punch{display:flex;align-items:center;gap:12px;text-decoration:none;background:#16a34a;color:#fff;border-radius:14px;padding:11px 12px;margin:0 0 12px;box-shadow:0 6px 16px rgba(22,163,74,.25)}
+  .ah-punch > i:first-child{font-size:20px;width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center}
   .ah-punch span{flex:1;display:flex;flex-direction:column;gap:2px}
-  .ah-punch b{font-size:16px !important;color:#fff}
-  .ah-punch small{font-size:12px !important;opacity:.9;color:#fff}
+  .ah-punch b{font-size:14px !important;color:#fff}
+  .ah-punch small{font-size:11px !important;opacity:.9;color:#fff}
   .ah-punch:active{transform:scale(.98)}
 </style>
 <?php foreach ($ahSections as $ahS): ?>
