@@ -4961,6 +4961,9 @@ foreach ($navigation->sections() as $navSec) {
     }
 }
 $isPlatformAdmin = $superConsole && $tenantId === '';
+// Platform screens opened from another platform screen, not from the menu (owner, 13 Nov 2026: the on-prem
+// invoice page bounced to the dashboard because only menu screens were allowed in the console).
+array_push($platformOnlyRoutes, 'onprem-invoice');
 $platformOnlyRoutes = array_values(array_filter($platformOnlyRoutes));
 if (!$isPlatformAdmin && (in_array($route, $platformOnlyRoutes, true) || ($route === 'm' && in_array('m&k=' . (string) ($_GET['k'] ?? ''), $platformOnlyRoutes, true)))) {
     $route = 'platform-denied';
@@ -5460,7 +5463,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = '';
     }
 
-    if ($subscriptionLocked && $action !== '' && $action !== 'signout') {
+    // A lapsed workspace can still renew online and download its invoices (SmartPRS 2: My Subscription stays open).
+    if ($subscriptionLocked && $action !== '' && !in_array($action, ['signout', 'my-renew', 'my-invoice'], true)) {
         $problem = 'Your subscription has expired — renew it under Administration → My Subscription. Nothing was changed.';
         $action = '';
     }

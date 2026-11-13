@@ -34,6 +34,59 @@ $badge = static fn (?int $days): string => $days === null ? 'gray' : ($days < 0 
 </div>
 <?php endif; ?>
 
+<?php // RENEW ONLINE (owner, 13 Nov 2026 — SmartPRS 2 My Subscription → Renew): the price is worked out on the server
+// (surface/actions/my-renew.php) for the employees, companies and period chosen, then paid by Razorpay.
+if ($may('tenant.settings.update') && !$licence->isOnPrem()):
+    $rnUsed = count(array_filter(liveRows($store, 'employees'), static fn (array $e): bool => !in_array(strtolower(trim((string) ($e['status'] ?? ''))), SmartPRS\Surface\Licence::SEAT_FREE, true)));
+    $rnCos = count(liveRows($store, 'companies'));
+    $rnEmp = max($rnUsed, (int) ($sub['seats'] ?? 0), 1);
+    $rnCo = max($rnCos, (int) ($sub['companies'] ?? 0), 1);
+    $rnCycles = (array) (((new SmartPRS\Surface\LandingContent(__DIR__ . '/../../config/landing.json', new SmartPRS\Surface\PlatformSettings($platform)))->content()['pricing']['cloud']['cycles'] ?? [])); ?>
+<div class="card" style="margin-bottom:12px" id="renew"><h3 style="margin:0 0 4px;font-size:15px">Renew online</h3>
+  <p class="note" style="margin:0 0 10px">Renewing early never loses days — the new period starts when the current one ends. At least <?= $rnUsed ?> employee(s) and <?= $rnCos ?> company(ies), as in use now.</p>
+  <div class="row" style="gap:10px;flex-wrap:wrap;align-items:flex-end">
+    <div><label>Employees</label><input type="number" id="rn-emp" min="<?= max(1, $rnUsed) ?>" value="<?= $rnEmp ?>" style="width:110px"></div>
+    <div><label>Companies</label><input type="number" id="rn-co" min="<?= max(1, $rnCos) ?>" value="<?= $rnCo ?>" style="width:90px"></div>
+    <div><label>Period</label><select id="rn-months"><?php foreach ($rnCycles as $c): ?><option value="<?= (int) $c['months'] ?>"<?= (int) $c['months'] === 12 ? ' selected' : '' ?>><?= e((string) $c['label']) ?><?= (int) $c['discount'] > 0 ? ' — ' . (int) $c['discount'] . '% off' : '' ?></option><?php endforeach; ?></select></div>
+    <button class="btn btn-outline" type="button" id="rn-quote">Get price</button>
+    <button class="btn btn-primary" type="button" id="rn-pay" disabled><i class="fas fa-lock"></i> Pay &amp; renew</button>
+  </div>
+  <div id="rn-out" class="note" style="margin-top:10px"></div>
+</div>
+<script src="<?= e(SmartPRS\Surface\Signup::CHECKOUT) ?>"></script>
+<script>
+(function () {
+  var out = document.getElementById('rn-out'), pay = document.getElementById('rn-pay'), csrf = <?= json_encode($session->token()) ?>;
+  function call(step, extra) {
+    var b = new URLSearchParams(Object.assign({action: 'my-renew', csrf: csrf, step: step, employees: document.getElementById('rn-emp').value,
+      companies: document.getElementById('rn-co').value, months: document.getElementById('rn-months').value}, extra || {}));
+    return fetch('?r=my-subscription', {method: 'POST', body: b, credentials: 'same-origin'}).then(function (r) { return r.json(); });
+  }
+  function say(ok, html) { out.innerHTML = html; out.style.color = ok ? '' : '#b91c1c'; }
+  ['rn-emp', 'rn-co', 'rn-months'].forEach(function (id) { document.getElementById(id).addEventListener('change', function () { pay.disabled = true; say(true, ''); }); });
+  document.getElementById('rn-quote').addEventListener('click', function () {
+    call('quote').then(function (q) {
+      if (!q.ok) { say(false, q.error); pay.disabled = true; return; }
+      say(true, '<b>' + q.plan + '</b> · ' + q.period + (q.discount ? ' (' + q.discount + '% off)' : '') + ' — subscription ' + q.subscription + ' + GST ' + q.tax + ' = <b>' + q.total + '</b>');
+      pay.disabled = false;
+    }).catch(function () { say(false, 'Could not reach the server — try again.'); });
+  });
+  pay.addEventListener('click', function () {
+    pay.disabled = true;
+    call('order').then(function (o) {
+      if (!o.ok) { say(false, o.error); pay.disabled = false; return; }
+      new Razorpay({key: o.keyId, amount: o.amountPaise, currency: 'INR', order_id: o.orderId, name: 'SmartPRS', description: 'Subscription renewal — ' + o.company,
+        prefill: {email: o.email}, modal: {ondismiss: function () { pay.disabled = false; }},
+        handler: function (r) {
+          call('complete', {uuid: o.uuid, razorpay_order_id: r.razorpay_order_id, razorpay_payment_id: r.razorpay_payment_id, razorpay_signature: r.razorpay_signature})
+            .then(function (c) { say(c.ok, c.ok ? c.message : c.error); if (c.ok) { setTimeout(function () { location.reload(); }, 2500); } });
+        }}).open();
+    }).catch(function () { say(false, 'Could not reach the server — try again.'); pay.disabled = false; });
+  });
+})();
+</script>
+<?php endif; ?>
+
 <?php // YOUR INVOICES (owner, 13 Nov 2026: PDF for cloud subscribers too) — this organisation's own, newest first.
 $myInv = liveRows($store, 'invoices');
 usort($myInv, static fn (array $a, array $b): int => strcmp((string) ($b['issued_on'] ?? ''), (string) ($a['issued_on'] ?? '')));

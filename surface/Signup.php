@@ -92,7 +92,7 @@ final class Signup
      * @param array<string, mixed>|null $coupon
      * @return array<string, mixed>
      */
-    public function price(array $plan, int $employees, int $companies, int $months, ?array $coupon = null, string $state = ''): array
+    public function price(array $plan, int $employees, int $companies, int $months, ?array $coupon = null, string $state = '', bool $withSetup = true): array
     {
         $cycle = null;
 
@@ -119,7 +119,8 @@ final class Signup
             $couponOff = min($couponOff, $subscription);
         }
 
-        $setup = 100 * $this->setup($employees);
+        // A RENEWAL carries no setup & onboarding charge — that is paid once, at signup (SmartPRS 2 priceFor vs withSetup).
+        $setup = $withSetup ? 100 * $this->setup($employees) : 0;
         $taxable = $subscription - $couponOff + $setup;
         $rate = (int) ($this->gst['rate_percent'] ?? 0);
         $intra = $state !== '' && $this->stateCode($state) === (string) ($this->gst['home_state_code'] ?? '');
