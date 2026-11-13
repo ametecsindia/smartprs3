@@ -138,11 +138,13 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
       // holiday — from the same engine as the Attendance Report and payroll, with the full log one tap away.
 if ($ownRow !== null):
     $paFrom = date('Y-m-d', strtotime('-6 days'));
-    $paCells = (array) (($attendanceReport->muster([$ownRow], $paFrom, date('Y-m-d'), $calendar->shiftStart(), $calendar->shiftEnd(), date('Y-m-d'))['rows'][0] ?? [])['cells'] ?? []);
+    // The last 7 days, plus the next 7 when they hold an approved leave or a W.OFF / holiday (planned).
+    $paCells = array_filter((array) (($attendanceReport->muster([$ownRow], $paFrom, date('Y-m-d', strtotime('+7 days')), $calendar->shiftStart(), $calendar->shiftEnd(), date('Y-m-d'), 62, true)['rows'][0] ?? [])['cells'] ?? []),
+        static fn (array $c, string $d): bool => $d <= date('Y-m-d') || (string) ($c['status'] ?? '') !== 'NOT_YET', ARRAY_FILTER_USE_BOTH);
     $paLabel = ['PRESENT' => ['Present', 'green'], 'ABSENT' => ['Absent', 'red'], 'HALF_DAY' => ['Half day', 'amber'], 'WEEKLY_OFF' => ['W.OFF', 'gray'],
         'HOLIDAY' => ['Holiday', 'blue'], 'ON_LEAVE' => ['Leave', 'blue'], 'UNPAID_LEAVE' => ['Unpaid leave', 'amber'], 'NOT_YET' => ['Today', 'gray'], 'NOT_JOINED' => ['—', 'gray']]; ?>
 <div class="card" style="margin-top:12px">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><b style="color:#1F3A5F">My attendance — last 7 days</b>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><b style="color:#1F3A5F">My attendance — last 7 days &amp; upcoming</b>
     <a class="btn btn-sm btn-outline" href="?r=my-attendance"><i class="fas fa-calendar-check"></i> Full log</a></div>
 <?php foreach (array_reverse($paCells, true) as $paD => $paC): $paL = $paLabel[(string) ($paC['status'] ?? '')] ?? [ucwords(strtolower(str_replace('_', ' ', (string) ($paC['status'] ?? '')))), 'gray']; ?>
   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--border,#e2e8f0);font-size:13px">

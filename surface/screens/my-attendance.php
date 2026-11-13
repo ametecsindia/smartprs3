@@ -23,7 +23,8 @@ $maFrom = $maMonth . '-01';
 $maTo = date('Y-m-t', (int) strtotime($maFrom));
 $maToday = date('Y-m-d');
 $maCode = Employment::code($maMe);
-$maRow = $attendanceReport->muster([$maMe], $maFrom, $maTo, $calendar->shiftStart(), $calendar->shiftEnd(), $maToday)['rows'][0] ?? null;
+// Upcoming approved leave and W.OFF / holidays are shown too (planned = true; payroll never sees these).
+$maRow = $attendanceReport->muster([$maMe], $maFrom, $maTo, $calendar->shiftStart(), $calendar->shiftEnd(), $maToday, 62, true)['rows'][0] ?? null;
 $maCells = (array) ($maRow['cells'] ?? []);
 // Every punch of the month, by day (held ones on an off day included, marked).
 $maPunches = [];

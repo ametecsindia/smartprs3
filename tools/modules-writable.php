@@ -100,7 +100,8 @@ $modules = new Modules($store, $root . '/config/modules.json', new Customisation
  */
 $valueFor = static function (array $field): string {
     if (($field['options'] ?? []) !== []) {
-        return (string) $field['options'][0];
+        // A value => label map ({"1": "Active"}) stores the KEY; a plain list stores the value itself.
+        return array_is_list($field['options']) ? (string) $field['options'][0] : (string) array_key_first($field['options']);
     }
 
     if (($field['lookup'] ?? []) !== []) {

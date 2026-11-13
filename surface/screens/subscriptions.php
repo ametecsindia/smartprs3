@@ -43,8 +43,8 @@ $grace = (int) ($declared['subscription_grace_days'] ?? 7);
   <form method="post"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
     <input type="hidden" name="action" value="subscription"><input type="hidden" name="op" value="save"><input type="hidden" name="id" value="<?= e($v('id')) ?>">
     <div class="row" style="flex-wrap:wrap;gap:10px">
-      <div><label>Tenant</label><select name="tenant_id" required><option value="">— choose —</option><?php foreach ($tenants as $id => $n): ?><option value="<?= e($id) ?>"<?= $id === $forTenant ? ' selected' : '' ?>><?= e($n) ?></option><?php endforeach; ?></select></div>
-      <div><label>Plan</label><select name="plan_id"><option value="">— no plan (custom) —</option><?php foreach ($plans as $id => $p): ?><option value="<?= e($id) ?>"<?= $id === $v('plan_id') ? ' selected' : '' ?>><?= e((string) $p['name']) ?></option><?php endforeach; ?></select></div>
+      <div><label>Tenant</label><select name="tenant_id" required><option value="">— choose —</option><?php foreach ($tenants as $id => $n): ?><option value="<?= e($id) ?>"<?= (string) $id === $forTenant ? ' selected' : '' ?>><?= e($n) ?></option><?php endforeach; ?></select></div>
+      <div><label>Plan</label><select name="plan_id"><option value="">— no plan (custom) —</option><?php foreach ($plans as $id => $p): ?><option value="<?= e($id) ?>"<?= (string) $id === $v('plan_id') ? ' selected' : '' ?>><?= e((string) $p['name']) ?></option><?php endforeach; ?></select></div>
       <div><label>Seats</label><input type="number" min="1" name="seats" required value="<?= e($v('seats') ?: '1') ?>" style="width:90px"></div>
       <div><label>Companies</label><input type="number" min="1" name="companies" value="<?= e($v('companies') ?: '1') ?>" style="width:90px"></div>
       <div><label>Cycle</label><select name="cycle"><?php foreach (array_keys((array) $declared['cycles']) as $c): ?><option<?= $c === $v('cycle') ? ' selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></div>

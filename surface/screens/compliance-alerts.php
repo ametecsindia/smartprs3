@@ -49,7 +49,7 @@ $badge = [StatutoryReports::OVERDUE => 'badge-red', StatutoryReports::DUE => 'ba
 <div class="page-header">
   <div><h2>Compliance Alerts</h2><p><?= $counts[StatutoryReports::OVERDUE] ?> overdue, <?= $counts[StatutoryReports::DUE] ?> due within <?= $lead ?> days, <?= $counts[StatutoryReports::UPCOMING] ?> upcoming, <?= $counts[StatutoryReports::FILED] ?> filed — for <?= $companyId === '' ? 'the tenant as a whole (no company picked)' : e($companies[$companyId]) ?>. Due days are <code>config/compliance-calendar.json</code>.</p></div>
   <form method="get" class="row" style="align-items:flex-end"><input type="hidden" name="r" value="compliance-alerts">
-    <div><label for="company">Company</label><select id="company" name="company"><option value="">ALL (tenant)</option><?php foreach ($companies as $id => $name): ?><option value="<?= e($id) ?>"<?= $id === $companyId ? ' selected' : '' ?>><?= e($name) ?></option><?php endforeach; ?></select></div>
+    <div><label for="company">Company</label><select id="company" name="company"><option value="">ALL (tenant)</option><?php foreach ($companies as $id => $name): ?><option value="<?= e($id) ?>"<?= (string) $id === $companyId ? ' selected' : '' ?>><?= e($name) ?></option><?php endforeach; ?></select></div>
     <div><label for="periods">Periods</label><input type="number" id="periods" name="periods" min="1" max="24" value="<?= $count ?>" style="width:70px"></div>
     <div><button class="btn btn-outline" type="submit">Show</button></div>
     <div><a class="btn btn-outline" href="?r=compliance"><i class="fas fa-id-badge"></i> Credential expiries</a></div></form>

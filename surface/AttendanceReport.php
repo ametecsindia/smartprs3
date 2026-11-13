@@ -170,7 +170,7 @@ final class AttendanceReport
      * @return array{dates: list<string>, rows: list<array<string, mixed>>, legend: array<string, int>}
      */
     public function muster(array $employments, string $from, string $to, string $shiftStart,
-        string $shiftEnd, string $today, int $maxDays = 62): array
+        string $shiftEnd, string $today, int $maxDays = 62, bool $planned = false): array
     {
         $dates = self::dates($from, $to, $maxDays);
         $this->shiftStart = $shiftStart;
@@ -226,6 +226,15 @@ final class AttendanceReport
             foreach ($dates as $date) {
                 if ($date > $today) {
                     $cells[$date] = self::blank(self::NOT_YET, 'This day has not happened yet.');
+
+                    // PLANNED DAYS (owner, 13 Nov 2026 — the employee's own report): an upcoming approved leave and an
+                    // upcoming W.OFF / holiday are shown as such. Only for the self-service views ($planned); payroll and
+                    // every report keep a future day as NOT_YET, so nothing is paid or counted ahead of time.
+                    if ($planned) {
+                        $off = self::cell($this->attendance->dayWithoutPunches($code, $date, $shiftStart, $shiftEnd));
+                        in_array($off['status'], ['WEEKLY_OFF', 'HOLIDAY'], true) ? $cells[$date] = $off
+                            : (isset($onLeave[$date]) && $cells[$date] = $leaveCell($date));
+                    }
 
                     continue;
                 }

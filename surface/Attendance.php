@@ -570,7 +570,8 @@ final class Attendance
             }
 
             foreach ($this->punchesByEmployment as &$rows) {
-                usort($rows, static fn (array $a, array $b): int => strcmp($a['at'], $b['at']));
+                // Two punches in the same second (a quick IN then OUT) keep the order they were made in.
+                usort($rows, static fn (array $a, array $b): int => strcmp($a['at'], $b['at']) ?: ((int) ($a['id'] ?? 0) <=> (int) ($b['id'] ?? 0)));
             }
 
             unset($rows);

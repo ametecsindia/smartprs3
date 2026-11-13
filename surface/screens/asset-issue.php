@@ -283,7 +283,7 @@ usort($out, static fn (array $a, array $b): int => strcmp((string) ($a['issue_da
   </div>
   <form method="get" class="row" style="align-items:flex-end;margin-bottom:14px"><input type="hidden" name="r" value="asset-issue">
     <div><label for="ai_emp">Held by</label><select id="ai_emp" name="emp"><option value="">ALL employees</option>
-<?php foreach ($people as $id => $label): ?><option value="<?= e($id) ?>"<?= $id === $emp ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
+<?php foreach ($people as $id => $label): ?><option value="<?= e($id) ?>"<?= (string) $id === $emp ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
     </select></div><div><button class="go" type="submit">Show</button></div>
   </form>
   <?php // TWO BANDS (owner, 29 Sep): everything up to Purpose is one colour — the

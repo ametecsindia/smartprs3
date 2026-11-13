@@ -8208,7 +8208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $lrAvail = leaveAvailability($store, $leave, $policy, $lrEmp, post('from'))[post('leave_type')] ?? null;
 
                 if ($lrAvail === null) {
-                    throw new \InvalidArgumentException('That leave type is not available to this employee.');
+                    throw new \InvalidArgumentException(post('leave_type') === '' ? 'Choose a leave type.' : 'That leave type is not available to this employee.');
                 }
 
                 $lrDays = $leave->chargeableDays(post('employment_code'), post('leave_type'), post('from'), post('to'))['days'];

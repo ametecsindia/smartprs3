@@ -101,7 +101,13 @@ if ($punchSource !== SmartPRS\Surface\QrAttendance::SOURCE && !$fenceExempt) {
 }
 
 try {
-    $attendance->record($code, $now, $direction, $punchSource, $reference);
+    if (!$attendance->record($code, $now, $direction, $punchSource, $reference)) {
+        // The same punch twice in one second (a double tap) is one punch — say so instead of "Punched".
+        $_SESSION['flash_notice'] = 'Already punched ' . strtoupper($direction) . ' at ' . substr($now, 11, 5) . ' — nothing new recorded.';
+        header('Location: ?r=punch');
+        exit;
+    }
+
     $audit('attendance.punch.recorded', 'punch', $code, null,
         ['at' => $now, 'direction' => $direction, 'source' => $punchSource, 'gps' => $reference], $punchSource === 'web' ? 'Self punch from the web app' : 'QR punch at ' . $qrCheck['gate']['name']);
     $_SESSION['flash_notice'] = 'Punched ' . strtoupper($direction) . ' at ' . substr($now, 11, 5) . ($punchSource !== 'web' ? ' — ' . $qrCheck['why']
