@@ -32,7 +32,7 @@ final class SaasPlatform
     /** @var array<string, mixed> */
     private readonly array $leads;
 
-    public function __construct(private readonly RowStore $platform, string $configDir)
+    public function __construct(private readonly RowStore $platform, private readonly string $configDir)
     {
         $read = static fn (string $name): array => (array) json_decode(
             (string) file_get_contents($configDir . '/' . $name . '.json'), true, 512, JSON_THROW_ON_ERROR);
@@ -118,6 +118,19 @@ final class SaasPlatform
                 $this->platform->put('plans', ['id' => $have['id']] + $row);
             }
         }
+    }
+
+    /**
+     * What a licence (subscription row) costs for one period, from the price list as edited on Plans & Pricing —
+     * the same figures the website, sign-up and renewals use. A Custom licence is priced by its seats.
+     */
+    public function licenceAmount(array $sub): Money
+    {
+        $pricing = (array) ((new LandingContent($this->configDir . '/landing.json', new PlatformSettings($this->platform)))->content()['pricing'] ?? []);
+        $plan = (string) ($sub['plan_id'] ?? '') === '' ? null : $this->platform->find('plans', (string) $sub['plan_id']);
+
+        return Money::ofMinor((new Signup($this->platform, $pricing, [], '/dev/null'))->periodPaise((string) ($plan['name'] ?? ''),
+            (int) ($sub['seats'] ?? 0), (int) ($sub['companies'] ?? 1), $this->months((string) ($sub['cycle'] ?? ''))));
     }
 
     /** Months a billing cycle bills for, from config; an unknown cycle is one month. */

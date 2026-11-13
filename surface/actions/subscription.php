@@ -40,7 +40,7 @@ if ($op === 'save') {
     $end = preg_match('/^\d{4}-\d{2}-\d{2}$/', post('valid_until')) === 1 ? post('valid_until') : $plus($today, $saas->months($cycle));
     $row = ['tenant_id' => (string) $tenant['id'], 'plan_id' => $plan === null ? null : (string) $plan['id'], 'seats' => $seats,
         'companies' => max(1, (int) post('companies')), 'cycle' => $cycle,
-        'amount' => $plan === null ? '0' : SmartPRS\Surface\SaasPlatform::monthly($plan, $seats)->multipliedBy($saas->months($cycle))->toDecimalString(),
+        'amount' => '0',
         'current_period_end' => $end, 'next_renewal' => $end,
         'status' => in_array(post('status'), (array) $declared['subscription_statuses'], true) ? post('status') : 'active'];
 
@@ -48,10 +48,12 @@ if ($op === 'save') {
         $row['id'] = $id;
     }
 
+    $row['amount'] = $saas->licenceAmount($row)->toDecimalString();
+
     $saved = $platform->put('subscriptions', $row);
     $audit($before === null ? 'subscription.created' : 'subscription.updated', 'subscriptions', (string) $saved['id'], $before, $row, 'platform staff');
     $_SESSION['flash_notice'] = 'Licence for ' . (string) $tenant['name'] . " saved: {$seats} seat(s), " . $row['companies'] . ' company(ies), valid until '
-        . date('d-m-Y', (int) strtotime($end)) . ($plan === null ? '.' : ' — ' . SmartPRS\Surface\Amount::of($row['amount'])->format() . ' per ' . $cycle . '.');
+        . date('d-m-Y', (int) strtotime($end)) . ' — ' . SmartPRS\Surface\Amount::of($row['amount'])->format() . ' per ' . $cycle . ' (price list, GST extra).';
 } elseif ($op === 'renew' && $before !== null) {
     $plan = $platform->find('plans', (string) $before['plan_id']);
     $months = $saas->months((string) ($before['cycle'] ?? ''));
@@ -66,9 +68,7 @@ if ($op === 'save') {
     }
     $after = ['id' => $id, 'current_period_end' => $end, 'next_renewal' => $end, 'status' => 'active'];
 
-    if ($plan !== null) {
-        $after['amount'] = SmartPRS\Surface\SaasPlatform::monthly($plan, (int) $before['seats'])->multipliedBy($months)->toDecimalString();
-    }
+    $after['amount'] = $saas->licenceAmount($before)->toDecimalString();
 
     $platform->put('subscriptions', $after);
     $audit('subscription.renewed', 'subscriptions', $id, ['current_period_end' => $before['current_period_end'], 'status' => $before['status']], $after, "renewed to {$end} (was {$from})");

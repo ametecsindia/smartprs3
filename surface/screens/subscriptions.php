@@ -67,7 +67,7 @@ $grace = (int) ($declared['subscription_grace_days'] ?? 7);
     <td><?= e($plan === null ? ((string) ($s['plan_id'] ?? '') === '' ? 'Custom' : 'Plan #' . (string) $s['plan_id'] . ' (gone)') : (string) $plan['name']) ?></td>
     <td><?= (int) ($s['seats'] ?? 0) ?><div class="note" style="font-size:11px"><?= $used((string) ($s['tenant_id'] ?? ''))[0] ?> in use · <?= (int) ($s['companies'] ?? 0) ?> co.</div></td>
     <td><?= e((string) ($s['cycle'] ?? '')) ?></td>
-    <td><?= e(SmartPRS\Surface\Amount::of($s['amount'] ?? '0')->format()) ?><?php if ($plan !== null): ?><div class="note" style="font-size:11px"><?= e(SmartPRS\Surface\SaasPlatform::monthly($plan, (int) ($s['seats'] ?? 0))->format()) ?>/mo × <?= $saas->months((string) ($s['cycle'] ?? '')) ?></div><?php endif; ?></td>
+    <td><?= e($saas->licenceAmount($s)->format()) ?><div class="note" style="font-size:11px">price list<?= $plan === null ? ', ' . (int) ($s['seats'] ?? 0) . ' seats' : '' ?> · GST extra</div></td>
     <td class="note" style="<?= $end !== '' && $end < $today && in_array($st, $live, true) ? 'color:#dc2626;font-weight:700' : '' ?>"><?= e($end ?: '—') ?><?php if ($end !== ''): ?><div style="font-size:11px"><?= SmartPRS\Surface\Licensing::daysBetween($today, $end) ?> days</div><?php endif; ?></td>
     <td class="note"><?= e((string) ($s['next_renewal'] ?? '') ?: '—') ?></td>
     <td><span class="badge badge-<?= $st === 'active' ? 'green' : ($st === 'trial' ? 'amber' : ($st === 'past due' ? 'red' : 'gray')) ?>"><?= e($st) ?></span></td>

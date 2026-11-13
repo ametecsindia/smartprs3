@@ -70,6 +70,31 @@ final class Signup
         return $all === [] ? null : end($all);
     }
 
+    /**
+     * A licence's price for one period, in paise, from the price list: the named plan, or (Custom / unknown) the
+     * plan that fits the seats; extra employees and companies as at sign-up; the advance discount when the
+     * period matches one (a monthly period has none). No setup, no GST.
+     */
+    public function periodPaise(string $planName, int $employees, int $companies, int $months): int
+    {
+        $plan = ($planName === '' ? null : $this->plan($planName)) ?? $this->bestFit($employees);
+
+        if ($plan === null) {
+            return 0;
+        }
+
+        $perMonth = 100 * ((int) $plan['monthly'] + (int) ($plan['extra'] ?? 0) * max(0, $employees - (int) $plan['employees'])
+            + (int) ($this->pricing['cloud']['company_fee'] ?? 0) * (max(1, $companies) - 1));
+        $gross = $perMonth * max(1, $months);
+        $off = 0;
+
+        foreach ($this->cycles() as $c) {
+            (int) $c['months'] === $months && $off = (int) $c['discount'];
+        }
+
+        return $gross - intdiv($gross * $off + 50, 100);
+    }
+
     public function maxEmployees(): int
     {
         $p = $this->plans();

@@ -33,9 +33,15 @@ if ($op === 'save') {
     }
 
     try {
-        $taxable = SmartPRS\Surface\Amount::of(post('amount') === '' ? (string) ($sub['amount'] ?? '0') : post('amount'));
+        $taxable = post('amount') === '' ? $saas->licenceAmount($sub) : SmartPRS\Surface\Amount::of(post('amount'));
     } catch (\InvalidArgumentException $e) {
         $_SESSION['flash_problem'] = $e->getMessage();
+        header('Location: ?r=invoices&edit=new');
+        exit;
+    }
+
+    if ($taxable->isZero() || $taxable->isNegative()) {
+        $_SESSION['flash_problem'] = 'Enter the taxable amount — an invoice cannot be for ₹0.';
         header('Location: ?r=invoices&edit=new');
         exit;
     }
@@ -46,12 +52,12 @@ if ($op === 'save') {
         'number' => $saas->invoiceNumber($platform->count('invoices') + 1, $issued),
         'amount' => $taxable->toDecimalString(), 'tax' => $gst['tax']->toDecimalString(), 'status' => 'issued',
         'issued_on' => $issued, 'due_on' => post('due_on') ?: null,
-        'period_from' => post('period_from') ?: null, 'period_to' => post('period_to') ?: null,
+        'period_from' => post('period_from') ?: null, 'period_to' => post('period_to') ?: (new DateTimeImmutable(post('period_from') ?: $today))->modify('+' . $saas->months((string) ($sub['cycle'] ?? '')) . ' months -1 day')->format('Y-m-d'),
         'notes' => trim(post('notes')) ?: null];
     $saved = $platform->put('invoices', $row);
     $audit('invoice.raised', 'invoices', (string) $saved['id'], null, $row,
         $gst['mode'] . ' ' . $gst['rate'] . '% on ' . $taxable->toDecimalString());
-    $_SESSION['flash_notice'] = 'Invoice ' . $row['number'] . ' raised: ' . $gst['total']->format() . ' (' . $gst['mode'] . ' ' . $gst['tax']->format() . ').';
+    $_SESSION['flash_notice'] = 'Invoice ' . $row['number'] . ' created: ' . $gst['total']->format() . ' (' . $gst['mode'] . ' ' . $gst['tax']->format() . ').';
 } elseif ($op === 'mark-paid' && $before !== null) {
     $balance = SmartPRS\Surface\SaasPlatform::balance($before, $platform->all('payments'));
     $method = in_array(post('method'), (array) $saas->declared()['payment_methods'], true) ? post('method') : 'bank transfer';

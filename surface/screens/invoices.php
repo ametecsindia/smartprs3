@@ -28,27 +28,29 @@ foreach ($platform->all('users') as $u) { if ((string) ($u['role'] ?? $u['status
 $hidI = static fn (string $op, string $iid): string => '<input type="hidden" name="csrf" value="' . e($session->token()) . '"><input type="hidden" name="action" value="invoice"><input type="hidden" name="op" value="' . $op . '"><input type="hidden" name="id" value="' . e($iid) . '">';
 ?>
 <div class="page-header"><div><h2>Invoices</h2>
-  <p><?= count($rows) ?> invoice(s), newest first. GST at <?= (int) $gst['rate_percent'] ?>% — CGST+SGST for tenants in state <?= e((string) $gst['home_state_code']) ?>, IGST for every other state — computed when the invoice is raised, from the tenant's state on the Tenants screen.</p></div>
-  <div><a class="btn btn-primary" href="?r=invoices&edit=new#form"><i class="fas fa-plus"></i> Raise invoice</a></div></div>
+  <p><?= count($rows) ?> invoice(s), newest first. GST at <?= (int) $gst['rate_percent'] ?>% — CGST+SGST for tenants in state <?= e((string) $gst['home_state_code']) ?>, IGST for every other state — computed when the invoice is created, from the tenant's state on the Tenants screen.</p></div>
+  <div><a class="btn btn-primary" href="?r=invoices&edit=new#form"><i class="fas fa-plus"></i> New invoice</a></div></div>
 
 <?php if (isset($_GET['edit'])): ?>
-<div class="card" id="form"><h3 style="margin-top:0">Raise invoice <code><?= e($next) ?></code></h3>
+<div class="card" id="form"><h3 style="margin-top:0">New invoice <code><?= e($next) ?></code></h3>
   <form method="post"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
     <input type="hidden" name="action" value="invoice"><input type="hidden" name="op" value="save">
     <div class="row" style="flex-wrap:wrap;gap:10px">
       <div style="min-width:260px"><label>Subscription</label><select name="subscription_id" required><option value="">— choose —</option>
 <?php foreach ($subs as $s): $t = $tenants[(string) $s['tenant_id']] ?? null; ?>
-        <option value="<?= e((string) $s['id']) ?>"><?= e(($t === null ? 'Tenant #' . (string) $s['tenant_id'] : (string) $t['name']) . ' — ' . ($plans[(string) $s['plan_id']] ?? 'plan #' . (string) $s['plan_id']) . ', ' . (int) $s['seats'] . ' seats, ' . (string) $s['cycle'] . ' · ' . $Amt::of($s['amount'] ?? '0')->format()) ?></option>
+        <?php $sAmt = $saas->licenceAmount($s); ?>
+        <option value="<?= e((string) $s['id']) ?>" data-amount="<?= e($sAmt->toDecimalString()) ?>" data-from="<?= e($today) ?>" data-to="<?= e((new DateTimeImmutable($today))->modify('+' . $saas->months((string) ($s['cycle'] ?? '')) . ' months -1 day')->format('Y-m-d')) ?>"><?= e(($t === null ? 'Tenant #' . (string) $s['tenant_id'] : (string) $t['name']) . ' — ' . ((string) ($s['plan_id'] ?? '') === '' ? 'Custom' : ($plans[(string) $s['plan_id']] ?? 'Custom')) . ', ' . (int) $s['seats'] . ' seats, ' . (string) $s['cycle'] . ' · ' . $sAmt->format()) ?></option>
 <?php endforeach; ?></select><span class="note">the tenant's state decides the GST split</span></div>
-      <div><label>Taxable amount ₹</label><input name="amount" inputmode="decimal" pattern="\d+(\.\d{1,2})?" placeholder="blank = subscription amount"><span class="note">GST is added on top</span></div>
+      <div><label>Taxable amount ₹</label><input name="amount" inputmode="decimal" pattern="\d+(\.\d{1,2})?" placeholder="from the price list"><span class="note">filled from the price list; change it if needed. GST is added on top</span></div>
       <div><label>Period from</label><input type="date" name="period_from" value="<?= e($today) ?>"></div>
       <div><label>Period to</label><input type="date" name="period_to"></div>
       <div><label>Issued on</label><input type="date" name="issued_on" value="<?= e($today) ?>"></div>
       <div><label>Due on</label><input type="date" name="due_on" value="<?= e((new DateTimeImmutable($today))->modify('+7 days')->format('Y-m-d')) ?>"></div>
       <div style="flex-basis:100%"><label>Notes</label><input name="notes" style="width:100%"></div>
     </div>
-    <p style="margin:12px 0 0"><button class="go" type="submit"><i class="fas fa-save"></i> Raise as issued</button> <a class="btn btn-outline" href="?r=invoices">Cancel</a></p>
-  </form></div>
+    <p style="margin:12px 0 0"><button class="go" type="submit"><i class="fas fa-save"></i> Create invoice</button> <a class="btn btn-outline" href="?r=invoices">Cancel</a></p>
+  </form>
+  <script>(function(){var f=document.currentScript.previousElementSibling,s=f.querySelector('[name=subscription_id]');s.addEventListener('change',function(){var o=s.selectedOptions[0];if(!o||!o.value)return;f.amount.value=o.dataset.amount;if(o.dataset.to)f.period_to.value=o.dataset.to;f.period_to.dispatchEvent(new Event('change'));f.amount.dispatchEvent(new Event('input'));});})();</script></div>
 <?php endif; ?>
 
 <div class="card" style="padding:0"><div class="table-wrap"><table>
