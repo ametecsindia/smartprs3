@@ -11821,7 +11821,26 @@ if ($session->isSignedIn() && $tenantId !== '' && !$licence->isOnPrem()) {
                     $saOut = $saTo === [] || !$saMail->ready() ? ['ok' => false, 'why' => 'no administrator email or platform mail not set up']
                         : $saMail->send($saTo, strtr((string) ($saDecl['title'] ?? ''), array_combine(array_map(static fn ($k) => '{' . $k . '}', array_keys($saValues)), $saValues)),
                             strtr((string) ($saDecl['body'] ?? ''), array_combine(array_map(static fn ($k) => '{' . $k . '}', array_keys($saValues)), $saValues)));
-                    $audit('subscription.alert', 'subscription', $saEnd, null, ['kind' => $saKind, 'emailed' => $saOut['ok'] ? implode(', ', $saTo) : ''], $saOut['ok'] ? 'sent' : (string) $saOut['why']);
+                    // WHATSAPP (owner, 13 Nov 2026 — SmartPRS 2 billing:alerts): the approved `renewal` template through
+                    // Interakt, to the mobile the client signed up with, else an administrator's employee mobile.
+                    $saMobile = '';
+                    foreach ($platform->all('signups') as $saS) {
+                        (string) ($saS['tenant_ref'] ?? '') === $tenantId && trim((string) ($saS['mobile'] ?? '')) !== '' && $saMobile = trim((string) $saS['mobile']);
+                    }
+                    foreach ($saMobile === '' ? $platform->all('users') : [] as $saU) {
+                        if ($saMobile === '' && (string) ($saU['tenant_id'] ?? '') === $tenantId && (string) ($saU['role'] ?? $saU['status'] ?? '') === 'administrator'
+                            && ($saEmp = $store->find('employees', (string) ($saU['employee_id'] ?? ''))) !== null) {
+                            $saMobile = trim((string) ($saEmp['mobile'] ?? ''));
+                        }
+                    }
+                    $saWa = new SmartPRS\Surface\WhatsApp($platform, new SmartPRS\Surface\PlatformSettings($platform), __DIR__ . '/../.env');
+                    $saWaOut = $saMobile === '' || !$saWa->ready() ? ['ok' => false, 'why' => 'no mobile on record or WhatsApp not set up']
+                        : $saWa->send($saMobile, $saWa->templateFor('renewal'), [(string) ($platform->find('tenants', $tenantId)['name'] ?? ''), $saValues['plan'], $saValues['end'],
+                            $saKind === 'grace' ? 'ended; the workspace locks on ' . $saValues['grace_end'] : $saValues['when'],
+                            (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'smartprs.com') . strtok((string) ($_SERVER['REQUEST_URI'] ?? '/app.php'), '?') . '?r=my-subscription'],
+                            'subscription-' . $saKind);
+                    $audit('subscription.alert', 'subscription', $saEnd, null, ['kind' => $saKind, 'emailed' => $saOut['ok'] ? implode(', ', $saTo) : '',
+                        'whatsapp' => $saWaOut['ok'] ? $saMobile : ''], ($saOut['ok'] ? 'email sent' : 'email: ' . $saOut['why']) . '; ' . ($saWaOut['ok'] ? 'WhatsApp sent' : 'WhatsApp: ' . $saWaOut['why']));
                 }
             }
         } catch (\Throwable $saX) {
