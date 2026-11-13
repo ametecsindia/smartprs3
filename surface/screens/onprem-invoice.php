@@ -12,7 +12,13 @@ $paid = SmartPRS\Surface\Amount::of($c['paid_total'] ?? '0');
 $bal = $tax['total']->minus($paid);
 ?>
 <div class="page-header no-print"><div><h2>Licence invoice <?= e((string) $c['invoice_no']) ?></h2></div>
-  <div class="actions"><button class="btn btn-primary" type="button" onclick="window.print()"><i class="fas fa-print"></i> Print / Save PDF</button> <a class="btn btn-outline" href="?r=onprem&client=<?= e((string) $c['id']) ?>">Back</a></div></div>
+  <div class="actions" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+    <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="onprem"><input type="hidden" name="op" value="invoice-pdf"><input type="hidden" name="client" value="<?= e((string) $c['id']) ?>">
+      <button class="btn btn-primary" type="submit"><i class="fas fa-file-pdf"></i> Download PDF</button></form>
+    <form method="post" style="display:inline-flex;gap:4px"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="onprem"><input type="hidden" name="op" value="invoice-email"><input type="hidden" name="client" value="<?= e((string) $c['id']) ?>">
+      <input type="email" name="to" value="<?= e((string) ($c['email'] ?? '')) ?>" placeholder="client email" required style="width:210px">
+      <button class="btn btn-primary" type="submit" title="Emails the PDF invoice with the pay-online link"><i class="fas fa-envelope"></i> Send email</button></form>
+    <a class="btn btn-outline" href="?r=onprem&client=<?= e((string) $c['id']) ?>">Back</a></div></div>
 <div class="card" style="max-width:820px">
   <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div><h3 style="margin:0"><?= e((string) ($seller['name'] ?? 'Ametecs India Private Limited')) ?></h3>

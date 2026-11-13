@@ -122,6 +122,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     json_out(400, ['ok' => false, 'error' => 'Unknown request.']);
 }
 
+// THE INVOICE PDF (SmartPRS 2 /licence/{token}/pdf).
+if ($client !== null && isset($_GET['pdf'])) {
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: inline; filename="' . preg_replace('/[^A-Za-z0-9._-]/', '-', (string) $client['invoice_no']) . '.pdf"');
+    echo LicenceAuthority::invoicePdf($client, $saas);
+    exit;
+}
+
 http_response_code($client === null ? 404 : 200);
 $t = $client === null ? null : LicenceAuthority::totals($client, $saas);
 ?><!DOCTYPE html>
@@ -149,6 +157,7 @@ button:disabled{opacity:.6;cursor:default}.msg{margin-top:16px;padding:12px 14px
     <tr><td>Paid</td><td><?= $h(Amount::of($client['paid_total'] ?? '0')->format()) ?></td></tr>
     <tr class="total"><td>Balance due</td><td><?= $h($t['balance']->format()) ?></td></tr>
   </table>
+  <p class="note"><a href="?t=<?= $h(rawurlencode($token)) ?>&amp;pdf=1" target="_blank" rel="noopener">Download the invoice (PDF)</a></p>
 <?php if ($t['balance']->isZero()): ?>
   <div class="msg ok">This invoice is fully paid — thank you!</div>
 <?php elseif ($gw === null): ?>

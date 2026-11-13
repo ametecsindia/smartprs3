@@ -4,7 +4,9 @@
  *
  *   save-client      add / edit the client (price, GST state, term or fixed expiry, expiry mode, seats)
  *   pay              record a payment (NEFT / UPI / cheque / cash / gateway)
- *   invoice          give the sale an invoice number (shared series with SaaS invoices) and email it with the pay link
+ *   invoice          give the sale an invoice number (shared series with SaaS invoices) and open it
+ *   invoice-pdf      download the invoice as a PDF
+ *   invoice-email    email the PDF invoice with the pay-online link (to the client, or an address typed)
  *   partial          tick / untick "activate on partial payment"
  *   issue            generate the online License Code (SPRS-XXXX-…) — paid in full, or partial ticked
  *   lic              generate a signed, machine-locked .lic file and download it
@@ -40,15 +42,15 @@ $go = static function (string $kind, string $msg, string $to): never {
 };
 $isDate = static fn (string $v): bool => preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) === 1;
 // THE CLIENT'S EMAILS (SmartPRS 2: key, .lic and invoice are emailed to the client, fail-soft — the screen still shows them).
-$mailClient = static function (string $kind, array $v) use ($client, $platform): string {
-    $to = trim((string) ($client['email'] ?? ''));
+$mailClient = static function (string $kind, array $v, array $attachments = [], string $to = '') use ($client, $platform): string {
+    $to = trim($to) ?: trim((string) ($client['email'] ?? ''));
 
     if ($to === '' || filter_var($to, FILTER_VALIDATE_EMAIL) === false) {
         return ' (not emailed: the client has no email address)';
     }
 
     [$subject, $text] = SmartPRS\Surface\LicenceAuthority::clientEmail($kind, $client, $v);
-    $r = (new SmartPRS\Surface\PlatformMail(new SmartPRS\Surface\PlatformSettings($platform), dirname(__DIR__, 2) . '/.env'))->send([$to], $subject, $text);
+    $r = (new SmartPRS\Surface\PlatformMail(new SmartPRS\Surface\PlatformSettings($platform), dirname(__DIR__, 2) . '/.env'))->send([$to], $subject, $text, [], $attachments);
 
     return $r['ok'] ? ' Emailed to ' . $to . '.' : ' (not emailed: ' . $r['why'] . ')';
 };
@@ -149,10 +151,49 @@ if ($op === 'invoice') {
         $platform->put('onprem_clients', ['id' => $clientId, 'invoice_token' => $client['invoice_token']]);
     }
 
-    // EMAIL THE INVOICE + PAY LINK (SmartPRS 2 invoice()): the public page shows it and takes payment by Razorpay.
+    header('Location: ?r=onprem-invoice&client=' . $clientId);
+    exit;
+}
+
+// THE INVOICE AS A PDF, DOWNLOADED OR EMAILED (owner, 13 Nov 2026: "it should be PDF and send email option available").
+if ($op === 'invoice-pdf' || $op === 'invoice-email') {
+    if (trim((string) ($client['invoice_no'] ?? '')) === '') {
+        $go('bad', 'Raise the invoice first.', $back);
+    }
+
+    $pdf = SmartPRS\Surface\LicenceAuthority::invoicePdf($client, $saas);
+    $file = preg_replace('/[^A-Za-z0-9._-]/', '-', (string) $client['invoice_no']) . '.pdf';
+
+    if ($op === 'invoice-pdf') {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        echo $pdf;
+        exit;
+    }
+
+    $to = trim(post('to'));
+
+    if ($to !== '' && filter_var($to, FILTER_VALIDATE_EMAIL) === false) {
+        $_SESSION['flash_problem'] = "'{$to}' is not an email address.";
+        header('Location: ?r=onprem-invoice&client=' . $clientId);
+        exit;
+    }
+
+    if (trim((string) ($client['invoice_token'] ?? '')) === '') {
+        $client['invoice_token'] = bin2hex(random_bytes(16));
+        $platform->put('onprem_clients', ['id' => $clientId, 'invoice_token' => $client['invoice_token']]);
+    }
+
+    // SmartPRS 2 invoice(): the PDF attached, with the pay-online link (public/licence.php, Razorpay).
     $sent = $mailClient('invoice', ['number' => (string) $client['invoice_no'], 'price' => $totals['price']->format(), 'tax' => $totals['tax']->format(),
-        'total' => $totals['total']->format(), 'balance' => $totals['balance']->format(), 'link' => $payLink($client)]);
-    $_SESSION['flash_notice'] = 'Invoice ' . (string) $client['invoice_no'] . '.' . $sent . ' Pay link: ' . $payLink($client);
+        'total' => $totals['total']->format(), 'balance' => $totals['balance']->format(), 'link' => $payLink($client)], [[$file, $pdf]], $to);
+    $ok = str_starts_with($sent, ' Emailed');
+    $ok && $audit('onprem_client.invoice_emailed', 'onprem_clients', $clientId, null, ['invoice_no' => $client['invoice_no'], 'to' => $to ?: $client['email']], 'licence invoice emailed');
+    $_SESSION[$ok ? 'flash_notice' : 'flash_problem'] = 'Invoice ' . (string) $client['invoice_no'] . ($ok ? ' (PDF).' . $sent : ' NOT emailed' . $sent);
     header('Location: ?r=onprem-invoice&client=' . $clientId);
     exit;
 }

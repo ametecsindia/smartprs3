@@ -59,7 +59,7 @@ final class PlatformMail
      * @param array<string, string> $lines label => value, printed as a small table under the text
      * @return array{ok: bool, why: string}
      */
-    public function send(array $to, string $subject, string $text, array $lines = []): array
+    public function send(array $to, string $subject, string $text, array $lines = [], array $attachments = []): array
     {
         if (!$this->ready()) {
             return ['ok' => false, 'why' => 'The platform mailbox is not set up (SaaS Platform → Platform Email (SMTP)).'];
@@ -86,6 +86,6 @@ final class PlatformMail
             . ($rows === '' ? '' : '<table style="margin-top:12px;border-collapse:collapse">' . $rows . '</table>')
             . '<p style="margin-top:18px;color:#94a3b8;font-size:12px">SmartPRS by Ametecs India Pvt. Ltd.</p></div>';
 
-        return (new Smtp())->send($s, $to, [], $subject, $plain, $html);
+        return (new Smtp())->send($s, $to, [], $subject, $plain, $html, 20 + (int) (array_sum(array_map(static fn ($a): int => strlen((string) $a[1]), $attachments)) / 200000), $attachments);
     }
 }

@@ -578,6 +578,38 @@ final class LicenceAuthority
             'balance' => $balance->isNegative() ? \SmartPRS\Platform\Support\Money::zero() : $balance, 'mode' => $gst['mode']];
     }
 
+    /**
+     * THE LICENCE TAX INVOICE AS A .pdf (owner, 13 Nov 2026: "it should be PDF" — SmartPRS 2 attached its invoice PDF).
+     * Same content as the invoice screen; written by TablePdf, no library. Seller from config/gst.json.
+     */
+    public static function invoicePdf(array $client, SaasPlatform $saas): string
+    {
+        $seller = (array) ($saas->gst()['seller'] ?? []);
+        $price = Amount::of($client['price'] ?? '0');
+        $tax = $saas->tax($price, (string) ($client['state'] ?? ''));
+        $t = self::totals($client, $saas);
+        $date = substr((string) ($client['invoice_date'] ?? '') ?: date('Y-m-d'), 0, 10);
+        $rows = [['SmartPRS on-premise licence' . (trim((string) ($client['employee_band'] ?? '')) !== '' ? ' — ' . $client['employee_band'] . ' employees' : '')
+            . ((int) ($client['seats'] ?? 0) > 0 ? ' (cap ' . (int) $client['seats'] . ')' : '') . ', perpetual, with '
+            . ((int) ($client['licence_term_months'] ?? 12) ?: 12) . " months' updates & support (SAC 997331)", $price->format()]];
+
+        if ($tax['mode'] === 'CGST+SGST') {
+            $rows[] = ['CGST ' . ($tax['rate'] / 2) . '%', $tax['cgst']->format()];
+            $rows[] = ['SGST ' . ($tax['rate'] / 2) . '%', $tax['sgst']->format()];
+        } else {
+            $rows[] = ['IGST ' . $tax['rate'] . '%', $tax['igst']->format()];
+        }
+
+        array_push($rows, ['TOTAL', $tax['total']->format()], ['Paid', Amount::of($client['paid_total'] ?? '0')->format()], ['BALANCE DUE', $t['balance']->format()],
+            ['Annual maintenance (AMC) after the first term: ' . (int) ($client['amc_percent'] ?? 18) . '% of the licence price per year. Computer-generated invoice.', '']);
+
+        return TablePdf::render('TAX INVOICE ' . (string) $client['invoice_no'] . '  ·  ' . date('d-m-Y', (int) strtotime($date)),
+            trim((string) ($seller['name'] ?? '')) . (trim((string) ($seller['gstin'] ?? '')) !== '' ? ' (GSTIN ' . $seller['gstin'] . ')' : '')
+            . '   |   Bill to: ' . (string) $client['company'] . (trim((string) ($client['state'] ?? '')) !== '' ? ', ' . $client['state'] : '')
+            . (trim((string) ($client['gstin'] ?? '')) !== '' ? ' (GSTIN ' . $client['gstin'] . ')' : ' (unregistered)'),
+            ['Description', 'Amount'], $rows, [1]);
+    }
+
     /** The licence end date the Super Admin chose: a fixed date, else N months, else one year. */
     public static function resolveExpiry(array $client): string
     {
