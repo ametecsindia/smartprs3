@@ -94,6 +94,85 @@ final class Licensing
     }
 
     /** Whole days from one date to another; negative once it has passed. */
+    /**
+     * CLOUD CAP (SmartPRS 2 SubscriptionService::seatUsage / companyUsage): the largest `seats` or
+     * `companies` on a live subscription; null = no limit on record (no subscription, or 0).
+     *
+     * @param list<array<string, mixed>> $subscriptions
+     * @param list<string> $live statuses that count (config/plans.json subscription_live)
+     */
+    public static function cloudLimit(array $subscriptions, array $live, string $field): ?int
+    {
+        $cap = null;
+
+        foreach ($subscriptions as $s) {
+            if (in_array((string) ($s['status'] ?? ''), $live, true) && (int) ($s[$field] ?? 0) > 0) {
+                $cap = max($cap ?? 0, (int) $s[$field]);
+            }
+        }
+
+        return $cap;
+    }
+
+    /**
+     * SmartPRS 2's lifecycle: active up to the period end, grace for $graceDays after it,
+     * then locked; suspended or cancelled is locked at once. none = no subscription on record.
+     *
+     * @param list<array<string, mixed>> $subscriptions
+     */
+    public static function lifecycle(array $subscriptions, string $today, int $graceDays): string
+    {
+        $sub = self::latest($subscriptions);
+        $end = (string) ($sub['current_period_end'] ?? '');
+
+        if ($sub === null || $end === '') {
+            return 'none';
+        }
+
+        if (in_array((string) ($sub['status'] ?? ''), ['cancelled', 'suspended'], true)) {
+            return 'locked';
+        }
+
+        if ($today <= $end) {
+            return 'active';
+        }
+
+        return $today <= date('Y-m-d', (int) strtotime($end . ' +' . $graceDays . ' days')) ? 'grace' : 'locked';
+    }
+
+    /**
+     * Which expiry alert is due today, if any: expiry-N on each of $days before the end
+     * (SmartPRS 2: 15, 7, 3, 1, 0), and grace every day of the grace period.
+     *
+     * @param list<array<string, mixed>> $subscriptions
+     * @param list<int> $days
+     */
+    public static function expiryAlert(array $subscriptions, string $today, int $graceDays, array $days): ?string
+    {
+        $state = self::lifecycle($subscriptions, $today, $graceDays);
+
+        if ($state === 'grace') {
+            return 'grace';
+        }
+
+        if ($state !== 'active') {
+            return null;
+        }
+
+        $left = self::daysBetween($today, (string) self::latest($subscriptions)['current_period_end']);
+
+        return in_array($left, array_map('intval', $days), true) ? 'expiry-' . $left : null;
+    }
+
+    /** @param list<array<string, mixed>> $subscriptions */
+    private static function latest(array $subscriptions): ?array
+    {
+        usort($subscriptions, static fn (array $a, array $b): int
+            => strcmp((string) ($b['current_period_end'] ?? ''), (string) ($a['current_period_end'] ?? '')));
+
+        return $subscriptions[0] ?? null;
+    }
+
     public static function daysBetween(string $from, string $to): int
     {
         $a = new \DateTimeImmutable(substr($from, 0, 10));

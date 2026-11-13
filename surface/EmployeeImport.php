@@ -516,7 +516,7 @@ final class EmployeeImport
      *
      * @return array{ok: bool, why: string, created: int, updated: int, skipped: int, errors: int, codes: list<string>}
      */
-    public function commit(string $token, string $by): array
+    public function commit(string $token, string $by, ?int $room = null): array
     {
         $job = null;
 
@@ -541,6 +541,16 @@ final class EmployeeImport
         }
 
         $parse = $this->parse((string) file_get_contents($path), (string) $job['dup_mode']);
+
+        // THE SEAT CAP (cloud subscription or on-prem licence): $room = how many more employees this
+        // workspace may add; a file that would go past it writes nothing (all or nothing).
+        $adding = count(array_filter($parse['rows'], static fn (array $r): bool => $r['action'] === 'create' && $r['problems'] === []));
+
+        if ($room !== null && $adding > $room) {
+            return ['ok' => false, 'why' => "Not imported — this file adds {$adding} employee(s) but only {$room} seat(s) are left on your plan. "
+                . 'Mark leavers Inactive, or ask Ametecs for a larger plan.', 'created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0, 'codes' => []];
+        }
+
         $created = $updated = $skipped = 0;
         $codes = [];
 

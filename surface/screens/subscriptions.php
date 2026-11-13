@@ -18,6 +18,7 @@ $editing = isset($_GET['edit']) ? $platform->find('subscriptions', (string) $_GE
 $v = static fn (string $k): string => (string) ($editing[$k] ?? '');
 $today = date('Y-m-d');
 $live = (array) $declared['subscription_live'];
+$grace = (int) ($declared['subscription_grace_days'] ?? 7);
 ?>
 <div class="page-header"><div><h2>Subscriptions</h2>
   <p><?= count($rows) ?> subscription(s), soonest period end first. Renew extends the period by the cycle's months and marks it active; Cancel keeps the row and closes it.</p></div>
@@ -41,8 +42,8 @@ $live = (array) $declared['subscription_live'];
 <?php endif; ?>
 
 <div class="card" style="padding:0"><div class="table-wrap"><table>
-  <thead><tr><th>Tenant</th><th>Plan</th><th>Seats</th><th>Cycle</th><th>Amount / cycle</th><th>Period end</th><th>Next renewal</th><th>Status</th><th></th></tr></thead><tbody>
-<?php if ($rows === []): ?><tr><td colspan="9" class="note">No subscriptions yet.</td></tr><?php endif; ?>
+  <thead><tr><th>Tenant</th><th>Plan</th><th>Seats</th><th>Cycle</th><th>Amount / cycle</th><th>Period end</th><th>Next renewal</th><th>Status</th><th title="Active until the period end, then grace for the grace days (works with a warning), then locked (only the admin may sign in, to renew)">Access</th><th></th></tr></thead><tbody>
+<?php if ($rows === []): ?><tr><td colspan="10" class="note">No subscriptions yet.</td></tr><?php endif; ?>
 <?php foreach ($rows as $s): $st = (string) ($s['status'] ?? ''); $end = (string) ($s['current_period_end'] ?? ''); $plan = $plans[(string) ($s['plan_id'] ?? '')] ?? null; ?>
   <tr>
     <td><b><?= e($tenants[(string) ($s['tenant_id'] ?? '')] ?? ('Tenant #' . (string) $s['tenant_id'])) ?></b></td>
@@ -53,6 +54,8 @@ $live = (array) $declared['subscription_live'];
     <td class="note" style="<?= $end !== '' && $end < $today && in_array($st, $live, true) ? 'color:#dc2626;font-weight:700' : '' ?>"><?= e($end ?: '—') ?><?php if ($end !== ''): ?><div style="font-size:11px"><?= SmartPRS\Surface\Licensing::daysBetween($today, $end) ?> days</div><?php endif; ?></td>
     <td class="note"><?= e((string) ($s['next_renewal'] ?? '') ?: '—') ?></td>
     <td><span class="badge badge-<?= $st === 'active' ? 'green' : ($st === 'trial' ? 'amber' : ($st === 'past due' ? 'red' : 'gray')) ?>"><?= e($st) ?></span></td>
+    <?php $lc = SmartPRS\Surface\Licensing::lifecycle([$s], $today, $grace); ?>
+    <td><span class="badge badge-<?= $lc === 'active' ? 'green' : ($lc === 'grace' ? 'amber' : ($lc === 'locked' ? 'red' : 'gray')) ?>"><?= e($lc) ?></span></td>
     <td style="white-space:nowrap"><a class="btn btn-sm btn-outline" href="?r=subscriptions&edit=<?= e((string) $s['id']) ?>#form">Edit</a>
 <?php if (in_array($st, $live, true) || $st === 'expired'): ?>
       <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="subscription"><input type="hidden" name="op" value="renew"><input type="hidden" name="id" value="<?= e((string) $s['id']) ?>"><button class="btn btn-sm btn-primary" type="submit">Renew</button></form>

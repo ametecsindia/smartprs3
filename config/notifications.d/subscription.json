@@ -1,0 +1,24 @@
+{
+ "events": {
+  "subscription.expiring": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "Your SmartPRS subscription ends {when}",
+   "body": "Your {plan} subscription ends on {end}. Renew from Administration → My Subscription to keep everyone signed in.",
+   "audience": "administrator",
+   "audience_note": "The workspace's administrators — they are the ones who renew."
+  },
+  "subscription.grace": {
+   "channels": [
+    "email",
+    "in_app"
+   ],
+   "title": "Your SmartPRS subscription has ended — {days} grace day(s) left",
+   "body": "Your {plan} subscription ended on {end}. The workspace locks after {grace_end}; renew from Administration → My Subscription.",
+   "audience": "administrator",
+   "audience_note": "The workspace's administrators — they are the ones who renew."
+  }
+ }
+}

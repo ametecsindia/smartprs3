@@ -25,6 +25,10 @@ $signInLink = static fn (array $t): string => trim((string) ($t['custom_domain']
     ? 'https://' . trim((string) $t['custom_domain']) . (trim((string) ($t['subdomain'] ?? '')) !== '' ? '/c/' . $t['subdomain'] : '')
     : (trim((string) ($t['subdomain'] ?? '')) !== '' ? $linkBase . '/c/' . $t['subdomain'] : '');
 $editAdmins = $editing === null ? [] : ($adminsOf[(string) $editing['id']] ?? []);
+// ACCESS (owner, 13 Nov 2026 — SmartPRS 2 lifecycle): active / grace / locked from each tenant's subscriptions.
+$subsOf = [];
+foreach ($platform->all('subscriptions') as $sx) { $subsOf[(string) ($sx['tenant_id'] ?? '')][] = $sx; }
+$graceDays = (int) ($saas->declared()['subscription_grace_days'] ?? 7);
 ?>
 <div class="page-header"><div><h2>Tenants</h2>
   <p><?= count($rows) ?> tenant(s). Each row is a customer whose whole HR runs here — plan, seats, GST state, status. The GST state decides CGST+SGST or IGST on their invoices.</p></div>
@@ -71,7 +75,8 @@ $editAdmins = $editing === null ? [] : ($adminsOf[(string) $editing['id']] ?? []
     <td><?= $sub === null ? '—' : (int) ($sub['seats'] ?? 0) ?></td>
     <td><?= (int) $t['employees'] ?></td>
     <td><?= e((string) ($t['state'] ?? '') ?: '—') ?></td>
-    <td class="note"><?= e((string) ($sub['next_renewal'] ?? $sub['current_period_end'] ?? '') ?: '—') ?></td>
+    <td class="note"><?= e((string) ($sub['next_renewal'] ?? $sub['current_period_end'] ?? '') ?: '—') ?>
+      <?php $lc = SmartPRS\Surface\Licensing::lifecycle($subsOf[(string) $t['id']] ?? [], date('Y-m-d'), $graceDays); if ($lc !== 'none'): ?><div><span class="badge badge-<?= $lc === 'active' ? 'green' : ($lc === 'grace' ? 'amber' : 'red') ?>"><?= e($lc) ?></span></div><?php endif; ?></td>
     <td><span class="badge badge-<?= $st === 'active' ? 'green' : ($st === 'suspended' || $st === 'closed' ? 'red' : 'amber') ?>"><?= e($st) ?></span></td>
     <td style="white-space:nowrap"><a class="btn btn-sm btn-outline" href="?r=tenants&edit=<?= e((string) $t['id']) ?>#form">Edit</a>
 <?php if (in_array($st, ['active', 'suspended'], true)): ?>

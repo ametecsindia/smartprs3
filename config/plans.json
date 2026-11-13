@@ -85,6 +85,8 @@
   ],
   "licence_expiring_days": 30,
   "subscription_grace_days": 7,
+  "subscription_alert_days": [15, 7, 3, 1, 0],
+  "subscription_alert_note": "SmartPRS 2 billing:alerts parity (owner, 13 Nov 2026): the workspace's administrators are told on each of these days before the subscription ends, and every day of the grace period (in-app bell and email).",
   "onprem": {
     "editions": [
       "Full"

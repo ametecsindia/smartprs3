@@ -489,6 +489,24 @@ $assistant = new Assistant(__DIR__ . '/../config/assistant.json');
 $selfOnboarding = new SelfOnboarding($store, __DIR__ . '/../config/self-onboarding.json');
 $onboarding = new Onboarding($store, __DIR__ . '/../config/onboarding.json', $customisation);
 $bgv = new Bgv($store, __DIR__ . '/../config/bgv.json');
+// ROOM LEFT ON THE PLAN (owner, 13 Nov 2026 — SmartPRS 2 SubscriptionService::canAddEmployees / canAddCompany):
+// how many more employees (or companies) this workspace may add; null = no limit on record. Employees: the
+// on-prem licence's seats, else the cloud subscription's; companies: the cloud subscription's.
+$roomFor = static function (string $what) use ($licence, $platform, $tenantId, $store): ?int {
+    $live = (array) (json_decode((string) @file_get_contents(__DIR__ . '/../config/plans.json'), true)['subscription_live'] ?? []);
+    $subs = $tenantId === '' || $licence->isOnPrem() ? [] : $platform->forTenant($tenantId)->all('subscriptions');
+
+    if ($what === 'companies') {
+        $cap = SmartPRS\Surface\Licensing::cloudLimit($subs, $live, 'companies');
+        $used = count(liveRows($store, 'companies'));
+    } else {
+        $cap = $licence->seatLimit() ?? SmartPRS\Surface\Licensing::cloudLimit($subs, $live, 'seats');
+        $used = count(array_filter(liveRows($store, 'employees'), static fn (array $e): bool
+            => !in_array(strtolower(trim((string) ($e['status'] ?? ''))), SmartPRS\Surface\Licence::SEAT_FREE, true)));
+    }
+
+    return $cap === null ? null : max(0, $cap - $used);
+};
 $workflowCustomisation = new WorkflowCustomisation($customisation);
 $requests = new Requests($store, __DIR__ . '/../config/workflows.json', $workflowCustomisation);
 $letters = new Letters($store, __DIR__ . '/../config/letters.json', $customisation);
@@ -6867,6 +6885,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $problem = 'The employee needs its real code.';
                         } elseif (employmentIdFor($store, $soCode) !== null) {
                             $problem = "Code {$soCode} is already an employee.";
+                        } elseif ($roomFor('employees') === 0) {
+                            $problem = 'Not saved — every seat on your plan is in use. Mark leavers Inactive, or ask Ametecs for a larger plan.';
                         } else {
                             $soDoj = post('doj') !== '' ? post('doj') : (($soColumns['doj'] ?? '') !== '' ? (string) $soColumns['doj'] : date('Y-m-d'));
                             $soNew = $store->put('employees', $soColumns + [
@@ -7547,7 +7567,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         . ($previewed['parse']['unknown'] === [] ? '' : ' Columns nobody captures, ignored: '
                             . implode(', ', $previewed['parse']['unknown']) . '.');
                 } elseif ($action === 'import-commit') {
-                    $committed = $employeeImport->commit(post('token'), (string) $session->user()['email']);
+                    $committed = $employeeImport->commit(post('token'), (string) $session->user()['email'], $roomFor('employees'));
 
                     if ($committed['ok']) {
                         foreach ($committed['codes'] as $newCode) {
@@ -8880,6 +8900,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // the first.
             $problem = 'Denied: ' . $access->decide((string) $session->user()['role'],
                 $modules->permission($module, 'edit'))->summary;
+        } elseif ((string) ($module['table'] ?? '') === 'companies' && post('id') === '' && $roomFor('companies') === 0) {
+            $problem = 'Not saved — your subscription covers ' . count(liveRows($store, 'companies')) . ' company(ies) and all are in use. Ask Ametecs for a larger plan.';
         } else {
             // THE TYPED ID WINS, and it is resolved HERE rather than by naming two
             // controls the same thing and hoping the browser's order holds. A
@@ -11753,6 +11775,57 @@ if ($session->isSignedIn() && $tenantId !== '') {
                 => in_array(strtolower(trim((string) ($e['status'] ?? 'active'))), ['active', ''], true))), $notifications, date('Y-m-d'));
         } catch (\Throwable $tdsX) {
             error_log('TDS reminders not sent today: ' . $tdsX->getMessage()); // retried tomorrow; never blocks the page
+        }
+    }
+}
+
+// SUBSCRIPTION EXPIRY ALERTS (owner, 13 Nov 2026 — SmartPRS 2 billing:alerts): the administrators hear on each of
+// config/plans.json subscription_alert_days before the end, and every day of the grace period — on the bell and by
+// email from the platform mail. Once a day per tenant, on any signed-in page; deduped per period end and alert.
+if ($session->isSignedIn() && $tenantId !== '' && !$licence->isOnPrem()) {
+    $saMark = __DIR__ . '/../storage/subscription-alerts-' . $tenantId . '.txt';
+
+    if (!is_file($saMark) || trim((string) @file_get_contents($saMark)) !== date('Y-m-d')) {
+        @file_put_contents($saMark, date('Y-m-d'));
+
+        try {
+            $saCfg = (array) json_decode((string) @file_get_contents(__DIR__ . '/../config/plans.json'), true);
+            $saGrace = (int) ($saCfg['subscription_grace_days'] ?? 7);
+            $saSubs = $platform->forTenant($tenantId)->all('subscriptions');
+            $saKind = SmartPRS\Surface\Licensing::expiryAlert($saSubs, date('Y-m-d'), $saGrace, (array) ($saCfg['subscription_alert_days'] ?? [15, 7, 3, 1, 0]));
+
+            if ($saKind !== null) {
+                $saSub = SmartPRS\Surface\Licensing::subscription($saSubs, $platform->all('plans'), date('Y-m-d'), 0);
+                $saEnd = (string) $saSub['period_end'];
+                $saGraceEnd = date('Y-m-d', (int) strtotime($saEnd . ' +' . $saGrace . ' days'));
+                $saLeft = (int) $saSub['days_left'];
+                $saValues = ['plan' => (string) $saSub['plan'], 'end' => SmartPRS\Surface\Dates::dmy($saEnd),
+                    'when' => $saLeft === 0 ? 'today' : ($saLeft === 1 ? 'tomorrow' : 'in ' . $saLeft . ' days'),
+                    'grace_end' => SmartPRS\Surface\Dates::dmy($saGraceEnd), 'days' => (string) SmartPRS\Surface\Licensing::daysBetween(date('Y-m-d'), $saGraceEnd)];
+                $saEvent = $saKind === 'grace' ? 'subscription.grace' : 'subscription.expiring';
+                $saNew = $notifications->queue($saEvent, SmartPRS\Surface\Notifications::ROLE_PREFIX . 'administrator',
+                    $saEvent . ':' . $saEnd . ':' . $saKind . ($saKind === 'grace' ? ':' . date('Y-m-d') : ''), $saValues);
+
+                if ($saNew) {
+                    $saMail = new SmartPRS\Surface\PlatformMail(new SmartPRS\Surface\PlatformSettings($platform), __DIR__ . '/../.env');
+                    $saTo = [];
+
+                    foreach ($platform->all('users') as $saU) {
+                        if ((string) ($saU['tenant_id'] ?? '') === $tenantId && (string) ($saU['role'] ?? $saU['status'] ?? '') === 'administrator'
+                            && trim((string) ($saU['disabled_at'] ?? '')) === '' && filter_var((string) ($saU['email'] ?? ''), FILTER_VALIDATE_EMAIL)) {
+                            $saTo[] = (string) $saU['email'];
+                        }
+                    }
+
+                    $saDecl = (array) ($notifications->events()[$saEvent] ?? []);
+                    $saOut = $saTo === [] || !$saMail->ready() ? ['ok' => false, 'why' => 'no administrator email or platform mail not set up']
+                        : $saMail->send($saTo, strtr((string) ($saDecl['title'] ?? ''), array_combine(array_map(static fn ($k) => '{' . $k . '}', array_keys($saValues)), $saValues)),
+                            strtr((string) ($saDecl['body'] ?? ''), array_combine(array_map(static fn ($k) => '{' . $k . '}', array_keys($saValues)), $saValues)));
+                    $audit('subscription.alert', 'subscription', $saEnd, null, ['kind' => $saKind, 'emailed' => $saOut['ok'] ? implode(', ', $saTo) : ''], $saOut['ok'] ? 'sent' : (string) $saOut['why']);
+                }
+            }
+        } catch (\Throwable $saX) {
+            error_log('Subscription alert not sent today: ' . $saX->getMessage()); // retried tomorrow; never blocks the page
         }
     }
 }
