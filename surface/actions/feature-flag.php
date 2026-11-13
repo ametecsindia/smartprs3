@@ -43,6 +43,6 @@ if ($existing !== null) {
 $saved = $platform->put('feature_flags', $row);
 $audit('feature_flag.' . ($op === 'clear' ? 'cleared' : $value), 'feature_flags', (string) $saved['id'],
     $existing === null ? null : ['value' => $existing['value']], ['value' => $value], $tenant === '' ? 'global' : 'tenant ' . $tenant);
-$_SESSION['flash_notice'] = $key . ($op === 'clear' ? ' now follows global' : ' is ' . $value) . ($tenant === '' ? ' globally.' : ' for that tenant.');
-header('Location: ?r=feature-flags');
+$_SESSION['flash_notice'] = $key . ($op === 'clear' ? ' now follows the all-clients setting' : ' is ' . $value) . ($tenant === '' ? ' for all clients.' : ' for that client.');
+header('Location: ?r=feature-flags' . (trim(post('tenant_id')) !== '' ? '&t=' . rawurlencode(trim(post('tenant_id'))) : ''));
 exit;

@@ -590,7 +590,7 @@ final class AttendanceReport
                     }
 
                     foreach ($drill['unpaired'] as $up) {
-                        $parts[] = $up['at'] . ' ' . $up['direction'] . ' (unpaired)';
+                        $parts[] = $up['at'] . ' ' . $up['direction'] . ($up['direction'] === 'in' ? ' (not punched out)' : ' (not punched in)');
                     }
 
                     $logs = implode(' · ', $parts);

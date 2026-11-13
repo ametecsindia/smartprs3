@@ -11910,7 +11910,7 @@ if (($_GET['r'] ?? '') === 'day-log' && $session->isSignedIn()) {
   <tr style="color:var(--amber,#b54708)"><td>&mdash;</td>
     <td><?= $fU['direction'] === 'in' ? e($fU['at']) : '&mdash;' ?></td>
     <td><?= $fU['direction'] === 'out' ? e($fU['at']) : '&mdash;' ?></td>
-    <td class="n" colspan="2">unpaired</td>
+    <td class="n" colspan="2"><?= (string) ($fU['direction'] ?? '') === 'in' ? 'Not punched out' : 'Not punched in' ?></td>
     <td class="note"><?= e($fU['source']) ?></td></tr>
 <?php endforeach; ?>
 <?php // PUNCHES THIS SHIFT'S WINDOW DOES NOT COVER. Listed, never counted: they
@@ -25568,7 +25568,7 @@ boot();
       </tbody></table></div>
 <?php endif; ?>
 <?php if ($drill['unpaired'] !== []): ?>
-    <p class="problem">Unpaired: <?php foreach ($drill['unpaired'] as $up): ?><code><?= e($up['direction']) ?> <?= e($up['at']) ?> (<?= e($up['source']) ?>)</code> <?php endforeach; ?>
+    <p class="problem">Missing punch (an IN with no OUT, or an OUT with no IN): <?php foreach ($drill['unpaired'] as $up): ?><code><?= e($up['direction']) ?> <?= e($up['at']) ?> (<?= e($up['source']) ?>)</code> <?php endforeach; ?>
       &mdash; <a href="?r=attendance&amp;id=<?= e((string) (employmentIdFor($store, $mCode) ?? '')) ?>">regularise</a></p>
 <?php endif; ?>
     <details><summary class="note">How this day was settled</summary><pre class="note" style="white-space:pre-wrap"><?= e((string) $drill['trace']) ?></pre></details>
@@ -25664,7 +25664,7 @@ boot();
               // a budget sees the plain amber "late Nm" chip and an
               // unhighlighted break, exactly as before this existed. ?>
 <?php elseif ($c === 'status'): ?>
-        <td><?= e($dr['status']) ?><?= $dr['late_minutes'] > 0 ? ' <span class="badge badge-' . e($dr['late_tier_badge'] ?? 'amber') . '">late ' . e(AttendanceReport::hm((int) $dr['late_minutes'])) . '</span>' : '' ?><?= $dr['needs_regularisation'] ? ' <span class="badge badge-amber">unpaired</span>' : '' ?></td>
+        <td><?= e($dr['status']) ?><?= $dr['late_minutes'] > 0 ? ' <span class="badge badge-' . e($dr['late_tier_badge'] ?? 'amber') . '">late ' . e(AttendanceReport::hm((int) $dr['late_minutes'])) . '</span>' : '' ?><?= $dr['needs_regularisation'] ? ' <span class="badge badge-amber">' . ((int) $dr['in_count'] >= (int) $dr['out_count'] ? 'Not punched out' : 'Not punched in') . '</span>' : '' ?></td>
 <?php elseif ($c === 'logs'): ?>
         <?php // THE PUNCHES, AS A BUTTON RATHER THAN A WALL OF TEXT. This column
               // printed "09:02 in · 13:31 out · 14:06 in · 18:44 out" inline, which
@@ -30732,7 +30732,7 @@ boot();
         <td><?php
           $flags = [];
           if ($d->needsRegularisation()) { $flags[] = 'needs regularisation'; }
-          if ($d->unpaired !== []) { $flags[] = count($d->unpaired) . ' unpaired'; }
+          if ($d->unpaired !== []) { $flags[] = count($d->unpaired) . ' missing punch(es)'; }
           if ($d->outsideWindow !== []) { $flags[] = count($d->outsideWindow) . ' outside window'; }
           // FLAG_FOR_REVIEW actions the rules emitted, beside the settlement's
           // own flags. They are different questions — the settlement's are
@@ -30751,7 +30751,7 @@ boot();
     <p class="note" style="padding:14px 22px 18px;margin:0">Nothing above is stored. Every figure is
        derived from the raw punches on read, so
        a corrected punch changes the payslip without anyone remembering to re-run a job — and an
-       out-punch that never arrived shows as <b>unpaired</b> rather than as a short day.
+       out-punch that never arrived shows as <b>Not punched out</b> rather than as a short day.
        The <b>Status</b> column is not code: it comes from the rules published in
        <code>config/attendance-rules.json</code>, evaluated by the platform rule engine. Hover a
        status for the rule's own description, or open the working below for the full decision.</p>
