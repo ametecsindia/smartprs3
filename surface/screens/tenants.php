@@ -64,7 +64,7 @@ $graceDays = (int) ($saas->declared()['subscription_grace_days'] ?? 7);
 <?php endif; ?>
 
 <div class="card" style="padding:0"><div class="table-wrap"><table>
-  <thead><tr><th>Code</th><th>Tenant</th><th>Admin login</th><th>Plan</th><th>Seats</th><th>Employees</th><th>State</th><th>Renewal</th><th>Status</th><th></th></tr></thead><tbody>
+  <thead><tr><th>Code</th><th>Tenant</th><th>Admin login</th><th>Plan</th><th>Seats (used / licensed)</th><th>Employees</th><th>State</th><th>Renewal</th><th>Status</th><th></th></tr></thead><tbody>
 <?php if ($rows === []): ?><tr><td colspan="10" class="note">No tenants yet.</td></tr><?php endif; ?>
 <?php foreach ($rows as $t): $st = (string) ($t['status_code'] ?? ''); $sub = $t['subscription']; ?>
   <tr>
@@ -72,13 +72,14 @@ $graceDays = (int) ($saas->declared()['subscription_grace_days'] ?? 7);
     <td><b><?= e((string) $t['name']) ?></b><?php if (trim((string) ($t['custom_domain'] ?? '')) !== ''): ?><div class="note" style="font-size:11px"><?= e((string) $t['custom_domain']) ?></div><?php endif; ?><?php if (($tLink = $signInLink($t)) !== ''): ?><div style="font-size:12px"><a href="<?= e($tLink) ?>" target="_blank" rel="noopener"><?= e($tLink) ?></a></div><?php endif; ?></td>
     <td><?= ($adminsOf[(string) $t['id']] ?? []) === [] ? '<span class="badge badge-amber">none yet</span>' : e(implode(', ', $adminsOf[(string) $t['id']])) ?></td>
     <td><?= e((string) $t['plan'] ?: '—') ?></td>
-    <td><?= $sub === null ? '—' : (int) ($sub['seats'] ?? 0) ?></td>
+    <td><?= (int) $t['employees'] ?> / <?= $sub === null ? '<span class="note">no limit</span>' : (int) ($sub['seats'] ?? 0) ?></td>
     <td><?= (int) $t['employees'] ?></td>
     <td><?= e((string) ($t['state'] ?? '') ?: '—') ?></td>
     <td class="note"><?= e((string) ($sub['next_renewal'] ?? $sub['current_period_end'] ?? '') ?: '—') ?>
       <?php $lc = SmartPRS\Surface\Licensing::lifecycle($subsOf[(string) $t['id']] ?? [], date('Y-m-d'), $graceDays); if ($lc !== 'none'): ?><div><span class="badge badge-<?= $lc === 'active' ? 'green' : ($lc === 'grace' ? 'amber' : 'red') ?>"><?= e($lc) ?></span></div><?php endif; ?></td>
     <td><span class="badge badge-<?= $st === 'active' ? 'green' : ($st === 'suspended' || $st === 'closed' ? 'red' : 'amber') ?>"><?= e($st) ?></span></td>
     <td style="white-space:nowrap"><a class="btn btn-sm btn-outline" href="?r=tenants&edit=<?= e((string) $t['id']) ?>#form">Edit</a>
+      <a class="btn btn-sm btn-primary" href="?r=subscriptions&edit=<?= $sub === null || !isset($sub['id']) ? 'new&tenant=' . e((string) $t['id']) : e((string) $sub['id']) ?>#form" title="Seats, companies, valid until, status"><i class="fas fa-id-card"></i> Licence</a>
 <?php if (in_array($st, ['active', 'suspended'], true)): ?>
       <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
         <input type="hidden" name="action" value="tenant"><input type="hidden" name="op" value="<?= $st === 'active' ? 'suspend' : 'reactivate' ?>"><input type="hidden" name="id" value="<?= e((string) $t['id']) ?>">

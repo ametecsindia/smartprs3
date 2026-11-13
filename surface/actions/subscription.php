@@ -28,19 +28,19 @@ if ($op === 'save') {
     $plan = $platform->find('plans', post('plan_id'));
     $tenant = $platform->find('tenants', post('tenant_id'));
 
-    if ($plan === null || $tenant === null) {
-        $_SESSION['flash_problem'] = 'Pick a tenant and a plan that exist.';
+    if ($tenant === null || (post('plan_id') !== '' && $plan === null)) {
+        $_SESSION['flash_problem'] = 'Pick a tenant (and, if any, a plan) that exist.';
         header('Location: ?r=subscriptions&edit=' . ($id === '' ? 'new' : $id));
         exit;
     }
 
     $cycle = array_key_exists(post('cycle'), (array) $declared['cycles']) ? post('cycle') : 'monthly';
     $seats = max(1, (int) post('seats'));
-    $start = preg_match('/^\d{4}-\d{2}-\d{2}$/', post('period_start')) === 1 ? post('period_start') : $today;
-    $end = $before !== null && post('period_start') === '' ? (string) $before['current_period_end'] : $plus($start, $saas->months($cycle));
-    $row = ['tenant_id' => (string) $tenant['id'], 'plan_id' => (string) $plan['id'], 'seats' => $seats,
+    // VALID UNTIL is typed directly (owner, 13 Nov 2026); blank = today + the cycle's months.
+    $end = preg_match('/^\d{4}-\d{2}-\d{2}$/', post('valid_until')) === 1 ? post('valid_until') : $plus($today, $saas->months($cycle));
+    $row = ['tenant_id' => (string) $tenant['id'], 'plan_id' => $plan === null ? null : (string) $plan['id'], 'seats' => $seats,
         'companies' => max(1, (int) post('companies')), 'cycle' => $cycle,
-        'amount' => SmartPRS\Surface\SaasPlatform::monthly($plan, $seats)->multipliedBy($saas->months($cycle))->toDecimalString(),
+        'amount' => $plan === null ? '0' : SmartPRS\Surface\SaasPlatform::monthly($plan, $seats)->multipliedBy($saas->months($cycle))->toDecimalString(),
         'current_period_end' => $end, 'next_renewal' => $end,
         'status' => in_array(post('status'), (array) $declared['subscription_statuses'], true) ? post('status') : 'active'];
 
@@ -50,7 +50,8 @@ if ($op === 'save') {
 
     $saved = $platform->put('subscriptions', $row);
     $audit($before === null ? 'subscription.created' : 'subscription.updated', 'subscriptions', (string) $saved['id'], $before, $row, 'platform staff');
-    $_SESSION['flash_notice'] = 'Subscription for ' . (string) $tenant['name'] . ' saved: ' . SmartPRS\Surface\Amount::of($row['amount'])->format() . ' per ' . $cycle . '.';
+    $_SESSION['flash_notice'] = 'Licence for ' . (string) $tenant['name'] . " saved: {$seats} seat(s), " . $row['companies'] . ' company(ies), valid until '
+        . date('d-m-Y', (int) strtotime($end)) . ($plan === null ? '.' : ' — ' . SmartPRS\Surface\Amount::of($row['amount'])->format() . ' per ' . $cycle . '.');
 } elseif ($op === 'renew' && $before !== null) {
     $plan = $platform->find('plans', (string) $before['plan_id']);
     $months = $saas->months((string) ($before['cycle'] ?? ''));
