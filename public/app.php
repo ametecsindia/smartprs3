@@ -12562,7 +12562,12 @@ $spNavLight = $brandNavOk && (0.299 * hexdec(substr($brandNav, 1, 2)) + 0.587 * 
   // section with the same route stays collapsed like any other.
   $navResolved = false;
 ?>
-<?php foreach ($navigation->forViewer($may, $navBadges, $navFlags) as $section): if (($section['platform_only'] ?? false) === true ? !$isPlatformAdmin : $superConsole) { continue; } ?>
+<?php foreach ($navigation->forViewer($may, $navBadges, $navFlags) as $section): if (($section['platform_only'] ?? false) === true ? !$isPlatformAdmin : $superConsole) { continue; }
+  // ONLY WHAT THIS PERSON MAY OPEN (owner, 13 Nov 2026: "the menu options displayed for the employee should be based on
+  // their role and access permissions", web and app alike): items their role does not grant are left out instead of
+  // shown with a padlock, and a section with nothing left disappears — the same list the app's Home shows.
+  $section['items'] = array_values(array_filter((array) $section['items'], static fn (array $i): bool => (bool) ($i['allowed'] ?? false)));
+  if ($section['items'] === []) { continue; } ?>
 <?php $navActive = ($orphanRouteSection[$rawRoute] ?? null) === (string) $section['key']; foreach ($section['items'] as $item) { $navActive = $navActive || ($navParent !== '' && $navKeyOf($item) === $navParent) || (isset($item['module']) ? ($rawRoute === 'm' && (string) ($_GET['k'] ?? '') === (string) $item['module']) : $rawRoute === (string) ($item['route'] ?? '')); } $navActive = $navActive && !$navResolved; $navResolved = $navResolved || $navActive; ?>
     <div class="nav-section<?= $navActive || $superConsole ? '' : ' collapsed' ?>" data-nav="<?= e((string) $section['key']) ?>">
       <div class="nav-item nav-group" role="button" tabindex="0" title="Expand / collapse" onclick="navToggle(this.parentNode)" onkeydown="if(event.key==='Enter'||event.key===' '){navToggle(this.parentNode);event.preventDefault();}"><i class="fas <?= e((string) ($section['icon'] ?? 'fa-folder')) ?>"></i> <?= e((string) $section['label']) ?><i class="fas fa-chevron-down nav-caret"></i></div>

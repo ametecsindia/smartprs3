@@ -649,8 +649,7 @@ final class Attendance
             // Indian attendance policies is the first step towards a day of loss
             // of pay. It comes from the calendar now, where a customer can
             // change it without a release.
-            $window = new ShiftWindow('GEN', new \DateTimeImmutable($day), $start, $end,
-                graceMinutes: $this->graceOn($employmentId, (string) $day));
+            $window = self::windowFor((string) $day, $start, $end, $this->graceOn($employmentId, (string) $day));
 
             $dayPunchObjects = array_map(
                 static fn (array $p): Punch => new Punch($p['employment_id'],
@@ -679,6 +678,27 @@ final class Attendance
     }
 
     /**
+     * THE WINDOW A DAY'S PUNCHES ARE READ IN (owner, 13 Nov 2026: "the punch … should be considered for attendance … late
+     * login based on first punch for the day"). A day shift (start and end on the same date) takes EVERY punch of its
+     * date — a QR scan at 06:30 or 23:55 is that day's punch, and the first IN decides late login. Before, a fixed window
+     * of 2 h before / 4 h after the shift dropped such punches, so the day showed no First In. A night shift keeps the
+     * standard tolerances, because its punches run into the next date.
+     */
+    public static function windowFor(string $day, \DateTimeImmutable $start, \DateTimeImmutable $end, int $grace): ShiftWindow
+    {
+        if ($start->format('Y-m-d') === $end->format('Y-m-d')) {
+            $midnight = new \DateTimeImmutable("{$day} 00:00:00");
+            $before = intdiv($start->getTimestamp() - $midnight->getTimestamp(), 60);
+            $after = intdiv($midnight->modify('+1 day')->getTimestamp() - $end->getTimestamp() + 59, 60); // ponytail: only this date's punches reach the window
+
+            return new ShiftWindow('GEN', new \DateTimeImmutable($day), $start, $end,
+                openMinutesBefore: max(0, $before), closeMinutesAfter: max(0, $after), graceMinutes: $grace);
+        }
+
+        return new ShiftWindow('GEN', new \DateTimeImmutable($day), $start, $end, graceMinutes: $grace);
+    }
+
+    /**
      * A day this employee has NO punches for, classified by the same rules.
      *
      * `settledDays()` only yields days that have a punch, so the ABSENT rule in
@@ -703,8 +723,7 @@ final class Attendance
             $end = $end->modify('+1 day');
         }
 
-        $window = new ShiftWindow('GEN', new \DateTimeImmutable($day), $start, $end,
-            graceMinutes: $this->graceOn($employmentId, $day));
+        $window = self::windowFor($day, $start, $end, $this->graceOn($employmentId, $day));
         $settlement = DaySettlement::settle($window, $employmentId, []);
 
         return [
