@@ -98,6 +98,8 @@
       "500+"
     ],
     "amc_months": 12,
+    "licence_alert_email": "",
+    "licence_alert_note": "Who is told when a machine other than the bound server uses a licence (SmartPRS 2 alertSalesMismatch). Blank = the platform mailbox's own From address.",
     "licence_statuses": [
       "pending",
       "active",
@@ -106,7 +108,7 @@
     ],
     "expiry_modes": {
       "renew": "On expiry the install stops until a new code is entered",
-      "notify": "On expiry the install keeps running and shows an 'expired' notice"
+      "notify": "On expiry the install stops and shows an 'LC expired' notice (SmartPRS 2: both modes block; notify only changes the message)"
     },
     "payment_modes": [
       "bank transfer",

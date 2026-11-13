@@ -19,6 +19,18 @@ declare(strict_types=1);
 require __DIR__ . '/../surface/partials/endpoint-boot.php';
 
 $authority = new SmartPRS\Surface\LicenceAuthority($platform, $root);
+// ANOTHER MACHINE USED A KEY (SmartPRS 2 alertSalesMismatch): an email to Ametecs, at most once a day per licence.
+$authority->onMismatch(static function (array $lic, string $attempted) use ($platform, $root): void {
+    $mail = new SmartPRS\Surface\PlatformMail(new SmartPRS\Surface\PlatformSettings($platform), $root . '/.env');
+    $to = trim((string) ((json_decode((string) @file_get_contents($root . '/config/plans.json'), true)['onprem']['licence_alert_email'] ?? '')))
+        ?: (string) $mail->config()['from_email'];
+    $company = (string) ($platform->find('onprem_clients', (string) $lic['client_id'])['company'] ?? ('client #' . (string) $lic['client_id']));
+    $to === '' || !$mail->ready() || $mail->send([$to], 'ALERT: SmartPRS licence contacted by a DIFFERENT machine — ' . $company . ' (' . date('d-m-Y') . ')',
+        "Possible licence misuse — {$company}.\n\nA machine OTHER than the bound server tried to validate this licence. This can mean an old PC still running "
+        . "after a machine shift, or a cloned installation.\n\nCompany: {$company}\nBound server: " . ((string) ($lic['fingerprint'] ?? '') ?: '(not bound)')
+        . "\nAttempted machine: " . ($attempted ?: '—') . "\nLast good check-in: " . ((string) ($lic['last_seen_at'] ?? '') ?: '—')
+        . "\n\nAction: Super Admin → On-Prem Clients → this client → History. If genuine (PC replaced), use Shift machine.");
+});
 
 if ((new SmartPRS\Surface\Licence($root))->isOnPrem()) {
     json_out(404, ['ok' => false, 'error' => 'This installation is not a licence server.']);

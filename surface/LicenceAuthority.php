@@ -23,8 +23,61 @@ final class LicenceAuthority
     public const LIVE = ['pending', 'active'];
     private const NEUTRAL = 'Licence not recognised. Please check the key, or contact ' . Licence::CONTACT . '.';
 
+    /** @var (\Closure(array<string, mixed>, string): void)|null told once a day when another machine uses a key */
+    private ?\Closure $onMismatch = null;
+
     public function __construct(private readonly RowStore $platform, private readonly string $root)
     {
+    }
+
+    /** SmartPRS 2 alertSalesMismatch: who to tell when a machine other than the bound server uses a licence. */
+    public function onMismatch(\Closure $tell): self
+    {
+        $this->onMismatch = $tell;
+
+        return $this;
+    }
+
+    /** The fingerprint a re-issued .lic falls back to: the bound one, else the server seat seen last (SmartPRS 2 licFile). */
+    public function knownFingerprint(array $licence): string
+    {
+        $fp = trim((string) ($licence['fingerprint'] ?? ''));
+        $seen = '';
+
+        foreach ($fp !== '' ? [] : $this->platform->all('licence_devices') as $d) {
+            if ((string) $d['licence_id'] === (string) $licence['id'] && (string) $d['status'] === 'active'
+                && (string) ($d['last_seen_at'] ?? '') >= $seen) {
+                $seen = (string) ($d['last_seen_at'] ?? '');
+                $fp = trim((string) (($d['fingerprint'] ?? '') ?: $d['device_uid']));
+            }
+        }
+
+        return $fp;
+    }
+
+    /**
+     * The client emails SmartPRS 2 sends (issueKey, licFile, invoice, payComplete), as [subject, text].
+     *
+     * @param array<string, mixed> $client
+     * @return array{0: string, 1: string}
+     */
+    public static function clientEmail(string $kind, array $client, array $v): array
+    {
+        $who = trim((string) ($client['contact_name'] ?? '')) ?: (string) $client['company'];
+        $help = 'For help, reply to this email.';
+
+        return match ($kind) {
+            'key' => ['Your SmartPRS licence key', "Welcome to SmartPRS, {$who}!\n\nYour licence is ready. Keep this key safe — it activates your installation.\n\n"
+                . "Licence key: {$v['key']}\nValid till: {$v['until']}\n\nActivation: open SmartPRS on your server, sign in as admin, and enter this key on the activation screen.\n\n{$help}"],
+            'paid' => ['Payment received — your SmartPRS licence key', "Payment received with thanks, {$who}!\n\nYour licence is ready. Keep this key safe — it activates your installation.\n\n"
+                . "Licence key: {$v['key']}\nValid till: {$v['until']}\n\nActivation: open SmartPRS on your server, sign in as admin, and enter this key.\n\n{$help}"],
+            'lic' => ['Your SmartPRS licence file (.lic)', "SmartPRS licence file for {$who}.\n\nSave the code below as license.lic (or paste it) on the SmartPRS Activation screen. "
+                . "It works fully offline and is locked to your server.\n\nLicence key: {$v['key']}\nSeats: {$v['seats']}\nValid till: {$v['until']}\n\nLicence code:\n{$v['token']}\n\n{$help}"],
+            'invoice' => ['SmartPRS licence invoice ' . $v['number'] . ' — ' . (string) $client['company'], "Thank you for choosing SmartPRS, {$who}.\n\n"
+                . "Invoice: {$v['number']}\nAmount: {$v['price']} + GST {$v['tax']} = {$v['total']}\nBalance due: {$v['balance']}\n\n"
+                . "View the invoice and pay securely online:\n{$v['link']}\n\nOn full payment your licence key is generated and emailed automatically.\n\n{$help}"],
+            default => throw new \InvalidArgumentException('Unknown licence email ' . $kind),
+        };
     }
 
     // ---------------------------------------------------------------- keys
@@ -266,6 +319,12 @@ final class LicenceAuthority
 
         if ($reason === 'server_mismatch') {
             $this->platform->put('licences', ['id' => $lic['id'], 'last_mismatch_at' => date('Y-m-d H:i:s')]);
+
+            try {
+                $this->onMismatch !== null && ($this->onMismatch)($lic, $attempted);
+            } catch (\Throwable $x) {
+                error_log('Licence mismatch alert not sent: ' . $x->getMessage()); // the refusal itself already stands
+            }
         }
     }
 

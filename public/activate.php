@@ -61,7 +61,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && $lic->isOnPrem()) {
 
 $_SESSION['act_csrf'] ??= bin2hex(random_bytes(16));
 $st = $lic->status();
-$labels = ['none' => 'Not activated', 'ok' => 'Active', 'expired' => 'Expired'];
+// Expired stops the install in both modes (SmartPRS 2 LicenseGate); notify only words it as "LC Expired".
+$labels = ['none' => 'Not activated', 'ok' => 'Active', 'expired' => $st['mode'] === 'notify' ? 'LC Expired — renew to continue' : 'Expired — enter a renewed License Code'];
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Activate SmartPRS</title>

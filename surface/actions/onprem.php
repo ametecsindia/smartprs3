@@ -4,7 +4,7 @@
  *
  *   save-client      add / edit the client (price, GST state, term or fixed expiry, expiry mode, seats)
  *   pay              record a payment (NEFT / UPI / cheque / cash / gateway)
- *   invoice          give the sale an invoice number (shared series with SaaS invoices)
+ *   invoice          give the sale an invoice number (shared series with SaaS invoices) and email it with the pay link
  *   partial          tick / untick "activate on partial payment"
  *   issue            generate the online License Code (SPRS-XXXX-…) — paid in full, or partial ticked
  *   lic              generate a signed, machine-locked .lic file and download it
@@ -39,6 +39,21 @@ $go = static function (string $kind, string $msg, string $to): never {
     exit;
 };
 $isDate = static fn (string $v): bool => preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) === 1;
+// THE CLIENT'S EMAILS (SmartPRS 2: key, .lic and invoice are emailed to the client, fail-soft — the screen still shows them).
+$mailClient = static function (string $kind, array $v) use ($client, $platform): string {
+    $to = trim((string) ($client['email'] ?? ''));
+
+    if ($to === '' || filter_var($to, FILTER_VALIDATE_EMAIL) === false) {
+        return ' (not emailed: the client has no email address)';
+    }
+
+    [$subject, $text] = SmartPRS\Surface\LicenceAuthority::clientEmail($kind, $client, $v);
+    $r = (new SmartPRS\Surface\PlatformMail(new SmartPRS\Surface\PlatformSettings($platform), dirname(__DIR__, 2) . '/.env'))->send([$to], $subject, $text);
+
+    return $r['ok'] ? ' Emailed to ' . $to . '.' : ' (not emailed: ' . $r['why'] . ')';
+};
+$payLink = static fn (array $c): string => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'smartprs.com')
+    . '/licence.php?t=' . rawurlencode((string) ($c['invoice_token'] ?? ''));
 
 if ($op === 'save-client') {
     $id = post('id');
@@ -127,6 +142,17 @@ if ($op === 'invoice') {
         $audit('onprem_client.invoiced', 'onprem_clients', $clientId, null, ['invoice_no' => $saas->invoiceNumber($seq, $today)], 'licence invoice');
     }
 
+    $client = (array) $platform->find('onprem_clients', $clientId);
+
+    if (trim((string) ($client['invoice_token'] ?? '')) === '') {
+        $client['invoice_token'] = bin2hex(random_bytes(16));
+        $platform->put('onprem_clients', ['id' => $clientId, 'invoice_token' => $client['invoice_token']]);
+    }
+
+    // EMAIL THE INVOICE + PAY LINK (SmartPRS 2 invoice()): the public page shows it and takes payment by Razorpay.
+    $sent = $mailClient('invoice', ['number' => (string) $client['invoice_no'], 'price' => $totals['price']->format(), 'tax' => $totals['tax']->format(),
+        'total' => $totals['total']->format(), 'balance' => $totals['balance']->format(), 'link' => $payLink($client)]);
+    $_SESSION['flash_notice'] = 'Invoice ' . (string) $client['invoice_no'] . '.' . $sent . ' Pay link: ' . $payLink($client);
     header('Location: ?r=onprem-invoice&client=' . $clientId);
     exit;
 }
@@ -157,7 +183,8 @@ if ($op === 'issue' || $op === 'lic') {
         $key = SmartPRS\Surface\LicenceAuthority::generateKey();
         $lic = $authority->issue($clientId, $key, $expiry, $mode, $seats ?: null, $key, $by);
         $audit('licence.issued', 'licences', (string) $lic['id'], null, ['key_last4' => $lic['key_last4'], 'amc_expires_on' => $expiry], 'client ' . (string) $client['company']);
-        $go('ok', 'License Code generated for ' . (string) $client['company'] . ' — valid till ' . SmartPRS\Surface\Dates::dmy($expiry) . '. It is shown on the client card (Show key).', $back);
+        $go('ok', 'License Code generated for ' . (string) $client['company'] . ' — valid till ' . SmartPRS\Surface\Dates::dmy($expiry) . '. It is shown on the client card (Show key).'
+            . $mailClient('key', ['key' => $key, 'until' => SmartPRS\Surface\Dates::dmy($expiry)]), $back);
     }
 
     if (!$authority->canSign()) {
@@ -167,7 +194,7 @@ if ($op === 'issue' || $op === 'lic') {
     $fp = trim(post('fingerprint'));
 
     if ($fp === '' && $live !== null) {
-        $fp = trim((string) ($live['fingerprint'] ?? ''));
+        $fp = $authority->knownFingerprint($live);
     }
 
     if ($fp === '') {
@@ -181,6 +208,7 @@ if ($op === 'issue' || $op === 'lic') {
     $platform->put('licences', ['id' => $lic['id'], 'fingerprint' => $fp, 'status' => 'active']);
     $authority->event((string) $lic['id'], 'lic_generated', '.lic for server ' . $fp . ' by ' . $by);
     $audit('licence.lic_generated', 'licences', (string) $lic['id'], null, ['fingerprint' => $fp, 'expires_at' => $expiry, 'seats' => $seats], 'client ' . (string) $client['company']);
+    $mailClient('lic', ['key' => $key, 'seats' => $seats > 0 ? (string) $seats : 'unlimited', 'until' => SmartPRS\Surface\Dates::dmy($expiry), 'token' => $token]);
 
     while (ob_get_level() > 0) {
         ob_end_clean();

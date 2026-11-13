@@ -191,7 +191,10 @@ PEM;
         return $out;
     }
 
-    /** Is the app allowed to run? Always yes off on-prem; notify-mode expiry still runs. */
+    /**
+     * Is the app allowed to run? Always yes off on-prem. An expired licence stops it in BOTH modes, as SmartPRS 2's
+     * LicenseGate does (owner, 13 Nov 2026: "exactly as SmartPRS2") — notify only changes the message shown.
+     */
     public function valid(): bool
     {
         if (!$this->enforced()) {
@@ -200,7 +203,7 @@ PEM;
 
         $s = $this->status();
 
-        return $s['state'] === 'ok' || ($s['state'] === 'expired' && $s['mode'] === 'notify');
+        return $s['state'] === 'ok';
     }
 
     /** The employee cap carried by the licence; null = unlimited or not on-prem. */

@@ -25,17 +25,12 @@ machine fingerprints, talking over HTTP:
 - Super Admin desk: key only when fully paid (price + GST) or "activate on partial" ticked; one live licence per client;
   renew by date / months / term; shift; revoke; delete — same rules as SmartPRS2.
 
-## Differences from SmartPRS2
+## Differences from SmartPRS2 (closed 13-11-2026)
 
-1. **Notify-mode expiry** — SmartPRS2 blocks an expired licence in both modes (notify only changes the message).
-   SmartPRS3 lets a notify-mode install keep running after expiry (config/plans.json says so).
-2. **No alert email to sales** when a different machine uses a key (SmartPRS2 `alertSalesMismatch`).
-3. **No emails to the client** with the key, the .lic, or the invoice + pay link.
-4. **No public pay page** (`/licence/{token}`, Razorpay) and no automatic key on full online payment.
-5. **No in-app updates** — SmartPRS3's check offers an update but gives no download link; updates are applied by IT
-   (deploy/DEPLOY.md). The FAQ and Licence Agreement copied from SmartPRS2 still promise an in-app Updates screen with
-   checksum, backup and rollback.
-6. Re-issuing a .lic falls back to the live licence's bound fingerprint, not (as SmartPRS2 also does) the last active
-   server seat's fingerprint.
-7. Single edition ("full") — SmartPRS2's L1/L2/L3 edition check is gone by design; SPRSX1 offline codes were already
-   retired in SmartPRS2.
+Closed: expired blocks in both modes (notify only words it "LC Expired"); the key, the .lic and the invoice + pay link are
+emailed to the client; the public pay page `/licence.php?t=…` takes the balance by Razorpay and a full payment issues and
+emails the key; a different machine using a key emails Ametecs (`onprem.licence_alert_email`, else the platform mailbox);
+a re-issued .lic falls back to the last-seen active server seat; in-app updates (Releases → Install / Check for update).
+
+Still different by design: single edition ("full"); no PDF attached to the invoice email (the pay page shows the invoice);
+the pay page is `/licence.php?t=…` rather than `/licence/{token}` (no nginx change needed).
