@@ -134,6 +134,25 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
     <div><b>Punches</b><br><?= count($todayRaw) ?></div>
   </div>
 </div>
+<?php // MY ATTENDANCE ON THE PUNCH TAB (owner, 13 Nov 2026): the last 7 days — present, late, approved leave, W.OFF,
+      // holiday — from the same engine as the Attendance Report and payroll, with the full log one tap away.
+if ($ownRow !== null):
+    $paFrom = date('Y-m-d', strtotime('-6 days'));
+    $paCells = (array) (($attendanceReport->muster([$ownRow], $paFrom, date('Y-m-d'), $calendar->shiftStart(), $calendar->shiftEnd(), date('Y-m-d'))['rows'][0] ?? [])['cells'] ?? []);
+    $paLabel = ['PRESENT' => ['Present', 'green'], 'ABSENT' => ['Absent', 'red'], 'HALF_DAY' => ['Half day', 'amber'], 'WEEKLY_OFF' => ['W.OFF', 'gray'],
+        'HOLIDAY' => ['Holiday', 'blue'], 'ON_LEAVE' => ['Leave', 'blue'], 'UNPAID_LEAVE' => ['Unpaid leave', 'amber'], 'NOT_YET' => ['Today', 'gray'], 'NOT_JOINED' => ['—', 'gray']]; ?>
+<div class="card" style="margin-top:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><b style="color:#1F3A5F">My attendance — last 7 days</b>
+    <a class="btn btn-sm btn-outline" href="?r=my-attendance"><i class="fas fa-calendar-check"></i> Full log</a></div>
+<?php foreach (array_reverse($paCells, true) as $paD => $paC): $paL = $paLabel[(string) ($paC['status'] ?? '')] ?? [ucwords(strtolower(str_replace('_', ' ', (string) ($paC['status'] ?? '')))), 'gray']; ?>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--border,#e2e8f0);font-size:13px">
+    <span><b><?= e(SmartPRS\Surface\Dates::dmy((string) $paD)) ?></b> <span class="note"><?= e(date('D', (int) strtotime((string) $paD))) ?></span></span>
+    <span class="note"><?= e(((string) ($paC['first_in'] ?? '') ?: '—') . ' – ' . ((string) ($paC['last_out'] ?? '') ?: '—')) ?><?= (int) ($paC['late_minutes'] ?? 0) > 0 ? ' · late ' . e(SmartPRS\Surface\AttendanceReport::hm((int) $paC['late_minutes'])) : '' ?></span>
+    <span class="badge badge-<?= e($paL[1]) ?>"><?= e($paL[0]) ?></span>
+  </div>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
 <script>
 // Ask the browser for a position once, then submit; denied or slow = submit without.
 (function () {

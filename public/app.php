@@ -18804,7 +18804,7 @@ window.acctMenuToggle = function (ev) {
 <?php if ($employment === null): ?>
   <div class="page-header"><div><h2>Full and final</h2>
     <p>What is owed to somebody who is leaving</p></div>
-    <a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a></div>
+    <?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?></div>
   <div class="card">
 <?php if (!$scope->isBound()): ?>
     <p class="note">This account is not linked to an employee, so there is no record of
@@ -18829,7 +18829,7 @@ window.acctMenuToggle = function (ev) {
         ? 'not settled yet' : 'settled on ' . e(substr((string) $existing['settled_at'], 0, 10)) ?></p></div>
     <div class="actions"><a class="btn btn-outline" href="?r=me&amp;id=<?= e($employment['id']) ?>"><i class="fas fa-id-badge"></i> Employee view</a>
       <a class="btn btn-outline" href="?r=exits"><i class="fas fa-door-open"></i> Exit &amp; FnF</a>
-      <a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a></div>
+      <?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?></div>
   </div>
 <?php // WHO IS BEING SETTLED — the record beside the sums, as SmartPRS 2's Exit & FnF shows it.
       $fnfOrg = static fn (string $k): string => orgValueOf($store, $employment, $k) ?: '—'; ?>
@@ -19005,7 +19005,7 @@ window.acctMenuToggle = function (ev) {
 <?php if ($employment === null): ?>
   <div class="page-header"><div><h2>What an employee sees</h2>
     <p>The read-only self-service view of one employee</p></div>
-    <a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a></div>
+    <?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?></div>
   <div class="card">
     <p class="note">Choose an employee from the <a href="?r=employees">Employees</a> list.</p></div>
 <?php else: ?>
@@ -19014,7 +19014,7 @@ window.acctMenuToggle = function (ev) {
     <div><h2><?= e($employment['name']) ?></h2>
       <p><code><?= e($code) ?></code> &middot; the read-only view, as the person being paid sees
         it</p></div>
-    <a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a>
+    <?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?>
   </div>
   <div class="card">
     <details class="why"><summary>Why this view never recomputes</summary>
@@ -24350,7 +24350,7 @@ boot();
 <?php if ($employment === null): ?>
   <div class="page-header"><div><h2>Leave</h2>
     <p>Balances, policy and requests for one employee</p></div>
-    <div class="actions" style="display:flex;gap:8px"><?= leaveNavButtons($store, $leave, $scope, $may, (string) ($session->user()['role'] ?? ''), 'leave') ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a></div></div>
+    <div class="actions" style="display:flex;gap:8px"><?= leaveNavButtons($store, $leave, $scope, $may, (string) ($session->user()['role'] ?? ''), 'leave') ?><?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?></div></div>
 <?php endif; ?>
 <?php if ($employment === null && $lvPicker && $scope->own() !== null): ?>
   <?php // NOBODY PICKED. Two different nothings, and they must not share a
@@ -24401,7 +24401,7 @@ boot();
     <div><h2>Leave &middot; <?= e($employment['name']) ?></h2>
       <p><code><?= e(Employment::code($employment)) ?></code> &middot; balances computed from the
         ledger, never read from a stored column</p></div>
-    <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-primary" href="#apply-leave"><i class="fas fa-plus"></i> Apply leave</a><?= leaveNavButtons($store, $leave, $scope, $may, (string) ($session->user()['role'] ?? ''), 'leave') ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a></div>
+    <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-primary" href="#apply-leave"><i class="fas fa-plus"></i> Apply leave</a><?= leaveNavButtons($store, $leave, $scope, $may, (string) ($session->user()['role'] ?? ''), 'leave') ?><?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?></div>
   </div>
 
 <?php $lvAvail = leaveAvailability($store, $leave, $policy, $employment); ?>
@@ -31085,7 +31085,7 @@ boot();
 <?php if ($employment === null): ?>
   <div class="page-header"><div><h2>Run payroll</h2>
     <p>One employee, one period, one payslip with its working</p></div>
-    <a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a></div>
+    <?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?></div>
   <div class="card">
     <p class="note">Choose an employee from the <a href="?r=employees">Employees</a> list.</p>
   </div>
@@ -31094,7 +31094,7 @@ boot();
     <div><h2>Run payroll &middot; <?= e($employment['name']) ?></h2>
       <p><code><?= e(Employment::code($employment)) ?></code> &middot; <?= e($from) ?> to
         <?= e($to) ?></p></div>
-    <a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a>
+    <?php if ($may('employee.directory.view')): ?><a class="btn btn-tint navy" href="?r=employees"><i class="fas fa-users"></i> All employees</a><?php endif; ?>
   </div>
   <div class="card">
     <h2>The period</h2>
