@@ -254,16 +254,11 @@ final class Authorisation
             'leave.balance.view', 'leave.balance.view_others',
         ];
 
-        $viewer = [
-            'employee.view', 'attendance.day.view', 'attendance.punch.view', 'ess.attendance.punch',
-            'payroll.structure.view',
-            'leave.request.view', 'leave.request.submit', 'leave.balance.view',
-            // Additive split of `employee.view` — see the administrator
-            // array above for why. The viewer held employee.view before
-            // this, so it holds all five new per-screen codes now.
-            'employee.directory.view', 'employee.probation.view', 'employee.team.view',
-            'employee.transfer.view', 'employee.idcard.view',
-        ];
+        // A LOGIN WITH NO DESIGNATION IS SELF-ONLY (owner, 13 Nov 2026): the same menus as
+        // the Employee/Agent role (config/role-defaults.json), plus punching their own day.
+        // Once a designation is set, that designation's access applies instead; a saved
+        // Roles & Permissions tick for Viewer still wins over this default.
+        $viewer = array_merge(['ess.attendance.punch'], self::defaultsFor('Employee/Agent'));
 
         // AN OWNER-EDITED GRID, LAYERED OVER THE SHIPPED DEFAULT — same shape as
         // Navigation's 'nav:sidebar' override. Missing entirely (nobody has ever
@@ -276,7 +271,6 @@ final class Authorisation
         $administrator = array_values(array_unique(array_merge($administrator, $this->declaredCodes)));
         $manager = array_merge($manager, self::MENU_CODES);
         $managerDefault = $manager; // the reporting-manager tier's shipped grants, reused by config/role-defaults.json `preset`
-        $viewer = array_merge($viewer, self::MENU_CODES);
         $manager = self::withOverride($manager, (array) ($override['manager'] ?? []));
         $viewer = self::withOverride($viewer, (array) ($override['viewer'] ?? []));
 

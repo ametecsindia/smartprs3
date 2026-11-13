@@ -35,7 +35,7 @@ ok(in_array('payroll.run', $codes, true) && in_array('employee.view', $codes, tr
 ok($matrix->state('administrator', 'payroll.run') !== 'none', 'the administrator holds payroll.run, as the guard says');
 same([], array_values(array_filter($codes, static fn (string $c): bool => RoleMatrix::moduleOf($c) === 'payroll' && $matrix->state('manager', $c) !== 'none')),
     'the manager holds nothing in payroll, as Authorisation.php says');
-ok($matrix->state('viewer', 'payroll.structure.view') !== 'none', 'the viewer may see the structure');
+ok($matrix->state('viewer', 'payroll.structure.view') === 'none', 'a login with no designation is self-only: no salary structure (owner, 13 Nov 2026)');
 foreach ($access->roles() as $role) {
     foreach ($codes as $code) {
         if ($matrix->state($role, $code) !== 'none' && !$access->allows($role, $code)) { ok(false, "matrix says {$role} holds {$code} but the decider refuses"); }
