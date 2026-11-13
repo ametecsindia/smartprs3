@@ -16,8 +16,7 @@ one-time server permission step.
 
 | File | What it is |
 |---|---|
-| `smartprs3-<version>.zip` | the application package |
-| `smartprs3-<version>.sig` | Ametecs' signature. Servers refuse a package without a matching signature |
+| `smartprs3-<version>.sprs` | THE release file — the application package and Ametecs' signature together (one file to upload). Servers refuse a package without a matching signature |
 | `smartprs3-<version>.txt` | version, SHA-256, size and notes, for your records |
 
 The package never contains `.env`, `storage/`, `.git`, `mobile/`, `public/uploads/` or `Claude outputs`.
@@ -30,13 +29,12 @@ It is signed with `storage\keys\license_private.pem`, so only the PC that holds 
 ## 2. Publish it on central (smartprs.com/super)
 
 1. **Super Admin → Releases & Updates → New release.**
-2. **Package (.zip)**: choose `smartprs3-<version>.zip` from `C:\SmartPRS3-Releases`.
-   **Signature (.sig)**: choose `smartprs3-<version>.sig`.
+2. **Release file (.sprs)**: choose `smartprs3-<version>.sprs` from `C:\SmartPRS3-Releases` — the only file to pick.
    The version and notes are read from the package. Edit the notes if you like.
 3. **Save.** The server checks the signature; a wrong or damaged file is refused.
 4. **Publish.**
 
-If the upload is refused as too big, copy the `.zip` and `.sig` into `/var/www/client_apps/SmartPRS3/storage/releases/`
+If the upload is refused as too big, copy the `.sprs` into `/var/www/client_apps/SmartPRS3/storage/releases/`
 on the server (WinSCP). Then on New release, pick it under **"…or a package already copied into storage/releases"**.
 
 ---
@@ -96,7 +94,7 @@ sudo find /var/www/client_apps/SmartPRS3 -type d -exec chmod g+s {} +
 sudo usermod -aG www-data ametecsssh
 ```
 
-Also make the upload limits large enough for a package (check the .zip size in `C:\SmartPRS3-Releases`):
+Also make the upload limits large enough for a package (check the .sprs size in `C:\SmartPRS3-Releases`):
 - nginx: `client_max_body_size 200M;` in the smartprs server block, then `sudo systemctl reload nginx`.
 - PHP: `upload_max_filesize = 200M` and `post_max_size = 210M` in `/etc/php/8.3/fpm/php.ini`, then
   `sudo systemctl restart php8.3-fpm`.

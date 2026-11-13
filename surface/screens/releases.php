@@ -29,9 +29,10 @@ $running = (string) ((array) json_decode((string) file_get_contents(__DIR__ . '/
   <form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>">
     <input type="hidden" name="action" value="release"><input type="hidden" name="op" value="save"><input type="hidden" name="id" value="<?= e($v('id')) ?>">
     <div class="row" style="flex-wrap:wrap;gap:10px">
-<?php $relOnServer = array_map('basename', glob(dirname(__DIR__, 2) . '/storage/releases/*.zip') ?: []); rsort($relOnServer, SORT_NATURAL); ?>
-      <div style="flex-basis:100%"><label>Package (.zip) from C:\SmartPRS3-Releases</label><input type="file" name="package" accept=".zip"></div>
-      <div style="flex-basis:100%"><label>Signature (.sig) — the file with the same name</label><input type="file" name="signature" accept=".sig"></div>
+<?php $relOnServer = array_map('basename', array_merge(glob(dirname(__DIR__, 2) . '/storage/releases/*.sprs') ?: [], glob(dirname(__DIR__, 2) . '/storage/releases/*.zip') ?: [])); rsort($relOnServer, SORT_NATURAL); ?>
+      <div style="flex-basis:100%"><label>Release file (.sprs) from C:\SmartPRS3-Releases</label><input type="file" name="package" accept=".sprs,.zip"><span class="note">one file — the package and its signature together</span></div>
+      <details style="flex-basis:100%"><summary class="note" style="cursor:pointer">Older two-file package (.zip + .sig)?</summary>
+        <label style="margin-top:6px">Signature (.sig) — only with an older .zip</label><input type="file" name="signature" accept=".sig"></details>
 <?php if ($relOnServer !== []): ?>
       <div style="flex-basis:100%"><label>…or a package already copied into storage/releases on this server</label><select name="server_file"><option value="">—</option><?php foreach ($relOnServer as $rf): ?><option><?= e($rf) ?></option><?php endforeach; ?></select></div>
 <?php endif; ?>

@@ -39,15 +39,35 @@ if ($op === 'save') {
     $zipTmp = '';
     $sigText = '';
 
+    // ONE FILE (owner, 13 Nov 2026: "why two files … it should cover everything within single file"): make-release.bat now
+    // makes smartprs3-<version>.sprs, which carries the package and its signature together; it is unpacked here.
+    $unbundle = static function (string $path) use ($relBack, $editTo): ?array {
+        $z = new \ZipArchive();
+
+        if ($z->open($path) !== true || $z->locateName('package.zip') === false || $z->locateName('package.sig') === false) {
+            $z->close();
+
+            return null;
+        }
+
+        $inner = tempnam(sys_get_temp_dir(), 'sprs');
+        $ok = $inner !== false && file_put_contents($inner, (string) $z->getFromName('package.zip')) !== false;
+        $sig = trim((string) $z->getFromName('package.sig'));
+        $z->close();
+        $ok || $relBack('Could not unpack the release file on this server (temporary folder not writable).', $editTo);
+
+        return [$inner, $sig];
+    };
+
     if ((int) ($upZip['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
         $zipTmp = (string) $upZip['tmp_name'];
-        $sigText = (int) ($upSig['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK ? trim((string) file_get_contents((string) $upSig['tmp_name'])) : '';
-        $sigText !== '' || $relBack('Choose the .sig file too — it comes with the .zip in C:\\SmartPRS3-Releases.', $editTo);
+        [$zipTmp, $sigText] = $unbundle($zipTmp) ?? [$zipTmp, (int) ($upSig['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK ? trim((string) file_get_contents((string) $upSig['tmp_name'])) : ''];
+        $sigText !== '' || $relBack('Choose the .sprs release file from C:\\SmartPRS3-Releases (an older .zip needs its .sig too).', $editTo);
     } elseif (in_array((int) ($upZip['error'] ?? UPLOAD_ERR_NO_FILE), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
         $relBack('The package is bigger than this server accepts for an upload (' . ini_get('upload_max_filesize') . '). Copy the .zip and .sig into storage/releases on the server and pick it from the list instead.', $editTo);
     } elseif ($picked !== '' && is_file($relUpdater->releasesDir() . '/' . $picked)) {
         $zipTmp = $relUpdater->releasesDir() . '/' . $picked;
-        $sigText = trim((string) @file_get_contents(preg_replace('/\.zip$/i', '.sig', $zipTmp)));
+        [$zipTmp, $sigText] = $unbundle($zipTmp) ?? [$zipTmp, trim((string) @file_get_contents(preg_replace('/\.zip$/i', '.sig', $zipTmp)))];
         $sigText !== '' || $relBack('No ' . preg_replace('/\.zip$/i', '.sig', $picked) . ' beside it in storage/releases.', $editTo);
     }
 

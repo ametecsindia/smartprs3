@@ -96,11 +96,23 @@ $sha = (string) hash_file('sha256', $zipPath);
 $sig = '';
 openssl_sign($sha, $sig, (string) file_get_contents($keyFile), OPENSSL_ALGO_SHA256);
 file_put_contents($out . DIRECTORY_SEPARATOR . 'smartprs3-' . $version . '.sig', base64_encode($sig));
-$size = (int) filesize($zipPath);
+// ONE FILE TO UPLOAD (owner, 13 Nov 2026): smartprs3-<version>.sprs carries the package and its signature together;
+// Releases unpacks it. The separate .zip and .sig are not kept, so there is only the one file to pick.
+$sigPath = $out . DIRECTORY_SEPARATOR . 'smartprs3-' . $version . '.sig';
+$bundlePath = $out . DIRECTORY_SEPARATOR . 'smartprs3-' . $version . '.sprs';
+$bundle = new \ZipArchive();
+$bundle->open($bundlePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+$bundle->addFile($zipPath, 'package.zip');
+$bundle->addFile($sigPath, 'package.sig');
+$bundle->setCompressionName('package.zip', \ZipArchive::CM_STORE);
+$bundle->close();
+@unlink($zipPath);
+@unlink($sigPath);
+$size = (int) filesize($bundlePath);
 file_put_contents($out . DIRECTORY_SEPARATOR . 'smartprs3-' . $version . '.txt',
-    "SmartPRS3 {$version}\r\nBuilt: " . date('d-m-Y H:i') . "\r\nSHA-256: {$sha}\r\nSize: " . number_format($size) . " bytes\r\nNotes: {$notes}\r\n");
+    "SmartPRS3 {$version}\r\nBuilt: " . date('d-m-Y H:i') . "\r\nPackage SHA-256: {$sha}\r\nRelease file: smartprs3-{$version}.sprs (" . number_format($size) . " bytes)\r\nNotes: {$notes}\r\n");
 
-echo "\nDone.\n  {$zipPath}  (" . round($size / 1048576, 1) . " MB)\n  smartprs3-{$version}.sig\n  smartprs3-{$version}.txt\n\n"
-    . "Next: Super Admin -> Releases & Updates -> New release -> choose these two files -> Save -> Publish,\n"
+echo "\nDone.\n  {$bundlePath}  (" . round($size / 1048576, 1) . " MB)\n\n"
+    . "Next: Super Admin -> Releases -> Add release -> choose this ONE .sprs file -> Save -> Publish,\n"
     . "then Install on cloud server and/or tick the on-prem clients to send it to.\n"
     . "Also: commit and push this code (config/version.json now says {$version}).\n";
