@@ -6773,7 +6773,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (post('employee_id') !== '' && ($soEmp === null || !$scope->covers(post('employee_id'), $may('employee.list')))) {
                     $problem = $soEmp === null ? 'No such employee.' : $scope->why(post('employee_id'));
                 } else {
-                    $result = $selfOnboarding->invite(post('name'), post('email'), post('mobile'), $who,
+                    // An existing employee left blank here is invited with the Directory's name, email and mobile.
+                    $soOr = static fn (string $k): string => post($k) !== '' ? post($k) : (string) ($soEmp[$k] ?? '');
+                    $result = $selfOnboarding->invite($soOr('name'), $soOr('email'), $soOr('mobile'), $who,
                         $soEmp === null ? 'new' : 'existing', $soEmp === null ? null : (string) $soEmp['id']);
                     $result['ok'] ? $notice = $result['why'] : $problem = $result['why'];
 
@@ -23466,12 +23468,31 @@ boot();
     <div class="row" style="align-items:flex-end">
       <form method="post" class="row" style="margin:0;flex:1;align-items:flex-end">
         <input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="onboard-invite">
+<?php // NEW CANDIDATE OR EXISTING EMPLOYEE (owner, 13 Nov 2026): say which first; picking an existing
+      // employee fills their name, email and mobile from the Directory (still editable).
+      $soChoices = []; $soContact = [];
+      foreach ($soEmployments as $soE) {
+          $soChoices[(string) $soE['id']] = Employment::label($soE);
+          $soContact[(string) $soE['id']] = [(string) ($soE['name'] ?? ''), (string) ($soE['email'] ?? ''), (string) ($soE['mobile'] ?? '')];
+      } ?>
+        <div><label for="so-who">Invite</label><select id="so-who" data-so-who><option value="new">New candidate</option><option value="existing">Existing employee</option></select></div>
+        <div data-so-existing hidden><label for="so-for">Employee</label>
+          <?= employeePicker('so-for', 'employee_id', $soChoices, '', 'type a name or code') ?></div>
         <div><label>Name</label><input name="name" required placeholder="joiner's name"></div>
         <div><label>Email</label><input name="email" type="email" placeholder="name@example.com"></div>
         <div><label>Mobile</label><input name="mobile" placeholder="10 digits"></div>
-        <div><label for="so-for">For</label>
-<?php $soChoices = []; foreach ($soEmployments as $soE) { $soChoices[(string) $soE['id']] = 'existing: ' . Employment::label($soE); } ?>
-          <?= employeePicker('so-for', 'employee_id', $soChoices, '', 'a new joiner') ?></div>
+        <script>(function () {
+          var who = document.querySelector('[data-so-who]'), f = who.form, box = f.querySelector('[data-so-existing]'),
+              id = box.querySelector('input[name="employee_id"]'), txt = box.querySelector('.emp-pick-text'), c = <?= json_encode($soContact, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
+          who.addEventListener('change', function () {
+            box.hidden = who.value !== 'existing'; txt.required = who.value === 'existing';
+            if (box.hidden) { id.value = ''; txt.value = ''; }
+          });
+          id.addEventListener('change', function () {
+            var r = c[id.value]; if (!r) { return; }
+            f.elements.name.value = r[0]; f.elements.email.value = r[1]; f.elements.mobile.value = r[2];
+          });
+        })();</script>
         <div><button class="btn btn-primary">+ Invite</button></div>
       </form>
       <form method="post" enctype="multipart/form-data" style="margin:0;display:flex;gap:8px;align-items:flex-end">
