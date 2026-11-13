@@ -66,7 +66,10 @@ $ver = ['note' => (string) ($ver['note'] ?? ''), 'product' => 'SmartPRS', 'versi
 file_put_contents($verFile, json_encode($ver, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n");
 
 // WHAT GOES IN: everything under the project folder except these.
-$skipDirs = ['.git', 'storage', 'mobile', 'node_modules', 'Claude outputs', '.phpunit.cache', '.idea', '.vscode', 'public/uploads'];
+// vendor/ (owner, 13 Nov 2026 — "413 Request Entity Too Large"): every server keeps its own libraries (composer), the
+// updater never deletes what a package leaves out, and they made the package too big to upload. docs/ and tests/ are
+// not needed to run.
+$skipDirs = ['.git', 'storage', 'mobile', 'node_modules', 'Claude outputs', '.phpunit.cache', '.idea', '.vscode', 'public/uploads', 'vendor', 'docs', 'tests'];
 $skipFiles = ['.env', '.env.bak', 'env-local.txt'];
 $zip = new \ZipArchive();
 $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
@@ -112,6 +115,7 @@ $size = (int) filesize($bundlePath);
 file_put_contents($out . DIRECTORY_SEPARATOR . 'smartprs3-' . $version . '.txt',
     "SmartPRS3 {$version}\r\nBuilt: " . date('d-m-Y H:i') . "\r\nPackage SHA-256: {$sha}\r\nRelease file: smartprs3-{$version}.sprs (" . number_format($size) . " bytes)\r\nNotes: {$notes}\r\n");
 
+$size > 24 * 1048576 && print("\nWARNING: " . round($size / 1048576, 1) . " MB is more than a server accepts by default (25 MB). Tell Claude before uploading.\n");
 echo "\nDone.\n  {$bundlePath}  (" . round($size / 1048576, 1) . " MB)  <- the one file to upload\n"
     . "  (smartprs3-{$version}.zip + .sig are there too, only for a server whose Releases screen still asks for two files)\n\n"
     . "Next: Super Admin -> Releases -> Add release -> choose the .sprs file -> Save -> Publish,\n"
