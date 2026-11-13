@@ -11,7 +11,7 @@ declare(strict_types=1);
 $amRoute = (string) ($rawRoute ?? '');
 $amTabs = array_values(array_filter([
     ['app-home', 'fa-house', 'Home', true],
-    ['punch', 'fa-fingerprint', 'Punch', $may('ess.attendance.punch')],
+    ['punch', 'fa-fingerprint', 'Punch', true], // every login (owner, 13 Nov 2026)
     // MY ATTENDANCE (owner, 12 Nov 2026): own days, punches in / out, worked and late — a tab of its own.
     ['my-attendance', 'fa-calendar-check', 'Attendance', $may('ess.attendance.punch') && trim((string) ($session->user()['employee_id'] ?? '')) !== ''],
     ['leave', 'fa-umbrella-beach', 'Leave', $may('leave.request.view')],

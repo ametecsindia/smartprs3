@@ -51,6 +51,7 @@ final class Authorisation
      * permission, `access.role.update`, rather than a PHP edit.
      */
     public const CUSTOMISATION_KEY = 'access:role-permissions';
+    private const PUNCH = 'ess.attendance.punch';
 
     /**
      * WHERE THE PER-ROLE REACH IS KEPT — `role => 'branch' | 'company'`, the one
@@ -273,6 +274,9 @@ final class Authorisation
         $managerDefault = $manager; // the reporting-manager tier's shipped grants, reused by config/role-defaults.json `preset`
         $manager = self::withOverride($manager, (array) ($override['manager'] ?? []));
         $viewer = self::withOverride($viewer, (array) ($override['viewer'] ?? []));
+        // PUNCH FOR EVERYONE (owner, 13 Nov 2026): a grid saved before the rule cannot take it away; the geo-fence is the exception.
+        $manager[] = self::PUNCH;
+        $viewer[] = self::PUNCH;
 
         $administrator = Role::publish('administrator', 'Administrator', 1, true, $administrator, catalogue: $catalogue);
         $manager = Role::publish('manager', 'Reporting manager', 1, false, $manager, catalogue: $catalogue);
@@ -331,7 +335,7 @@ final class Authorisation
             $preset = self::presetFor($customRole);
             $defaultGranted = strtolower($customRole) === 'company admin' || $preset === 'full' ? $catalogue->declaredCodes()
                 : ($preset === 'manager' ? array_values(array_unique(array_merge($managerDefault, self::defaultsFor($customRole)))) : self::defaultsFor($customRole));
-            $grants = self::withOverride($defaultGranted, (array) ($override[$customRole] ?? []));
+            $grants = [...self::withOverride($defaultGranted, (array) ($override[$customRole] ?? [])), self::PUNCH];
             $published = Role::publish($customRole, $customRole, 1, false, $grants, catalogue: $catalogue);
             $this->assignments[$customRole] = [Assignment::of($published, $tenantWide, label: $customRole)];
         }
