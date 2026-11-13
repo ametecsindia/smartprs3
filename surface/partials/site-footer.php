@@ -43,6 +43,10 @@ footer.sf .sf-tile small{font-size:12.5px;color:rgba(255,255,255,.55)}
 footer.sf .sf-bottom{border-top:1px solid rgba(255,255,255,.08);margin-top:30px;padding-top:20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px}
 @media(max-width:1020px){footer.sf .sf-cols{grid-template-columns:1fr 1fr}footer.sf .sf-tiles{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){footer.sf .sf-cols,footer.sf .sf-tiles{grid-template-columns:1fr 1fr}footer.sf .sf-cols>div:first-child{grid-column:1/-1}}
+/* MORE FROM AMETECS (owner, 13 Nov 2026): a plain heading on wide screens; on a phone it starts collapsed and opens on tap. */
+footer.sf .sf-family>summary{list-style:none;pointer-events:none}footer.sf .sf-family>summary::-webkit-details-marker{display:none}
+@media(max-width:600px){footer.sf .sf-family>summary{pointer-events:auto;cursor:pointer}footer.sf .sf-family>summary h5{display:flex;justify-content:space-between;align-items:center}
+footer.sf .sf-family>summary h5::after{content:'+';font-size:18px;font-weight:400}footer.sf .sf-family[open]>summary h5::after{content:'\2212'}}
 </style>
 <footer class="sf"><div class="wrap">
     <div class="sf-cols">
@@ -64,7 +68,7 @@ footer.sf .sf-bottom{border-top:1px solid rgba(255,255,255,.08);margin-top:30px;
             <a class="lk" href="<?= $sfE((string) $sfSlug) ?>"><?= $sfE((string) ($sfPg['link'] ?? $sfPg['title'] ?? $sfSlug)) ?></a>
             <?php endforeach; ?></div>
     </div>
-    <div class="sf-family"><h5>More from Ametecs</h5>
+    <details class="sf-family" open><summary><h5>More from Ametecs</h5></summary>
         <div class="sf-tiles">
             <?php foreach ($sfFamily as [$u, $col, $img, $word, $sub]): ?>
             <a class="sf-tile" style="--sf-c:<?= $col ?>" href="<?= $u ?>" target="_blank" rel="noopener">
@@ -72,7 +76,8 @@ footer.sf .sf-bottom{border-top:1px solid rgba(255,255,255,.08);margin-top:30px;
                 <small><?= $sub ?></small></a>
             <?php endforeach; ?>
         </div>
-    </div>
+    </details>
+    <script>matchMedia('(max-width:600px)').matches && document.querySelector('footer.sf .sf-family').removeAttribute('open');</script>
     <div class="sf-bottom">
         <span>&copy; <?= date('Y') ?> Ametecs India Private Limited. All rights reserved.</span>
         <span><?php foreach ($sfPhones as $i => $ph): ?><?= $i ? ' · ' : '' ?><a href="tel:<?= $sfE((string) preg_replace('/[^\d+]/', '', $ph)) ?>" style="white-space:nowrap"><?= $sfE($ph) ?></a><?php endforeach; ?><?php if ($sfEmail !== ''): ?><?= $sfPhones ? ' · ' : '' ?><a href="mailto:<?= $sfE($sfEmail) ?>"><?= $sfE($sfEmail) ?></a><?php endif; ?></span>
