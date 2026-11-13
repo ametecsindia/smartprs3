@@ -11,7 +11,10 @@ $ownId = $scope->own();
 $ownRow = $ownId === null ? null : $store->find('employees', $ownId);
 $code = $ownRow === null ? '' : SmartPRS\Surface\Employment::code($ownRow);
 $today = $code === '' ? null : $attendanceReport->day($code, date('Y-m-d'), $calendar->shiftStart(), $calendar->shiftEnd());
-$next = $today === null || array_filter($today['unpaired'], static fn (array $p): bool => $p['direction'] === 'in') === [] ? 'in' : 'out';
+// THE NEXT PUNCH AND THE STATUS follow the LAST punch today (owner, 13 Nov 2026) — the same rule the punch action uses.
+$todayRaw = $code === '' ? [] : array_values(array_filter($attendance->punchesFor($code), static fn (array $p): bool => substr((string) $p['at'], 0, 10) === date('Y-m-d')));
+$lastPunch = $todayRaw === [] ? null : end($todayRaw);
+$next = $lastPunch !== null && (string) $lastPunch['direction'] === 'in' ? 'out' : 'in';
 $fence = $ownRow === null ? null : (new SmartPRS\Surface\GeoFence($store))->fenceFor($ownRow);
 // THE COMPANY'S ATTENDANCE SOURCE (owner, 9 Nov 2026) — Time & Attendance → QR Attendance.
 $qrSource = $ownRow === null ? 'standard' : SmartPRS\Surface\QrAttendance::load($customisation, __DIR__ . '/../..')->modeFor($ownRow); // Office staff: QR by default (12 Nov 2026)
@@ -28,6 +31,13 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
   body.in-app .punch-stats > div { background:var(--bg,#f8fafc); border:1px solid var(--border,#e2e8f0); border-radius:12px; padding:10px 12px; }
   body.in-app .punch-stats b { display:block; font-size:12px !important; color:var(--text3,#64748b); font-weight:600; margin-bottom:2px; }
   body.in-app .punch-stats br { display:none; }
+  /* CURRENT STATUS (owner, 13 Nov 2026): punched IN / OUT / not yet, at a glance */
+  .punch-status { display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:12px; font-weight:700; font-size:15px; margin:4px 0 12px; }
+  .punch-status i { font-size:20px; }
+  .punch-status-in { background:#dcfce7; color:#166534; }
+  .punch-status-out { background:#fee2e2; color:#991b1b; }
+  .punch-status-none { background:#f1f5f9; color:#475569; }
+  body.in-app .punch-status, body.in-app .punch-status span { font-size:15px !important; }
 </style>
 <div class="page-header">
   <div><h2>Punch In / Out</h2><p><?= e((new DateTimeImmutable('today'))->format('l, d-m-Y')) ?> &middot; from this web app; device and mobile punches land in the same register</p></div>
@@ -37,9 +47,9 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
 <div class="card"><div class="problem" style="margin:0">This account is not bound to an employee, so there is nobody to punch for. An administrator binds accounts on the Accounts screen.</div></div>
 <?php else: ?>
 <div class="card">
-  <h2><?= e($code) ?> <span class="note"><?= e((string) ($ownRow['name'] ?? '')) ?></span>
-    <span class="badge <?= $today['punches'] === 0 ? 'badge-gray' : ($next === 'out' ? 'badge-green' : 'badge-amber') ?>"><?=
-      $today['punches'] === 0 ? 'No punch yet today' : ($next === 'out' ? 'IN since ' . e((string) ($today['first_in'] ?? '')) : 'OUT at ' . e((string) ($today['last_out'] ?? ''))) ?></span></h2>
+  <h2><?= e($code) ?> <span class="note"><?= e((string) ($ownRow['name'] ?? '')) ?></span></h2>
+  <div class="punch-status punch-status-<?= $lastPunch === null ? 'none' : (string) $lastPunch['direction'] ?>"><i class="fas <?= $lastPunch === null ? 'fa-circle-minus' : ((string) $lastPunch['direction'] === 'in' ? 'fa-circle-check' : 'fa-circle-stop') ?>"></i>
+    <span><?= $lastPunch === null ? 'Not punched in yet today' : ((string) $lastPunch['direction'] === 'in' ? 'Punched IN' : 'Punched OUT') . ' at ' . e(substr((string) $lastPunch['at'], 11, 5)) ?></span></div>
 <?php if ($qrSource === 'smartept'): ?>
   <div class="note" style="font-size:14px"><i class="fas fa-desktop"></i> Your company records attendance through <b>SmartEPT</b>. Punch in SmartEPT; the punch reaches SmartPRS3 by itself and shows here.</div>
 <?php elseif ($qrSource === 'qr' && !$inApp): ?>
@@ -116,10 +126,12 @@ $inApp = ($_COOKIE['sprs_app_device'] ?? '') !== '';
   </form>
 <?php endif; ?>
   <div class="row punch-stats" style="margin-top:14px">
-    <div><b>First in</b><br><?= e((string) ($today['first_in'] ?? '—')) ?></div>
-    <div><b>Last out</b><br><?= e((string) ($today['last_out'] ?? '—')) ?></div>
+<?php $pIns = array_values(array_filter($todayRaw, static fn (array $p): bool => (string) $p['direction'] === 'in'));
+      $pOuts = array_values(array_filter($todayRaw, static fn (array $p): bool => (string) $p['direction'] === 'out')); ?>
+    <div><b>First in</b><br><?= e($pIns === [] ? '—' : substr((string) $pIns[0]['at'], 11, 5)) ?></div>
+    <div><b>Last out</b><br><?= e($pOuts === [] ? '—' : substr((string) end($pOuts)['at'], 11, 5)) ?></div>
     <div><b>Worked so far</b><br><?= e(SmartPRS\Surface\AttendanceReport::hm((int) $today['worked_minutes'])) ?></div>
-    <div><b>Punches</b><br><?= (int) $today['punches'] ?></div>
+    <div><b>Punches</b><br><?= count($todayRaw) ?></div>
   </div>
 </div>
 <script>

@@ -43,17 +43,15 @@ if ($qrSource === 'qr' && (post('qr') === '' || ($_COOKIE['sprs_app_device'] ?? 
     header('Location: ?r=punch');
     exit;
 }
-$today = $attendanceReport->day($code, date('Y-m-d'), $calendar->shiftStart(), $calendar->shiftEnd());
-$open = array_filter($today['unpaired'], static fn (array $p): bool => $p['direction'] === 'in');
-$direction = $open === [] ? 'in' : 'out';
+// IN, THEN OUT, THEN IN… (owner, 13 Nov 2026: "if already punched in, it should show Punched out after punching again"):
+// the direction follows the employee's LAST punch today, whatever the shift times. It used to come from the shift-window
+// pairing, which never saw punches outside the shift as open, so every scan was taken as IN.
+$todayRaw = array_values(array_filter($attendance->punchesFor($code), static fn (array $p): bool => substr((string) $p['at'], 0, 10) === date('Y-m-d')));
+$direction = $todayRaw !== [] && (string) end($todayRaw)['direction'] === 'in' ? 'out' : 'in';
 // A DAY OFF (W.OFF, holiday, approved full-day leave — owner, 14 Oct): the punch is allowed and
 // kept, but it counts only once the reporting line approves it, so a regularization is raised
 // for it now. Held punches are not in $today, so the direction comes from today's raw punches.
 $offWhy = $attendance->offDayReason($code, date('Y-m-d'));
-if ($offWhy !== null) {
-    $raw = array_values(array_filter($attendance->punchesFor($code), static fn (array $p): bool => substr((string) $p['at'], 0, 10) === date('Y-m-d')));
-    $direction = $raw !== [] && (string) end($raw)['direction'] === 'in' ? 'out' : 'in';
-}
 $lat = trim(post('lat'));
 $lng = trim(post('lng'));
 $reference = ($lat !== '' && $lng !== '' && is_numeric($lat) && is_numeric($lng)) ? "gps:$lat,$lng" : null;
