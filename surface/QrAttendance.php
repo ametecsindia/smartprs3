@@ -71,6 +71,9 @@ final class QrAttendance
     public function modeFor(array $employee): string
     {
         $source = $this->sourceFor((string) ($employee['employer_company_id'] ?? ''));
+        // QR + BIOMETRIC (owner, 13 Nov 2026): in the app it is QR; the device's punches arrive on their own. The day takes the
+        // first IN and the last OUT from whichever was punched.
+        $source === 'qr_biometric' && $source = self::SOURCE;
 
         // NO GATE, NO QR (owner, 13 Nov 2026): in a QR company an employee whose branch has no active gate — a field agent —
         // uses the regular Punch IN / OUT, judged by their own geo-fence. Punch is never simply unavailable.
@@ -116,10 +119,16 @@ final class QrAttendance
     {
         $source = $this->sourceFor($companyId);
 
-        return $source === self::SOURCE || ($source === 'standard' && (array) (((array) ($this->config['office_qr'] ?? []))['values'] ?? []) !== []);
+        return $source === self::SOURCE || $source === 'qr_biometric' || ($source === 'standard' && (array) (((array) ($this->config['office_qr'] ?? []))['values'] ?? []) !== []);
     }
 
-    /** standard | smartept | qr — a company never set (or set to something unknown) is Standard. */
+    /** Does this company take SmartEPT punches? Not when it records attendance by QR, the device, or both (one source each). */
+    public function takesSmartEpt(string $companyId): bool
+    {
+        return !in_array($this->sourceFor($companyId), [self::SOURCE, 'biometric', 'qr_biometric'], true);
+    }
+
+    /** standard | smartept | qr | biometric | qr_biometric — a company never set (or set to something unknown) is Standard. */
     public function sourceFor(string $companyId): string
     {
         $s = (string) (((array) ($this->saved['sources'] ?? []))[$companyId] ?? '');

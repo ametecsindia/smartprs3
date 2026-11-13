@@ -5,14 +5,51 @@
   "standard": "Standard (biometric / web & app)",
   "smartept": "SmartEPT punch (SmartEPT API)",
   "biometric": "Biometric device (ZKTeco / eSSL / eTimeOffice)",
+  "qr_biometric": "QR Attendance + Biometric device (either — first IN, last OUT)",
   "qr": "QR Attendance (gate QR in the app)"
  },
- "office_qr": {"_note": "QR PUNCH BY DEFAULT FOR OFFICE STAFF (owner, 12 Nov 2026): in a Standard company, an employee whose Staff Type is one of these punches by scanning the gate QR in the SmartPRS3 app, once their branch has an active gate. Field staff keep the app's location punch.", "field": "type", "values": ["Office"]},
+ "office_qr": {
+  "_note": "QR PUNCH BY DEFAULT FOR OFFICE STAFF (owner, 12 Nov 2026): in a Standard company, an employee whose Staff Type is one of these punches by scanning the gate QR in the SmartPRS3 app, once their branch has an active gate. Field staff keep the app's location punch.",
+  "field": "type",
+  "values": [
+   "Office"
+  ]
+ },
  "settings": {
-  "interval_s":           {"label": "New code every (seconds)",                    "short": "Code (s)", "default": 3,   "min": 2,  "max": 30},
-  "grace_s":              {"label": "Accept a just-expired code for (seconds)",    "short": "Grace (s)", "default": 5,   "min": 0,  "max": 15},
-  "duplicate_window_min": {"label": "Ignore repeat scans within (minutes)",        "short": "Repeat (min)", "default": 2,   "min": 0,  "max": 60},
-  "gps_accuracy_m":       {"label": "Required GPS accuracy (metres)",              "short": "GPS (m)", "default": 50,  "min": 10, "max": 500},
-  "radius_m":             {"label": "Default gate geo-fence radius (metres)",      "short": "Radius (m)", "default": 150, "min": 30, "max": 2000}
+  "interval_s": {
+   "label": "New code every (seconds)",
+   "short": "Code (s)",
+   "default": 3,
+   "min": 2,
+   "max": 30
+  },
+  "grace_s": {
+   "label": "Accept a just-expired code for (seconds)",
+   "short": "Grace (s)",
+   "default": 5,
+   "min": 0,
+   "max": 15
+  },
+  "duplicate_window_min": {
+   "label": "Ignore repeat scans within (minutes)",
+   "short": "Repeat (min)",
+   "default": 2,
+   "min": 0,
+   "max": 60
+  },
+  "gps_accuracy_m": {
+   "label": "Required GPS accuracy (metres)",
+   "short": "GPS (m)",
+   "default": 50,
+   "min": 10,
+   "max": 500
+  },
+  "radius_m": {
+   "label": "Default gate geo-fence radius (metres)",
+   "short": "Radius (m)",
+   "default": 150,
+   "min": 30,
+   "max": 2000
+  }
  }
 }

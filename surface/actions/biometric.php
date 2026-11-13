@@ -39,12 +39,12 @@ if ($bioOp === 'sync' || $bioOp === 'test') {
     foreach ($store->all('biometric_unmapped') as $u) {
         strcasecmp((string) ($u['device_code'] ?? ''), $code) === 0 && (string) ($u['source'] ?? '') === 'smartept' && $bioFromEpt = true;
     }
-    $bioQrCo = $emp !== null && $bioFromEpt && SmartPRS\Surface\QrAttendance::load($customisation, dirname(__DIR__, 2))->sourceFor((string) ($emp['employer_company_id'] ?? '')) === 'qr';
+    $bioQrCo = $emp !== null && $bioFromEpt && SmartPRS\Surface\QrAttendance::load($customisation, dirname(__DIR__, 2))->takesSmartEpt((string) ($emp['employer_company_id'] ?? '')) === false;
 
     if ($emp === null || $code === '') {
         $_SESSION['flash_problem'] = 'Choose an employee to map this device id to.';
     } elseif ($bioQrCo) {
-        $_SESSION['flash_problem'] = SmartPRS\Surface\Employment::label($emp) . '\'s company records attendance by QR Attendance, so SmartEPT punches are not taken for them (one source per company — QR Attendance → Module & policy).';
+        $_SESSION['flash_problem'] = SmartPRS\Surface\Employment::label($emp) . '\'s company records attendance by QR Attendance or the biometric device, so SmartEPT punches are not taken for them (one source per company — QR Attendance → Module & policy).';
     } else {
         foreach ($store->all('employees') as $other) {
             if ((string) $other['id'] !== (string) $emp['id'] && strcasecmp(trim((string) ($other['device_user_id'] ?? '')), $code) === 0) {

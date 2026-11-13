@@ -560,7 +560,7 @@ document.querySelectorAll('[data-qa-copy]').forEach(function (b) {
 });
 document.querySelectorAll('[data-qa-co]').forEach(function (box) {
   var sel = box.querySelector('[data-qa-src]'); if (!sel) { return; }
-  sel.addEventListener('change', function () { box.querySelectorAll('[data-qa-qr]').forEach(function (el) { el.style.display = sel.value === 'qr' ? '' : 'none'; }); });
+  sel.addEventListener('change', function () { box.querySelectorAll('[data-qa-qr]').forEach(function (el) { el.style.display = (sel.value === 'qr' || sel.value === 'qr_biometric') ? '' : 'none'; }); });
 });
 function qaXls(id, name) { // the table on screen, same rows — handed back as a formatted Excel file (action csv-xlsx)
   var t = document.getElementById(id); if (!t) { return; }
