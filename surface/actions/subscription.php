@@ -4,9 +4,9 @@
  * the write lands on the subscription's own tenant and not the operator's.
  *
  * The amount is never typed: plan monthly price at the seats × cycle months
- * (SaasPlatform), so the register and the dashboard's MRR agree. Renew moves
- * the period end forward by one cycle from wherever it is (or today if it
- * has lapsed) and sets the row active. Cancel is a status, not a delete.
+ * (SaasPlatform), so the register and the dashboard's MRR agree. Renew sets
+ * the period end to the date the operator chooses (offered: one cycle on)
+ * and sets the row active. Cancel is a status, not a delete.
  */
 declare(strict_types=1);
 
@@ -56,7 +56,14 @@ if ($op === 'save') {
     $plan = $platform->find('plans', (string) $before['plan_id']);
     $months = $saas->months((string) ($before['cycle'] ?? ''));
     $from = max((string) ($before['current_period_end'] ?? ''), $today);
-    $end = $plus($from, $months);
+    // The renewal date is CHOSEN, never applied by a click (owner, 13 Nov 2026).
+    $end = post('valid_until');
+
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $end) !== 1 || $end <= $today) {
+        $_SESSION['flash_problem'] = 'Choose a renewal date after today.';
+        header('Location: ?r=subscriptions');
+        exit;
+    }
     $after = ['id' => $id, 'current_period_end' => $end, 'next_renewal' => $end, 'status' => 'active'];
 
     if ($plan !== null) {
@@ -64,8 +71,8 @@ if ($op === 'save') {
     }
 
     $platform->put('subscriptions', $after);
-    $audit('subscription.renewed', 'subscriptions', $id, ['current_period_end' => $before['current_period_end'], 'status' => $before['status']], $after, "renewed {$months} month(s) from {$from}");
-    $_SESSION['flash_notice'] = "Renewed to {$end}.";
+    $audit('subscription.renewed', 'subscriptions', $id, ['current_period_end' => $before['current_period_end'], 'status' => $before['status']], $after, "renewed to {$end} (was {$from})");
+    $_SESSION['flash_notice'] = 'Renewed until ' . date('d-m-Y', (int) strtotime($end)) . '.';
 } elseif ($op === 'cancel' && $before !== null) {
     $platform->put('subscriptions', ['id' => $id, 'status' => 'cancelled']);
     $audit('subscription.cancelled', 'subscriptions', $id, ['status' => $before['status']], ['status' => 'cancelled'], 'cancelled by platform staff');

@@ -35,7 +35,7 @@ $live = (array) $declared['subscription_live'];
 $grace = (int) ($declared['subscription_grace_days'] ?? 7);
 ?>
 <div class="page-header"><div><h2>Subscriptions</h2>
-  <p><?= count($rows) ?> subscription(s), soonest period end first. Renew extends the period by the cycle's months and marks it active; Cancel keeps the row and closes it.</p></div>
+  <p><?= count($rows) ?> subscription(s), soonest period end first. Renew asks for the date to renew until (one cycle ahead is suggested) and marks it active; Cancel keeps the row and closes it.</p></div>
   <div><a class="btn btn-primary" href="?r=subscriptions&edit=new#form"><i class="fas fa-plus"></i> Add subscription</a></div></div>
 
 <?php if (isset($_GET['edit'])): ?>
@@ -75,7 +75,7 @@ $grace = (int) ($declared['subscription_grace_days'] ?? 7);
     <td><span class="badge badge-<?= $lc === 'active' ? 'green' : ($lc === 'grace' ? 'amber' : ($lc === 'locked' ? 'red' : 'gray')) ?>"><?= e($lc) ?></span></td>
     <td style="white-space:nowrap"><a class="btn btn-sm btn-outline" href="?r=subscriptions&edit=<?= e((string) $s['id']) ?>#form">Edit</a>
 <?php if (in_array($st, $live, true) || $st === 'expired'): ?>
-      <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="subscription"><input type="hidden" name="op" value="renew"><input type="hidden" name="id" value="<?= e((string) $s['id']) ?>"><button class="btn btn-sm btn-primary" type="submit">Renew</button></form>
+      <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="subscription"><input type="hidden" name="op" value="renew"><input type="hidden" name="id" value="<?= e((string) $s['id']) ?>"><details style="display:inline-block;vertical-align:top"><summary class="btn btn-sm btn-primary" style="list-style:none;cursor:pointer">Renew</summary><div class="card" style="padding:10px;margin-top:6px;width:190px;white-space:normal;text-align:left"><label>Renew until</label><input style="width:100%;box-sizing:border-box" type="date" name="valid_until" required min="<?= e(date('Y-m-d', strtotime($today . ' +1 day'))) ?>" value="<?= e((new DateTimeImmutable(max($end, $today)))->modify('+' . $saas->months((string) ($s['cycle'] ?? '')) . ' months')->format('Y-m-d')) ?>"><button class="btn btn-sm btn-primary" type="submit" style="margin-top:6px">Confirm renewal</button></div></details></form>
 <?php endif; if (in_array($st, $live, true)): ?>
       <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($session->token()) ?>"><input type="hidden" name="action" value="subscription"><input type="hidden" name="op" value="cancel"><input type="hidden" name="id" value="<?= e((string) $s['id']) ?>"><button class="btn btn-sm btn-outline" type="submit" onclick="return confirm('Cancel this subscription?')">Cancel</button></form>
 <?php endif; ?></td>
