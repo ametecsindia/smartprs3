@@ -29905,7 +29905,7 @@ boot();
 <?php endif; ?>
   </div>
 
-<?php elseif ($route === 'attendance-corrections' && !$may('attendance.day.view')): ?>
+<?php elseif ($route === 'attendance-corrections' && !$may('attendance.day.view') && !$may('ess.attendance.punch')): ?>
   <div class="page-header"><div><h2>Attendance Regularization</h2></div></div>
   <div class="card"><div class="problem" style="margin:0">Denied: <?= e($access->decide(
       (string) $session->user()['role'], 'attendance.day.view')->summary) ?></div></div>

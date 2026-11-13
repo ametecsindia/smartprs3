@@ -213,7 +213,7 @@
      "key": "attendance-corrections",
      "label": "Attendance Regularization",
      "icon": "fa-pen-to-square",
-     "permission": "attendance.day.view",
+     "permission": "ess.attendance.punch",
      "route": "attendance-corrections"
     },
     {
