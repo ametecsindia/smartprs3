@@ -31,12 +31,12 @@ use SmartPRS\Platform\Identity\PasswordHasher;
 final class Session
 {
     /**
-     * The minimum password length. TEMPORARILY 8 at the owner's instruction;
-     * it goes back to 12 before this instance is used by anyone but them.
+     * The minimum password length: 8, PERMANENTLY, everywhere (owner, 22 Oct, 5 Nov and 13 Nov 2026).
+     * Do not raise it to 12 for a live or client install — that was reverted at go-live and the owner refused it.
      * Length is the floor rather than a symbol rule, because a long passphrase
      * beats an eight-character one with a digit stuck on the end.
      */
-    public const PASSWORD_FLOOR = 12;
+    public const PASSWORD_FLOOR = 8;
 
     /**
      * How long a lockout lasts. Long enough to make guessing pointless, short

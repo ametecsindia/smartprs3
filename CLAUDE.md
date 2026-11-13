@@ -59,6 +59,7 @@ is logged.** A gate that does not block is only a suggestion.
 - **Removed by the owner — do not bring back**: the "CTC includes the employer's contributions" box (Salary
   structure); the Bonus Register, Minimum Wages and Statutory Configuration menus.
 - **Dates are dd-mm-yyyy** on every screen and export.
+- **Password minimum is 8 characters, permanently, everywhere** (owner, 22 Oct / 5 Nov / 13 Nov 2026) — `Session::PASSWORD_FLOOR = 8`. Never raise it to 12, including for go-live or client installs.
 
 ---
 
@@ -128,7 +129,6 @@ If `composer check` cannot run, say so rather than working around it.
 These are deliberate local-development shortcuts. They are listed here so they cannot be
 forgotten, and each one should become a gate rather than a note.
 
-- `Session::PASSWORD_FLOOR` is lowered — restore it to 12.
 - A seeded `admin@smartprslocal` account exists — remove it.
 - No screen assigns the manager role yet; it is reachable only by setting the column directly.
 - `composer install` has not been run on the Laragon machine, so phpstan and both deptrac
