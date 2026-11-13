@@ -34,7 +34,7 @@ if ($aeStep === 'smtp') {
 if ($aeStep === 'test') {
     $to = trim(post('test_to'));
     filter_var($to, FILTER_VALIDATE_EMAIL) === false && $aeDone(['ok' => false, 'why' => 'Give an email address to send the test to.']);
-    $r = $aeAlerts->send([$to], [], 'SmartPRS test email', "This is a test email from SmartPRS Alert Email Drafts.\n\nIf you can read this, automatic alert emails will reach your people.");
+    $r = $aeAlerts->send([$to], [], 'SmartPRS test email', "This is a test email from SmartPRS Alert Email Drafts.\n\nIf you can read this, automatic alert emails will reach your people.", [], 'Test email');
     $aeDone(['ok' => $r['ok'], 'why' => $r['ok'] ? 'Test email ' . $r['why'] . '.' : 'Test email NOT sent: ' . $r['why']]);
 }
 

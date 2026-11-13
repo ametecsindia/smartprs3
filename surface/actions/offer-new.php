@@ -54,7 +54,7 @@ if (post('op') === 'send') {
     } else {
         $onCc = array_values(array_filter(array_map('trim', preg_split('/[,;\s]+/', post('cc')) ?: []), static fn (string $a): bool => filter_var($a, FILTER_VALIDATE_EMAIL) !== false));
         $onSent = (new SmartPRS\Surface\AlertEmails($store, $customisation, __DIR__ . '/../../config/alert-emails.json'))->send([$onIn['email']], $onCc,
-            letterEmailSubject($onTemplate, $onSubject, $company, ''), $onR['body']);
+            letterEmailSubject($onTemplate, $onSubject, $company, ''), $onR['body'], [], 'Offer letter');
 
         if (!$onSent['ok']) {
             $_SESSION['flash_problem'] = 'Not sent: ' . $onSent['why'];

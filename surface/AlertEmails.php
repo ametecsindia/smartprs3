@@ -566,7 +566,46 @@ final class AlertEmails
      *
      * @param list<string> $to @param list<string> $cc
      */
-    public function send(array $to, array $cc, string $subject, string $body, array $attachments = []): array
+    public function send(array $to, array $cc, string $subject, string $body, array $attachments = [], string $logAs = ''): array
+    {
+        $r = $this->deliver($to, $cc, $subject, $body, $attachments);
+
+        // EVERY EMAIL IS LOGGED (owner, 13 Nov 2026): one-off emails (self-onboarding link, offer, letters, activation)
+        // land in Alert Email Drafts → Recent emails with the server's receipt or its refusal, like the alerts do.
+        if ($logAs !== '') {
+            try {
+                $now = date('Y-m-d H:i:s');
+                $this->store->put(self::LOG, ['kind' => 'email.' . $logAs, 'title' => $subject, 'body' => Redactor::redact($body), 'channels' => 'email',
+                    'email_status' => $r['ok'] ? Outbox::SENT : Outbox::FAILED, 'dedupe_key' => 'mail1:' . $logAs . ':' . bin2hex(random_bytes(6)),
+                    'meta' => json_encode(['to' => $to, 'cc' => $cc, 'result' => $r['why']], JSON_THROW_ON_ERROR), 'created_at' => $now, 'updated_at' => $now]);
+            } catch (\Throwable $x) {
+                error_log('Email log write failed: ' . $x->getMessage()); // the send's own answer still goes back to the caller
+            }
+        }
+
+        return $r;
+    }
+
+    /**
+     * A From address on another domain than the mail account is the usual reason "sent" mail never arrives:
+     * Gmail / Microsoft 365 / Zoho accept it, then drop or spam it (SPF / DMARC). Null when they agree.
+     */
+    public function fromWarning(): ?string
+    {
+        $s = $this->smtp();
+        $user = strtolower(trim((string) ($s['username'] ?? '')));
+        $from = strtolower(trim((string) ($s['from_email'] ?? '')));
+
+        if (!str_contains($user, '@') || $from === '' || $from === $user) {
+            return null;
+        }
+
+        return substr((string) strrchr($user, '@'), 1) === substr((string) strrchr($from, '@'), 1) ? null
+            : "The From email ({$from}) is not the mail account you sign in with ({$user}). Most mail providers accept such emails and then drop them or put them in spam. Set From email to {$user}, or allow {$from} as a sender in that account.";
+    }
+
+    /** @param list<array{0: string, 1: string}> $attachments */
+    private function deliver(array $to, array $cc, string $subject, string $body, array $attachments = []): array
     {
         $s = $this->smtp(true);
 
@@ -614,7 +653,7 @@ final class AlertEmails
             $addr = self::addresses((array) $cfg['recipients'], $d['employee'], $employeesById, $users);
             $subject = self::render((string) $cfg['subject'], $d['values']);
             $body = self::render((string) $cfg['body'], $d['values']);
-            $r = $this->send($addr['to'], $addr['cc'], $subject, $body);
+            $r = $this->deliver($addr['to'], $addr['cc'], $subject, $body);
             $now = date('Y-m-d H:i:s');
             $this->store->put(self::LOG, ['kind' => 'email.' . $d['alert'], 'title' => $subject, 'body' => Redactor::redact($body),
                 'channels' => 'email', 'email_status' => $r['ok'] ? Outbox::SENT : Outbox::FAILED,

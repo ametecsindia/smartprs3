@@ -91,6 +91,7 @@ $aeSample = ['emp_name' => 'Asha Rao', 'emp_code' => 'AI2001', 'designation' => 
   </form>
 <?php else: ?>
   <p class="note" style="margin:0"><?= e((string) $aeSmtp['host']) ?>:<?= (int) $aeSmtp['port'] ?> · from <?= e((string) $aeSmtp['from_email']) ?></p>
+<?php if (($aeFromWarn = $aeAlerts->fromWarning()) !== null): ?><div class="problem" style="margin:8px 0 0"><?= e($aeFromWarn) ?></div><?php endif; ?>
 <?php endif; ?>
 </div>
 
@@ -169,7 +170,7 @@ $aeSample = ['emp_name' => 'Asha Rao', 'emp_code' => 'AI2001', 'designation' => 
     <tr><td class="note"><?= e(substr((string) ($l['created_at'] ?? ''), 0, 16)) ?></td><td><?= e((string) ($aeList[substr((string) $l['kind'], 6)]['label'] ?? $l['kind'])) ?></td>
       <td><?= e((string) ($m['recipient'] ?? '')) ?></td><td class="note"><?= e(implode(', ', (array) ($m['to'] ?? []))) ?><?= ($m['cc'] ?? []) !== [] ? '<br>cc ' . e(implode(', ', (array) $m['cc'])) : '' ?></td>
       <td><?= e((string) ($l['title'] ?? '')) ?></td>
-      <td><span class="badge <?= $ok ? 'badge-green' : 'badge-red' ?>"><?= $ok ? 'Sent' : 'Failed' ?></span><?= $ok ? '' : '<div class="note" style="max-width:280px">' . e((string) ($m['result'] ?? '')) . '</div>' ?></td></tr>
+      <td><span class="badge <?= $ok ? 'badge-green' : 'badge-red' ?>"><?= $ok ? 'Sent' : 'Failed' ?></span><?= (string) ($m['result'] ?? '') === '' ? '' : '<div class="note" style="max-width:320px;font-size:11px">' . e((string) $m['result']) . '</div>' ?></td></tr>
 <?php endforeach; ?>
 <?php if ($aeLog === []): ?><tr><td colspan="6" class="note">No alert email has been sent yet.</td></tr><?php endif; ?>
     </tbody></table></div>

@@ -58,7 +58,7 @@ if (($maEmp === null && $maUser === null) || ($maEmp !== null && trim((string) (
                 . "1. Install the SmartPRS3 app (your HR team shares the install file / store link).\n"
                 . "2. Open it and enter:\n   Company address: {$maAddr}\n   Employee ID or email: {$maLogin}\n   Password: your SmartPRS password (use \"Forgot password\" on the sign-in page if you do not have one)\n"
                 . "3. When the app asks for the activation code, enter:\n\n      {$maCode}\n\n"
-                . "The code works once, on one phone, and is valid until {$maUntilShow}. After that the app signs you straight in.\n\nHR");
+                . "The code works once, on one phone, and is valid until {$maUntilShow}. After that the app signs you straight in.\n\nHR", [], 'Mobile activation code');
         $_SESSION['flash_notice'] = 'Activation code for ' . $maWho . ': ' . $maCode . ' — valid until ' . $maUntilShow . '. Company address: ' . $maAddr . '. '
             . ($maMail['ok'] ? 'Emailed to ' . $maTo . '.' : 'Not emailed (' . rtrim((string) $maMail['why'], '.') . ') — pass it on by WhatsApp / SMS.');
         // ONE FIELD PER LINE (owner, 12 Nov 2026: "it is coming as a paragraph which is completely confusing").

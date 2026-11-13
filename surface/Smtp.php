@@ -81,10 +81,17 @@ final class Smtp
 
             $this->command('DATA', 354);
             $this->write(self::message($server, $to, $cc, $subject, $text, $html, $attachments) . "\r\n.");
-            $this->expect(250);
-            $this->command('QUIT', 221);
+            // THE SERVER'S RECEIPT (owner, 13 Nov 2026: "it says sent but nothing arrives"): the 250 reply carries the
+            // mail server's queue id — proof it was handed over, and what the mail provider needs to trace it.
+            $receipt = trim($this->expect(250));
+            try {
+                $this->command('QUIT', 221);
+            } catch (\Throwable $q) {
+                error_log('SMTP QUIT not answered after a delivered message: ' . $q->getMessage()); // the message itself was accepted
+            }
 
-            return ['ok' => true, 'why' => 'Sent to ' . implode(', ', $to) . ($cc === [] ? '' : ' (cc ' . implode(', ', $cc) . ')')];
+            return ['ok' => true, 'why' => 'Accepted by ' . $server['host'] . ' for ' . implode(', ', $to) . ($cc === [] ? '' : ' (cc ' . implode(', ', $cc) . ')')
+                . ' — receipt: ' . substr((string) preg_replace('/\s+/', ' ', $receipt), 0, 160)];
         } catch (\Throwable $e) {
             return ['ok' => false, 'why' => $e->getMessage()];
         } finally {

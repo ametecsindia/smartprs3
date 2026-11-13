@@ -6824,8 +6824,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     : (new SmartPRS\Surface\AlertEmails($store, $customisation, __DIR__ . '/../config/alert-emails.json'))->send([$soMailTo], [],
                         'Welcome to ' . $company . ' — complete your joining details',
                         "Dear {$soTarget['name']},\n\nWelcome to {$company}. Please open the link below, fill in your details and upload your documents before your joining date:\n\n{$soLinkUrl}\n\n"
-                        . 'The link is open until ' . date('d-m-Y', (int) strtotime((string) $soTarget['link_expires_at'])) . ". Your reference is {$soTarget['temp_emp_code']}.\n\nHR");
-                $soSent['ok'] ? $notice = "Link emailed to {$soMailTo}." : $problem = 'Not emailed: ' . $soSent['why'];
+                        . 'The link is open until ' . date('d-m-Y', (int) strtotime((string) $soTarget['link_expires_at'])) . ". Your reference is {$soTarget['temp_emp_code']}.\n\nHR", [], 'Self onboarding link');
+                $soSent['ok'] ? $notice = $soSent['why'] . '. If it does not arrive, check spam, then Alert Email Drafts → Mail server.' : $problem = 'Not emailed: ' . $soSent['why'];
                 $_GET['id'] = (string) $soTarget['id'];
             } elseif ($action === 'onboard-flags') {
                 $result = $selfOnboarding->setFlags($soTarget, (array) ($_POST['verified'] ?? []), post('email_verified') === '1', post('mobile_verified') === '1', $who);
@@ -9845,7 +9845,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $liSent = $liTo === '' ? ['ok' => false, 'why' => 'the employee has no email address on record']
                             : (new SmartPRS\Surface\AlertEmails($store, $customisation, __DIR__ . '/../config/alert-emails.json'))->send([$liTo], $liCc,
                                 letterEmailSubject($template, $subject, $company, post('email_subject')), (string) ($result['letter']['body'] ?? '')
-                                . (Letters::needsAck($template) ? "\n\n— — —\nPlease sign in to SmartPRS, open HR Letters → My Letters and click \"I acknowledge\" on this letter." : ''));
+                                . (Letters::needsAck($template) ? "\n\n— — —\nPlease sign in to SmartPRS, open HR Letters → My Letters and click \"I acknowledge\" on this letter." : ''), [], 'HR letter');
                         $liSent['ok'] ? $notice .= ' Emailed to ' . $liTo . ($liCc !== [] ? ', copy to ' . implode(', ', $liCc) : '') . '.' : $problem = 'Issued, but not emailed: ' . $liSent['why'];
                         $audit('letter.emailed', 'letters', (string) ($result['letter']['id'] ?? ''), null, ['to' => $liTo, 'cc' => $liCc, 'ok' => $liSent['ok']], $liSent['ok'] ? 'Letter emailed' : 'Letter email failed');
                     }
