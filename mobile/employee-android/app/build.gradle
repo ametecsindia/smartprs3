@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'com.ametecs.smartprs3.employee'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId 'com.ametecs.smartprs3.employee'
         minSdk 24
-        targetSdk 34
+        targetSdk 36
         versionCode 7
         versionName '1.6'
     }
@@ -44,6 +44,19 @@ android.applicationVariants.all { variant ->
                 into releasesRoot
                 rename { 'README.txt' }
             }
+        }
+    }
+}
+
+// THE PLAY STORE FILE (owner, 13 Nov 2026): Build > Generate Signed App Bundle makes app-release.aab; it is copied beside the
+// APKs as SmartPRS3-Mobile-app-<version>-release.aab — the file uploaded to the Google Play Console.
+tasks.matching { it.name == 'bundleRelease' }.configureEach {
+    doLast {
+        copy {
+            from layout.buildDirectory.dir('outputs/bundle/release')
+            include '*.aab'
+            into "${releasesRoot}/SmartPRS3 Mobile app/v${android.defaultConfig.versionName}"
+            rename { "SmartPRS3-Mobile-app-${android.defaultConfig.versionName}-release.aab" }
         }
     }
 }

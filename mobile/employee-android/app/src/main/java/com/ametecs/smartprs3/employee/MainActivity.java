@@ -25,6 +25,10 @@ import android.text.InputType;
 import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
@@ -70,7 +74,7 @@ public class MainActivity extends Activity {
 
     private static final String COOKIE = "sprs_app_device";
     /** Where Explore Demo opens when no company address is typed. */
-    private static final String DEMO_ADDRESS = "https://app.smartprs.com";
+    private static final String DEMO_ADDRESS = "https://smartprs.com";
     /** A page to open instead of the dashboard (Explore Demo); used once. */
     private String startPath = null;
     private static final int REQ_LOCATION = 1;
@@ -114,9 +118,44 @@ public class MainActivity extends Activity {
         void done(JSONObject res);
     }
 
+    /** The screen's content kept clear of the status bar, the navigation bar, a display cutout and the keyboard. */
+    private View edge(View v) {
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsetsController bars = getWindow().getInsetsController();
+            if (bars != null) {
+                bars.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS);
+            }
+            // A FRAME carries the padding — a WebView draws its page ignoring its own padding.
+            if (v.getParent() instanceof ViewGroup) {
+                ((ViewGroup) v.getParent()).removeView(v);
+            }
+            FrameLayout frame = new FrameLayout(this);
+            frame.setBackgroundColor(Color.WHITE);
+            frame.addView(v, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+            frame.setOnApplyWindowInsetsListener((view, insets) -> {
+                android.graphics.Insets s = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
+                view.setPadding(s.left, s.top, s.right, s.bottom);
+                return WindowInsets.CONSUMED;
+            });
+            frame.requestApplyInsets();
+            return frame;
+        }
+        return v;
+    }
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        // ANDROID 15/16 DRAW EDGE TO EDGE (Google Play needs target API 36, 13 Nov 2026): the app lays itself out under the
+        // status and navigation bars and pads its own content by them (edge()), on every version from Android 11 alike;
+        // dark bar icons on the white app.
+        if (Build.VERSION.SDK_INT >= 30) {
+            getWindow().setDecorFitsSystemWindows(false);
+            getWindow().setStatusBarColor(Color.WHITE);
+            getWindow().setNavigationBarColor(Color.WHITE);
+            getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+        }
         prefs = getSharedPreferences("smartprs", MODE_PRIVATE);
         deviceId = prefs.getString("device_id", "");
 
@@ -447,7 +486,7 @@ public class MainActivity extends Activity {
         root.addView(foot);
 
         closeWeb();
-        setContentView(sv);
+        setContentView(edge(sv));
 
         return l;
     }
@@ -533,7 +572,7 @@ public class MainActivity extends Activity {
     private void showSignIn(String problem) {
         LinearLayout l = page("Sign in", null);
         problem(l, problem);
-        final EditText addr = field(l, "Company address", "https://app.smartprs.com/c/yourcompany",
+        final EditText addr = field(l, "Company address", "https://smartprs.com/c/yourcompany",
                 prefs.getString("address", ""), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
         final EditText login = field(l, "Employee ID or email", "e.g. EMP001 or you@company.com", prefs.getString("login", ""),
                 InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -792,7 +831,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        setContentView(web);
+        setContentView(edge(web));
         // The one-time login link (from /api/mobile/signin) opens the session as that login; boot-hooks spends it.
         String path = startPath;
         startPath = null;

@@ -137,7 +137,8 @@ if ($amCoLogo === '' && ($amOwn = $scope->own()) !== null) {
 <?php // APP VERSION (owner, 13 Nov 2026): the app names itself in its user agent ("SmartPRS3-Mobile/1.5"); the server's from config/version.json.
   $amAppVer = preg_match('#SmartPRS3-Mobile/([0-9][0-9A-Za-z.\-]*)#', (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), $amV) === 1 ? $amV[1] : '—';
   $amSrvVer = (string) ((json_decode((string) @file_get_contents(dirname(__DIR__, 2) . '/config/version.json'), true) ?: [])['version'] ?? ''); ?>
-  <div style="margin-top:10px;font-size:11px;color:#94a3b8">App version <?= e($amAppVer) ?><?= $amSrvVer !== '' ? ' · Server ' . e($amSrvVer) : '' ?></div>
+  <div style="margin-top:12px;font-size:12px"><a href="policy.php?p=delete-account" style="color:#94a3b8">Delete my account</a> · <a href="policy.php?p=privacy-policy" style="color:#94a3b8">Privacy policy</a></div>
+  <div style="margin-top:6px;font-size:11px;color:#94a3b8">App version <?= e($amAppVer) ?><?= $amSrvVer !== '' ? ' · Server ' . e($amSrvVer) : '' ?></div>
 </div>
 <?php endif; ?>
 <script>
