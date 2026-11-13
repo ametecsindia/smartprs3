@@ -127,6 +127,10 @@ if ($amCoLogo === '' && ($amOwn = $scope->own()) !== null) {
 <div class="card" id="app-signout" style="margin-top:14px;text-align:center">
   <button type="button" class="btn btn-outline" style="width:100%;color:#dc2626;border-color:#fca5a5;font-weight:700;padding:12px"
     onclick="if (confirm('Sign out of the app?')) { document.getElementById('sp-signout-form').submit(); }"><i class="fas fa-right-from-bracket"></i> Sign out</button>
+<?php // APP VERSION (owner, 13 Nov 2026): the app names itself in its user agent ("SmartPRS3-Mobile/1.5"); the server's from config/version.json.
+  $amAppVer = preg_match('#SmartPRS3-Mobile/([0-9][0-9A-Za-z.\-]*)#', (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), $amV) === 1 ? $amV[1] : '—';
+  $amSrvVer = (string) ((json_decode((string) @file_get_contents(dirname(__DIR__, 2) . '/config/version.json'), true) ?: [])['version'] ?? ''); ?>
+  <div style="margin-top:10px;font-size:11px;color:#94a3b8">App version <?= e($amAppVer) ?><?= $amSrvVer !== '' ? ' · Server ' . e($amSrvVer) : '' ?></div>
 </div>
 <?php endif; ?>
 <script>
